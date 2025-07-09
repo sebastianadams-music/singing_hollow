@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Multi-Timeline</title>
+    <!-- Tailwind CSS for basic styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the canvas and body */
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            overflow: hidden; /* Prevent body scroll bars */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f0f4f8; /* Light background */
+            color: #333;
+        }
+        canvas {
+            background-color: #ffffff; /* White canvas background */
+            border: 2px solid #cbd5e1; /* Light gray border */
+            border-radius: 12px; /* Rounded corners */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            display: block;
+            touch-action: none; /* Prevent default touch actions like scrolling */
+            cursor: grab; /* Indicate draggable area */
+        }
+        canvas.grabbing {
+            cursor: grabbing; /* Change cursor when dragging */
+        }
+        .info-box {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="info-box">
+        Pan: Click and Drag | Zoom: Scroll Wheel
+    </div>
+    <canvas id="timelineCanvas" class="w-full max-w-4xl h-[600px]"></canvas>
+
+    <script>
+        // Get the canvas element and its 2D rendering context
+        const canvas = document.getElementById('timelineCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // --- Transformation State Variables ---
+        // These variables must be initialized before any function that uses them is called.
+        let scale = 1.0; // Current zoom level
+        let translateX = 0; // Current pan X offset
+        let translateY = 0; // Current pan Y offset
+
+        // --- Panning State ---
+        // These variables must be initialized before any function that uses them is called.
+        let isDragging = false;
+        let lastMouseX = 0;
+        let lastMouseY = 0;
+
+        // --- Helper Function to Generate Sine Wave Data for Graphs ---
+        // This function needs to be defined before timelineData uses it.
+        function generateSineWaveData(startX, endX, amplitude, verticalOffset, frequency, phase = 0) {
+            const data = [];
+            for (let x = startX; x <= endX; x += 5) { // Increment by 5 for smoother curve
+                const y = Math.sin(x * frequency + phase) * amplitude + verticalOffset;
+                data.push({ x, y });
+            }
+            return data;
+        }
+
+        // --- Timeline Data ---
+        // Define the data for multiple timelines. Moved here to be initialized before draw() is called.
+        const timelineData = [
+            {
+                id: 'timeline-events',
+                label: 'Historical Events',
+                color: '#ef4444', // Red-500
+                items: [
+                    { type: 'text', x: 100, y: 50, content: 'Event A: 1900', size: 16 },
+                    { type: 'graphic', x: 150, y: 50, width: 20, height: 20, shape: 'circle' },
+                    { type: 'text', x: 300, y: 50, content: 'Event B: 1950', size: 16 },
+                    { type: 'graphic', x: 350, y: 50, width: 20, height: 20, shape: 'square' },
+                    { type: 'text', x: 500, y: 50, content: 'Event C: 2000', size: 16 },
+                    { type: 'graphic', x: 550, y: 50, width: 20, height: 20, shape: 'triangle' },
+                ]
+            },
+            {
+                id: 'timeline-data-series',
+                label: 'Data Series 1',
+                color: '#3b82f6', // Blue-500
+                items: [
+                    { type: 'text', x: 100, y: 150, content: 'Data Start', size: 14 },
+                    { type: 'graphic', x: 100, y: 150, width: 10, height: 10, shape: 'circle' },
+                    { type: 'graph', yOffset: 150, data: generateSineWaveData(100, 700, 50, 20, 0.05) },
+                    { type: 'text', x: 700, y: 150, content: 'Data End', size: 14 },
+                    { type: 'graphic', x: 700, y: 150, width: 10, height: 10, shape: 'circle' },
+                ]
+            },
+            {
+                id: 'timeline-project-phases',
+                label: 'Project Phases',
+                color: '#10b981', // Emerald-500
+                items: [
+                    { type: 'text', x: 50, y: 250, content: 'Phase 1: Planning', size: 15 },
+                    { type: 'graphic', x: 50, y: 250, width: 30, height: 20, shape: 'rectangle', fill: '#d1fae5' }, // Emerald-100
+                    { type: 'text', x: 250, y: 250, content: 'Phase 2: Development', size: 15 },
+                    { type: 'graphic', x: 250, y: 250, width: 30, height: 20, shape: 'rectangle', fill: '#d1fae5' },
+                    { type: 'text', x: 450, y: 250, content: 'Phase 3: Testing', size: 15 },
+                    { type: 'graphic', x: 450, y: 250, width: 30, height: 20, shape: 'rectangle', fill: '#d1fae5' },
+                    { type: 'text', x: 650, y: 250, content: 'Phase 4: Deployment', size: 15 },
+                    { type: 'graphic', x: 650, y: 250, width: 30, height: 20, shape: 'rectangle', fill: '#d1fae5' },
+                ]
+            },
+            {
+                id: 'timeline-data-series-2',
+                label: 'Data Series 2',
+                color: '#f97316', // Orange-500
+                items: [
+                    { type: 'graph', yOffset: 350, data: generateSineWaveData(100, 700, 30, 15, 0.03, Math.PI / 2) }, // Different amplitude, frequency, phase
+                    { type: 'text', x: 400, y: 350, content: 'Another Data Trend', size: 14 },
+                ]
+            }
+        ];
+
+        // --- Canvas Dimensions and Responsiveness ---
+        // Set canvas dimensions to match its CSS size
+        const setCanvasDimensions = () => {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            draw(); // Redraw content after resizing
+        };
+        // Initial setup
+        setCanvasDimensions();
+        // Update dimensions on window resize
+        window.addEventListener('resize', setCanvasDimensions);
+
+
+        // --- Drawing Function ---
+        function draw() {
+            // Clear the entire canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Save the current transformation state (identity matrix)
+            ctx.save();
+
+            // Apply global transformations for pan and zoom
+            ctx.translate(translateX, translateY);
+            ctx.scale(scale, scale);
+
+            // Draw a background grid or timeline axis if desired
+            drawGrid();
+
+            // Iterate through each timeline layer
+            timelineData.forEach(timeline => {
+                // Draw a horizontal line for the timeline axis
+                ctx.strokeStyle = timeline.color;
+                ctx.lineWidth = 2 / scale; // Adjust line width for zoom
+                ctx.beginPath();
+                // Find min/max X for the current timeline items to draw a relevant line
+                let minX = Infinity;
+                let maxX = -Infinity;
+                timeline.items.forEach(item => {
+                    if (item.x !== undefined) {
+                        minX = Math.min(minX, item.x);
+                        maxX = Math.max(maxX, item.x);
+                    } else if (item.type === 'graph' && item.data.length > 0) {
+                        minX = Math.min(minX, item.data[0].x);
+                        maxX = Math.max(maxX, item.data[item.data.length - 1].x);
+                    }
+                });
+                // If no items, default to a small range or skip line
+                if (minX === Infinity) {
+                    minX = 0; maxX = canvas.width; // Default to canvas width if no specific items
+                }
+
+                // Draw the main timeline line for this layer
+                ctx.moveTo(minX, timeline.items[0]?.y || timeline.items[0]?.yOffset || 0);
+                ctx.lineTo(maxX + 50, timeline.items[0]?.y || timeline.items[0]?.yOffset || 0); // Extend slightly
+                ctx.stroke();
+
+                // Draw timeline label
+                ctx.fillStyle = timeline.color;
+                ctx.font = `${18 / scale}px Inter, sans-serif`;
+                ctx.fillText(timeline.label, -100, timeline.items[0]?.y || timeline.items[0]?.yOffset || 0);
+
+
+                // Iterate through items within the current timeline layer
+                timeline.items.forEach(item => {
+                    ctx.fillStyle = item.fill || timeline.color; // Use item fill color if specified, else timeline color
+                    ctx.strokeStyle = timeline.color;
+                    ctx.lineWidth = 2 / scale;
+
+                    switch (item.type) {
+                        case 'text':
+                            ctx.font = `${item.size / scale}px Inter, sans-serif`;
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'middle';
+                            ctx.fillText(item.content, item.x, item.y);
+                            break;
+                        case 'graphic':
+                            ctx.fillStyle = item.fill || timeline.color;
+                            ctx.beginPath();
+                            if (item.shape === 'circle') {
+                                ctx.arc(item.x, item.y, item.width / 2, 0, Math.PI * 2);
+                                ctx.fill();
+                                ctx.stroke();
+                            } else if (item.shape === 'square' || item.shape === 'rectangle') {
+                                ctx.fillRect(item.x - item.width / 2, item.y - item.height / 2, item.width, item.height);
+                                ctx.strokeRect(item.x - item.width / 2, item.y - item.height / 2, item.width, item.height);
+                            } else if (item.shape === 'triangle') {
+                                ctx.moveTo(item.x, item.y - item.height / 2); // Top
+                                ctx.lineTo(item.x - item.width / 2, item.y + item.height / 2); // Bottom-left
+                                ctx.lineTo(item.x + item.width / 2, item.y + item.height / 2); // Bottom-right
+                                ctx.closePath();
+                                ctx.fill();
+                                ctx.stroke();
+                            }
+                            break;
+                        case 'graph':
+                            ctx.beginPath();
+                            ctx.strokeStyle = timeline.color;
+                            ctx.lineWidth = 3 / scale; // Thicker line for graphs
+                            if (item.data.length > 0) {
+                                ctx.moveTo(item.data[0].x, item.data[0].y + item.yOffset);
+                                for (let i = 1; i < item.data.length; i++) {
+                                    ctx.lineTo(item.data[i].x, item.data[i].y + item.yOffset);
+                                }
+                            }
+                            ctx.stroke();
+                            break;
+                    }
+                });
+            });
+
+            // Restore the canvas to its original transformation state
+            ctx.restore();
+        }
+
+        // --- Grid Drawing Helper (Optional, for visual reference) ---
+        function drawGrid() {
+            const gridSize = 50; // Size of each grid square in world coordinates
+            ctx.strokeStyle = '#e2e8f0'; // Gray-200
+            ctx.lineWidth = 1 / scale; // Keep line thin regardless of zoom
+
+            // Calculate visible area in world coordinates
+            const worldMinX = -translateX / scale;
+            const worldMaxX = (canvas.width - translateX) / scale;
+            const worldMinY = -translateY / scale;
+            const worldMaxY = (canvas.height - translateY) / scale;
+
+            // Draw vertical lines
+            for (let x = Math.floor(worldMinX / gridSize) * gridSize; x <= worldMaxX; x += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(x, worldMinY);
+                ctx.lineTo(x, worldMaxY);
+                ctx.stroke();
+            }
+
+            // Draw horizontal lines
+            for (let y = Math.floor(worldMinY / gridSize) * gridSize; y <= worldMaxY; y += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(worldMinX, y);
+                ctx.lineTo(worldMaxX, y);
+                ctx.stroke();
+            }
+        }
+
+
+        // --- Event Handlers for Pan and Zoom ---
+
+        // Mouse Down Event (Start Panning)
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            canvas.classList.add('grabbing');
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+        });
+
+        // Mouse Move Event (Perform Panning)
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+
+            const dx = e.clientX - lastMouseX;
+            const dy = e.clientY - lastMouseY;
+
+            translateX += dx;
+            translateY += dy;
+
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+
+            draw(); // Redraw with new pan offset
+        });
+
+        // Mouse Up Event (Stop Panning)
+        canvas.addEventListener('mouseup', () => {
+            isDragging = false;
+            canvas.classList.remove('grabbing');
+        });
+
+        // Mouse Leave Event (Stop Panning if mouse leaves canvas while dragging)
+        canvas.addEventListener('mouseleave', () => {
+            isDragging = false;
+            canvas.classList.remove('grabbing');
+        });
+
+        // Mouse Wheel Event (Zooming)
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault(); // Prevent page scrolling
+
+            const zoomFactor = 1.1; // How much to zoom in/out
+            const mouseX = e.clientX - canvas.getBoundingClientRect().left;
+            const mouseY = e.clientY - canvas.getBoundingClientRect().top;
+
+            // Calculate world coordinates before zoom
+            const worldX = (mouseX - translateX) / scale;
+            const worldY = (mouseY - translateY) / scale;
+
+            if (e.deltaY < 0) {
+                // Zoom In
+                scale *= zoomFactor;
+            } else {
+                // Zoom Out
+                scale /= zoomFactor;
+            }
+
+            // Limit zoom level
+            scale = Math.max(0.1, Math.min(scale, 10.0)); // Min 0.1x, Max 10x zoom
+
+            // Adjust translation to keep the point under the mouse fixed
+            translateX = mouseX - worldX * scale;
+            translateY = mouseY - worldY * scale;
+
+            draw(); // Redraw with new zoom and pan
+        });
+
+        // Initial draw call when the page loads
+        window.onload = draw;
+
+    </script>
+</body>
+</html>
