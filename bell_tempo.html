@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashing Website</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            transition: background-color 0.05s ease-in-out; /* Smooth transition for flashes */
+            overflow: hidden; /* Prevent scrollbars */
+            margin: 0;
+            padding: 0;
+            height: 100vh; /* Ensure body takes full viewport height */
+            width: 100vw; /* Ensure body takes full viewport width */
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px); /* Optional: blur background */
+        }
+
+        .overlay-content {
+            background-color: #1f2937; /* Darker gray for content */
+            padding: 2.5rem; /* Increased padding */
+            border-radius: 1rem; /* More rounded corners */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            width: 90%; /* Responsive width */
+            max-width: 600px; /* Max width for larger screens */
+            color: #e5e7eb; /* Light text color */
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem; /* Spacing between sections */
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            color: #d1d5db;
+        }
+
+        .input-group input[type="number"],
+        .input-group textarea {
+            background-color: #374151; /* Even darker input background */
+            border: 1px solid #4b5563;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            color: #f9fafb;
+            font-size: 1rem;
+            width: 100%;
+            box-sizing: border-box; /* Include padding in width */
+        }
+
+        .input-group textarea {
+            min-height: 120px; /* Larger text area */
+            resize: vertical;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 0.25rem;
+            background-color: #374151;
+            border: 1px solid #4b5563;
+            appearance: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+            position: relative;
+            flex-shrink: 0; /* Prevent checkbox from shrinking */
+        }
+
+        .checkbox-group input[type="checkbox"]:checked {
+            background-color: #3b82f6; /* Blue for checked */
+            border-color: #3b82f6;
+        }
+
+        .checkbox-group input[type="checkbox"]:checked::after {
+            content: '✔';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 0.875rem;
+        }
+
+        .message-box {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background-color: #10b981; /* Green for success/info */
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+
+        .message-box.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .overlay-content {
+                padding: 1.5rem;
+                gap: 1rem;
+            }
+            .input-group label {
+                font-size: 0.9rem;
+            }
+            .input-group input[type="number"],
+            .input-group textarea {
+                padding: 0.6rem 0.8rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-900">
+    <div id="app" class="w-full h-full flex items-center justify-center text-white text-2xl">
+        Press ESC to open settings
+    </div>
+
+    <div id="settings-overlay" class="overlay hidden">
+        <div class="overlay-content">
+            <h2 class="text-2xl font-bold text-center mb-4">Flashing Settings</h2>
+
+            <div class="input-group">
+                <label for="flash-interval">Time between flashes (seconds):</label>
+                <input type="number" id="flash-interval" min="0.01" step="0.01" value="0.5">
+            </div>
+
+            <div class="input-group">
+                <label for="cycle-length">Flashes per red cycle:</label>
+                <input type="number" id="cycle-length" min="1" step="1" value="6">
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="disable-pause">
+                <label for="disable-pause">Disable pause after two cycles</label>
+            </div>
+
+            <div class="input-group">
+                <label for="script-input">Script (one command per line, e.g., "duration 60 metro 0.5"):</label>
+                <textarea id="script-input" placeholder="duration 60 metro 0.5&#10;duration 30 metro 0.25"></textarea>
+                <button id="apply-script-btn" class="mt-2 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75">Apply Script</button>
+                <button id="clear-script-btn" class="mt-2 px-4 py-2 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-75">Clear Script</button>
+            </div>
+
+            <button id="close-settings-btn" class="mt-4 px-6 py-3 bg-gray-700 text-white font-bold rounded-lg shadow-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-opacity-75">Close</button>
+        </div>
+    </div>
+
+    <div id="message-box" class="message-box"></div>
+
+    <script>
+        // Global variables for flashing state
+        let flashIntervalId = null;
+        let flashDuration = 500; // Default 0.5 seconds in milliseconds
+        let cycleLength = 6; // Default number of flashes in a sequence (e.g., 6 flashes: 1 red, 5 green)
+        let disablePause = false; // Whether to disable the pause after two cycles
+
+        // State variable for tracking position in the "super cycle"
+        // This index will go from 0 up to (2 * cycleLength) for a full sequence including the pause (if enabled).
+        let superCycleFlashIndex = 0;
+
+        // Script related variables
+        let scriptMode = false;
+        let scriptLines = [];
+        let currentScriptLineIndex = 0;
+        let scriptTimeoutId = null; // Timeout for script line duration
+
+        // DOM elements
+        const body = document.body;
+        const settingsOverlay = document.getElementById('settings-overlay');
+        const flashIntervalInput = document.getElementById('flash-interval');
+        const cycleLengthInput = document.getElementById('cycle-length');
+        const disablePauseCheckbox = document.getElementById('disable-pause');
+        const scriptInput = document.getElementById('script-input');
+        const applyScriptBtn = document.getElementById('apply-script-btn');
+        const clearScriptBtn = document.getElementById('clear-script-btn');
+        const closeSettingsBtn = document.getElementById('close-settings-btn');
+        const messageBox = document.getElementById('message-box');
+
+        /**
+         * Displays a temporary message box.
+         * @param {string} message - The message to display.
+         * @param {string} type - 'success' or 'error'.
+         */
+        function showMessage(message, type = 'success') {
+            messageBox.textContent = message;
+            messageBox.className = 'message-box show'; // Reset classes and add show
+            if (type === 'error') {
+                messageBox.style.backgroundColor = '#ef4444'; // Red for error
+            } else {
+                messageBox.style.backgroundColor = '#10b981'; // Green for success
+            }
+            setTimeout(() => {
+                messageBox.classList.remove('show');
+            }, 3000); // Hide after 3 seconds
+        }
+
+        /**
+         * Toggles the visibility of the settings overlay.
+         */
+        function toggleSettingsOverlay() {
+            if (settingsOverlay.classList.contains('hidden')) {
+                // Show overlay
+                settingsOverlay.classList.remove('hidden');
+                stopFlashing(); // Stop flashing when settings are open
+            } else {
+                // Hide overlay
+                settingsOverlay.classList.add('hidden');
+                startFlashing(); // Resume flashing when settings are closed
+            }
+        }
+
+        /**
+         * Updates the flashing interval based on the current flashDuration.
+         * Clears any existing interval and sets a new one.
+         */
+        function updateFlashingInterval() {
+            stopFlashing(); // Clear existing interval
+            flashIntervalId = setInterval(flash, flashDuration); // Set new interval
+        }
+
+        /**
+         * Stops the flashing by clearing the interval and any script timeouts.
+         */
+        function stopFlashing() {
+            if (flashIntervalId) {
+                clearInterval(flashIntervalId);
+                flashIntervalId = null;
+            }
+            if (scriptTimeoutId) {
+                clearTimeout(scriptTimeoutId);
+                scriptTimeoutId = null;
+            }
+            // Ensure body is not stuck in a flash color when stopped
+            body.style.backgroundColor = '#1f2937'; // A neutral dark color
+        }
+
+        /**
+         * Starts the flashing.
+         * Resets superCycleFlashIndex if not in script mode.
+         */
+        function startFlashing() {
+            if (!flashIntervalId) { // Only start if not already running
+                if (!scriptMode) {
+                    superCycleFlashIndex = 0; // Reset for new manual start
+                }
+                updateFlashingInterval();
+            }
+        }
+
+        /**
+         * The main flashing logic.
+         * Determines color, handles cycle length, and pause.
+         */
+        function flash() {
+            const briefFlashDuration = 250; // How long the flash color stays on (150ms)
+            const defaultBgColor = '#1f2937'; // Default dark grey background
+
+            /**
+             * Applies a brief flash of a given color, then reverts to default background.
+             * @param {string} color - The color to flash.
+             */
+            function applyBriefFlash(color) {
+                body.style.backgroundColor = color;
+                setTimeout(() => {
+                    body.style.backgroundColor = defaultBgColor;
+                }, briefFlashDuration);
+            }
+
+            let currentColor = defaultBgColor;
+
+            // Calculate the total length of the "super cycle" including the pause
+            // If pause is disabled, the super cycle is just two regular cycles
+            const totalSuperCycleLength = (2 * cycleLength) + (disablePause ? 0 : 1);
+
+            // Determine the current flash type based on superCycleFlashIndex
+            if (!disablePause && superCycleFlashIndex === (2 * cycleLength)) {
+                // This is the specific index for the blank pause flash
+                currentColor = defaultBgColor;
+            } else if (superCycleFlashIndex % cycleLength === 0) {
+                // This is the start of a new 'cycleLength' sequence (e.g., flash 0, flash 6)
+                // So it should be red.
+                currentColor = 'red';
+            } else {
+                // All other flashes within a cycle are green
+                currentColor = 'green';
+            }
+
+            applyBriefFlash(currentColor);
+
+            // Increment superCycleFlashIndex and loop it
+            superCycleFlashIndex++;
+            if (superCycleFlashIndex >= totalSuperCycleLength) {
+                superCycleFlashIndex = 0; // Loop back to the beginning of the super cycle
+            }
+        }
+
+        /**
+         * Parses the script input and starts script execution.
+         */
+        function applyScript() {
+            const lines = scriptInput.value.trim().split('\n').filter(line => line.trim() !== '');
+            if (lines.length === 0) {
+                showMessage('Script is empty. Please enter commands.', 'error');
+                return;
+            }
+
+            const parsedLines = [];
+            for (const line of lines) {
+                const parts = line.split(' ');
+                if (parts.length === 4 && parts[0] === 'duration' && parts[2] === 'metro') {
+                    const duration = parseFloat(parts[1]);
+                    const metro = parseFloat(parts[3]);
+                    if (!isNaN(duration) && duration > 0 && !isNaN(metro) && metro > 0) {
+                        parsedLines.push({ duration: duration, metro: metro });
+                    } else {
+                        showMessage(`Invalid script line: "${line}". Duration and metro must be positive numbers.`, 'error');
+                        return; // Stop parsing on first error
+                    }
+                } else {
+                    showMessage(`Invalid script line format: "${line}". Expected "duration <seconds> metro <time>".`, 'error');
+                    return; // Stop parsing on first error
+                }
+            }
+
+            scriptLines = parsedLines;
+            scriptMode = true;
+            currentScriptLineIndex = 0;
+            superCycleFlashIndex = 0; // Reset super cycle index for new script
+            executeCurrentScriptLine();
+            showMessage('Script applied and started!');
+        }
+
+        /**
+         * Executes the current line of the script.
+         */
+        function executeCurrentScriptLine() {
+            if (scriptLines.length === 0) {
+                scriptMode = false;
+                stopFlashing();
+                startFlashing(); // Revert to manual settings
+                showMessage('Script finished or empty. Reverting to manual settings.');
+                return;
+            }
+
+            const currentLine = scriptLines[currentScriptLineIndex];
+            flashDuration = currentLine.metro * 1000; // Convert seconds to milliseconds
+            updateFlashingInterval(); // Update flashing with new metro value
+
+            // Set timeout for the duration of this script line
+            if (scriptTimeoutId) clearTimeout(scriptTimeoutId);
+            scriptTimeoutId = setTimeout(() => {
+                currentScriptLineIndex++;
+                if (currentScriptLineIndex >= scriptLines.length) {
+                    currentScriptLineIndex = 0; // Loop back to the first line
+                    showMessage('Script looped!');
+                }
+                executeCurrentScriptLine(); // Move to the next line
+            }, currentLine.duration * 1000); // Convert duration to milliseconds
+        }
+
+        /**
+         * Clears the active script and reverts to manual settings.
+         */
+        function clearScript() {
+            scriptMode = false;
+            scriptLines = [];
+            currentScriptLineIndex = 0;
+            stopFlashing();
+            // Revert flashDuration to the value in the input field
+            flashDuration = parseFloat(flashIntervalInput.value) * 1000;
+            superCycleFlashIndex = 0; // Reset super cycle index when clearing script
+            startFlashing();
+            showMessage('Script cleared. Reverted to manual settings.');
+        }
+
+        // Event Listeners
+
+        // ESC key to toggle settings overlay
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                toggleSettingsOverlay();
+            }
+        });
+
+        // Close settings button
+        closeSettingsBtn.addEventListener('click', () => {
+            toggleSettingsOverlay();
+        });
+
+        // Update flash interval on input change (only if not in script mode)
+        flashIntervalInput.addEventListener('change', (e) => {
+            if (!scriptMode) {
+                const newDuration = parseFloat(e.target.value);
+                if (!isNaN(newDuration) && newDuration > 0) {
+                    flashDuration = newDuration * 1000; // Convert to milliseconds
+                    updateFlashingInterval();
+                    showMessage('Flash interval updated.');
+                } else {
+                    showMessage('Please enter a valid positive number for flash interval.', 'error');
+                }
+            } else {
+                showMessage('Cannot change flash interval manually while a script is active. Clear the script first.', 'error');
+                flashIntervalInput.value = (flashDuration / 1000).toFixed(2); // Revert input to current script value
+            }
+        });
+
+        // Update cycle length on input change
+        cycleLengthInput.addEventListener('change', (e) => {
+            const newLength = parseInt(e.target.value);
+            if (!isNaN(newLength) && newLength >= 1) {
+                cycleLength = newLength;
+                superCycleFlashIndex = 0; // Reset super cycle index when cycle length changes
+                showMessage('Cycle length updated.');
+            } else {
+                showMessage('Please enter a valid positive integer for cycle length.', 'error');
+            }
+        });
+
+        // Update disable pause setting
+        disablePauseCheckbox.addEventListener('change', (e) => {
+            disablePause = e.target.checked;
+            superCycleFlashIndex = 0; // Reset super cycle index when pause setting changes
+            showMessage(`Pause between cycles ${disablePause ? 'disabled' : 'enabled'}.`);
+        });
+
+        // Apply Script button
+        applyScriptBtn.addEventListener('click', applyScript);
+
+        // Clear Script button
+        clearScriptBtn.addEventListener('click', clearScript);
+
+        // Initial setup on window load
+        window.onload = function() {
+            // Set initial values for inputs
+            flashIntervalInput.value = (flashDuration / 1000).toFixed(2);
+            cycleLengthInput.value = cycleLength;
+            disablePauseCheckbox.checked = disablePause;
+
+            startFlashing(); // Start flashing automatically on page load
+        };
+    </script>
+</body>
+</html>
