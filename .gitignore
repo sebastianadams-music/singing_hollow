@@ -1,0 +1,64 @@
+# Node.js
+node_modules/
+.pnp/
+.pnp.js
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.parcel-cache/
+.eslintcache
+.stylelintcache
+.DS_Store # macOS specific
+build/
+dist/
+tmp/
+*.log
+*.tgz
+*.zip
+*.rar
+*.7z
+.env
+.env.*
+!.env.example # Keep example files for .env
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Python
+__pycache__/
+*.pyc
+*.pyd
+*.pyo
+.Python/
+env/
+venv/
+pip-log.log
+pip-delete-this-arg.log
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+.ipynb_checkpoints/
+.ruff_cache/
+celerybeat-schedule/
+*.egg-info/
+.installed.cfg
+var/
+wheels/
+*.egg
+
+# OS-specific
+.DS_Store
+.Trashes
+Thumbs.db
+
+# Editor-specific
+*~
+*.swp
+.idea/
+.vscode/
+.project
+.settings
+.metadata
