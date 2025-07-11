@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Static Music Mockup</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #f0f0f0;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding-bottom: 50px;
+        }
+        h1 {
+            color: #333;
+        }
+        #score-container {
+            position: relative;
+            width: 800px; /* Fixed width for the container */
+            height: 300px; /* Fixed height for the container */
+            margin: 20px auto;
+            border: 1px solid #ccc;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+            background-color: #fff;
+            overflow: hidden;
+        }
+        /* Style the actual SVG element that will be injected */
+        #score-svg-wrapper svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+            /* The SVG's internal viewBox and preserveAspectRatio should handle scaling */
+        }
+        #status-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.8);
+            color: #FF0000;
+            font-size: 3em;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            z-index: 1000;
+            transition: opacity 0.3s ease-in-out;
+            opacity: 0;
+            pointer-events: none;
+        }
+        #status-overlay.visible {
+            opacity: 1;
+        }
+
+        /* Material segment duration section */
+        .material-section {
+            margin-top: 40px;
+            width: 800px;
+            text-align: left;
+        }
+        .material-section h2 {
+            color: #333;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .columns-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 0 20px;
+        }
+        .column {
+            flex: 1;
+            min-width: 120px;
+            max-width: 150px;
+            text-align: center;
+            background-color: #fff;
+            padding: 15px 10px;
+            border-radius: 8px;
+            box-shadow: 1px 1px 5px rgba(0,0,0,0.1);
+        }
+        .column h3 {
+            font-size: 1.1em;
+            color: #555;
+            margin-top: 0;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+        /* Added IDs for each duration paragraph for dynamic updates */
+        .column p {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #007bff;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Static Music Mockup</h1>
+
+    <div id="score-container">
+        <div id="score-svg-wrapper"></div>
+        <div id="status-overlay"></div>
+    </div>
+
+    <div class="material-section">
+        <h2>Material segment duration:</h2>
+        <div class="columns-container">
+            <div class="column">
+                <h3>1. runs</h3>
+                <p id="duration-0">--s</p>
+            </div>
+            <div class="column">
+                <h3>2. Cluster chords</h3>
+                <p id="duration-1">--s</p>
+            </div>
+            <div class="column">
+                <h3>3. High very high squeaks</h3>
+                <p id="duration-2">--s</p>
+            </div>
+            <div class="column">
+                <h3>4. Random runs</h3>
+                <p id="duration-3">--s</p>
+            </div>
+            <div class="column">
+                <h3>5. Ostinato chords</h3>
+                <p id="duration-4">--s</p>
+            </div>
+            <div class="column">
+                <h3>6. Low rumbles</h3>
+                <p id="duration-5">--s</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Configuration Variables ---
+        const SVG_FOLDER_PATH = 'static_svg/'; // Path relative to index.html
+        const NUM_STATIC_SVGS = 6; // notes_1.svg to notes_6.svg
+        const SVG_CYCLE_INTERVAL_SECONDS = 5; // How often the SVG image changes
+        const MATERIAL_DURATION_UPDATE_INTERVAL_SECONDS = 3 * 60; // 3 minutes
+
+        const POSSIBLE_DURATIONS = [3, 5, 8, 13, 21, 34, 59];
+
+        // --- Mockup Status Cycle ---
+        const MOCKUP_STATUS_MESSAGES = [
+            'Stop Playing!',
+            'Recording bells...',
+            'Analysing bells...',
+            '' // Empty string means no message, overlay hidden
+        ];
+        let currentMockupStatusIndex = 0;
+        const MOCKUP_STATUS_CYCLE_INTERVAL = 3000; // Cycle every 3 seconds for demo
+
+        // --- Template SVG structure (without the inner <g id="music"> placeholder) ---
+        // We will inject the content of notes_X.svg into this template
+        const SVG_TEMPLATE_START = `
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 xmlns:xlink="http://www.w3.org/1999/xlink"
+                 width="800" height="300" viewBox="0 0 800 300">
+                <rect width="100%" height="100%" fill="#fefefe"/>
+                
+                <g id="music" transform="translate(0, 0)">
+        `;
+        const SVG_TEMPLATE_END = `
+                </g>
+            </svg>
+        `;
+
+
+        // --- DOM Elements ---
+        const scoreSvgWrapper = document.getElementById('score-svg-wrapper'); // This div will hold the SVG
+        const statusOverlay = document.getElementById('status-overlay');
+        const durationParagraphs = [];
+        for(let i = 0; i < 6; i++) {
+            durationParagraphs.push(document.getElementById('duration-' + i));
+        }
+
+        // --- State Variables ---
+        let currentSvgIndex = 1; // Start with notes_1.svg
+        let currentMaterialDurations = []; // Will store the generated durations for the 6 segments
+
+        // --- Functions ---
+
+        /**
+         * Generates random durations for the 6 material segments from POSSIBLE_DURATIONS.
+         */
+        function generateRandomMaterialDurations() {
+            const newDurations = [];
+            for (let i = 0; i < 6; i++) {
+                const randomIndex = Math.floor(Math.random() * POSSIBLE_DURATIONS.length);
+                newDurations.push(POSSIBLE_DURATIONS[randomIndex]);
+            }
+            currentMaterialDurations = newDurations;
+            console.log("Generated new material durations:", currentMaterialDurations);
+
+            // Update the display immediately after generating new durations
+            updateMaterialDurationsDisplay();
+        }
+
+        /**
+         * Updates the text content of the duration paragraphs based on currentMaterialDurations.
+         */
+        function updateMaterialDurationsDisplay() {
+            if (currentMaterialDurations && currentMaterialDurations.length === 6) {
+                currentMaterialDurations.forEach((duration, index) => {
+                    if (durationParagraphs[index]) {
+                        durationParagraphs[index].textContent = duration + 's';
+                    }
+                });
+            }
+        }
+
+        /**
+         * Fetches the content of the current SVG part and injects it into the template.
+         */
+        async function cycleSvg() {
+            // Increment index, wrap around if it exceeds NUM_STATIC_SVGS
+            currentSvgIndex = (currentSvgIndex % NUM_STATIC_SVGS) + 1;
+            const svgContentPath = SVG_FOLDER_PATH + `notes_${currentSvgIndex}.svg`;
+            console.log(`Fetching content for ${svgContentPath}`);
+
+            try {
+                const response = await fetch(svgContentPath);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const svgInnerContent = await response.text();
+
+                // Inject the inner SVG content into our template
+                scoreSvgWrapper.innerHTML = SVG_TEMPLATE_START + svgInnerContent + SVG_TEMPLATE_END;
+
+            } catch (error) {
+                console.error('Error fetching or embedding SVG:', error);
+                statusOverlay.textContent = 'Error loading music SVG!';
+                statusOverlay.classList.add('visible');
+                statusOverlay.style.color = '#FFA500'; // Orange for client-side error
+            }
+        }
+
+        /**
+         * Cycles through the mockup status messages and updates the overlay.
+         */
+        function cycleMockupStatus() {
+            const statusMessage = MOCKUP_STATUS_MESSAGES[currentMockupStatusIndex];
+            statusOverlay.textContent = statusMessage;
+
+            if (statusMessage) {
+                statusOverlay.classList.add('visible');
+                if (statusMessage === 'Recording bells...') {
+                    statusOverlay.style.color = '#008000'; // Green
+                } else if (statusMessage === 'Analysing bells...') {
+                    statusOverlay.style.color = '#0000FF'; // Blue
+                } else {
+                    statusOverlay.style.color = '#FF0000'; // Red
+                }
+            } else {
+                statusOverlay.classList.remove('visible');
+            }
+
+            currentMockupStatusIndex = (currentMockupStatusIndex + 1) % MOCKUP_STATUS_MESSAGES.length;
+        }
+
+
+        // --- Initial Calls and Timers ---
+
+        // 1. Initial generation of material durations and start the 3-minute update timer
+        generateRandomMaterialDurations(); // Generate initial durations
+        setInterval(generateRandomMaterialDurations, MATERIAL_DURATION_UPDATE_INTERVAL_SECONDS * 1000);
+
+        // 2. Start the SVG cycling timer
+        cycleSvg(); // Display the first SVG and start the cycle
+        setInterval(cycleSvg, SVG_CYCLE_INTERVAL_SECONDS * 1000);
+
+        // 3. Start the mockup status message cycling
+        cycleMockupStatus(); // Display initial status
+        setInterval(cycleMockupStatus, MOCKUP_STATUS_CYCLE_INTERVAL);
+    </script>
+</body>
+</html>

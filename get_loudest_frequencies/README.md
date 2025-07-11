@@ -12,4 +12,4 @@ STEPS:
 1. webpage has an SVG reloading often, and a timer running material instructions
 2. at intervals, webpage requests the organist to stop playing
 3. server then activates the microphone
-4. microphone content is analysed and a new SVG is created from the resulting analysis.
+4. microphone content is analysed and a new SVG is created from the resulting analysis.s

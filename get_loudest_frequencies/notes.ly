@@ -46,7 +46,7 @@
       \key c \major % Key signature (still needed for accidental calculation, but transparent)
       \time 4/4 % Time signature (still needed for rhythmic parsing, but transparent)
       \relative c' { % C4 is 'c'
-        c1 a1 gis1 f1 c1 g1 g1 dis1 dis1 f1 gis1 g1
+        cis1
       }
     }
     \new Staff = "bassStaff" {
@@ -54,7 +54,7 @@
       \key c \major % Key signature (still needed for accidental calculation, but transparent)
       \time 4/4 % Time signature (still needed for rhythmic parsing, but transparent)
       \relative c { % C3 is 'c'
-        s1 s1 s1 s1 s1 s1 s1 s1 s1 s1 s1 s1
+        s1
       }
     }
   >>

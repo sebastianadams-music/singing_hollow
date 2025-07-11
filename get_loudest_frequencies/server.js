@@ -7,7 +7,7 @@ const app = express();
 const PORT = 3000;
 const RECORD_DURATION_SECONDS = 5;
 // Removed fixed TIMER_INTERVAL_SECONDS constant, as it's now dynamic
-const DURATION_UPDATE_INTERVAL_SECONDS = 60; // How often material durations update (1 minute)
+const DURATION_UPDATE_INTERVAL_SECONDS = 180; // How often material durations update (1 minute)
 const AUDIO_FILE_PATH = path.join(__dirname, 'recorded_audio.wav');
 const NOTES_JSON_PATH = path.join(__dirname, 'notes.json');
 
@@ -23,7 +23,7 @@ const FFMPEG_DEVICE_INDEX = ":3"; // You confirmed this for your Focusrite. MAKE
 // --- New Testing Mode Switch ---
 // Set to `true` to force 5-second interval for audio processing cycle.
 // Set to `false` to use random 5-60 second interval.
-const IS_TESTING_MODE = true; // <--- Set this to true or false as needed
+const IS_TESTING_MODE = false; // <--- Set this to true or false as needed
 
 if (!fs.existsSync(path.join(__dirname, 'public'))) {
     fs.mkdirSync(path.join(__dirname, 'public'));
@@ -33,7 +33,7 @@ app.use(express.static('public'));
 
 let currentStatusMessage = '';
 // New: Store the current material durations
-const POSSIBLE_DURATIONS = [1, 2, 3, 5, 8, 13, 21, 34, 55];
+const POSSIBLE_DURATIONS = [3, 5, 8, 13, 21, 34, 59];
 let currentMaterialDurations = []; // Will store the generated durations
 
 // Function to generate random durations for the 6 segments
