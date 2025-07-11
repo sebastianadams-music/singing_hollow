@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flashing Website</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -15,6 +14,10 @@
             padding: 0;
             height: 100vh; /* Ensure body takes full viewport height */
             width: 100vw; /* Ensure body takes full viewport width */
+            display: flex; /* Use flexbox for body to center content easily */
+            justify-content: center;
+            align-items: center;
+            position: relative; /* Needed for absolute positioning of number */
         }
 
         .overlay {
@@ -126,6 +129,25 @@
             visibility: visible;
         }
 
+        /* New styles for the flash number display */
+        #flash-number-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 15em; /* Very large font size */
+            font-weight: bold;
+            color: white; /* White color for contrast */
+            text-shadow: 0 0 10px rgba(0,0,0,0.5); /* Optional: slight shadow */
+            z-index: 999; /* Below settings overlay, but above app content */
+            pointer-events: none; /* Allows clicks to pass through */
+            opacity: 0; /* Hidden by default */
+            transition: opacity 0.1s ease-out; /* Quick fade in/out */
+        }
+        #flash-number-display.visible {
+            opacity: 1;
+        }
+
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .overlay-content {
@@ -140,13 +162,18 @@
                 padding: 0.6rem 0.8rem;
                 font-size: 0.9rem;
             }
+            #flash-number-display {
+                font-size: 10em; /* Smaller on small screens */
+            }
         }
     </style>
 </head>
 <body class="bg-gray-900">
-    <div id="app" class="w-full h-full flex items-center justify-center text-white text-2xl">
+    <div id="app" class="w-full h-full flex justify-center text-white text-2xl">
         Press ESC to open settings
     </div>
+
+    <div id="flash-number-display"></div>
 
     <div id="settings-overlay" class="overlay hidden">
         <div class="overlay-content">
@@ -190,6 +217,8 @@
         // State variable for tracking position in the "super cycle"
         // This index will go from 0 up to (2 * cycleLength) for a full sequence including the pause (if enabled).
         let superCycleFlashIndex = 0;
+        // New: Counter for the number display. Starts at 0 to correctly count 1 for red, then 2, 3...
+        let flashNumber = 0; // Initialize to 0
 
         // Script related variables
         let scriptMode = false;
@@ -208,6 +237,7 @@
         const clearScriptBtn = document.getElementById('clear-script-btn');
         const closeSettingsBtn = document.getElementById('close-settings-btn');
         const messageBox = document.getElementById('message-box');
+        const flashNumberDisplay = document.getElementById('flash-number-display'); // New: Reference to display element
 
         /**
          * Displays a temporary message box.
@@ -228,6 +258,26 @@
         }
 
         /**
+         * Shows the flash number display.
+         * @param {number} num - The number to display.
+         */
+        function showFlashNumber(num) {
+            flashNumberDisplay.textContent = num;
+            flashNumberDisplay.classList.add('visible');
+        }
+
+        /**
+         * Hides the flash number display after a brief moment.
+         */
+        function hideFlashNumber() {
+            // Apply brief flash logic so number disappears with the background
+            setTimeout(() => {
+                flashNumberDisplay.classList.remove('visible');
+            }, 200); // Number disappears shortly after color flash fades
+        }
+
+
+        /**
          * Toggles the visibility of the settings overlay.
          */
         function toggleSettingsOverlay() {
@@ -235,6 +285,7 @@
                 // Show overlay
                 settingsOverlay.classList.remove('hidden');
                 stopFlashing(); // Stop flashing when settings are open
+                flashNumberDisplay.classList.remove('visible'); // Hide number when settings are open
             } else {
                 // Hide overlay
                 settingsOverlay.classList.add('hidden');
@@ -253,6 +304,7 @@
 
         /**
          * Stops the flashing by clearing the interval and any script timeouts.
+         * Also ensures the flash number is hidden and reset.
          */
         function stopFlashing() {
             if (flashIntervalId) {
@@ -265,16 +317,20 @@
             }
             // Ensure body is not stuck in a flash color when stopped
             body.style.backgroundColor = '#1f2937'; // A neutral dark color
+            hideFlashNumber(); // Hide number immediately if flashing stops manually
+            flashNumber = 0; // Reset flash number to 0
+            superCycleFlashIndex = 0; // Reset super cycle index
         }
 
         /**
          * Starts the flashing.
-         * Resets superCycleFlashIndex if not in script mode.
+         * Resets superCycleFlashIndex and flashNumber if not in script mode.
          */
         function startFlashing() {
             if (!flashIntervalId) { // Only start if not already running
                 if (!scriptMode) {
                     superCycleFlashIndex = 0; // Reset for new manual start
+                    flashNumber = 0; // Reset flash number for new manual start
                 }
                 updateFlashingInterval();
             }
@@ -282,7 +338,7 @@
 
         /**
          * The main flashing logic.
-         * Determines color, handles cycle length, and pause.
+         * Determines color, handles cycle length, and pause, and updates the flash number.
          */
         function flash() {
             const briefFlashDuration = 250; // How long the flash color stays on (150ms)
@@ -300,25 +356,40 @@
             }
 
             let currentColor = defaultBgColor;
+            let showNumber = false; // Flag to decide if number should be shown for this flash
+            let currentDisplayNumber = 0; // The number that will *actually* be displayed this flash
 
             // Calculate the total length of the "super cycle" including the pause
-            // If pause is disabled, the super cycle is just two regular cycles
             const totalSuperCycleLength = (2 * cycleLength) + (disablePause ? 0 : 1);
 
             // Determine the current flash type based on superCycleFlashIndex
             if (!disablePause && superCycleFlashIndex === (2 * cycleLength)) {
                 // This is the specific index for the blank pause flash
                 currentColor = defaultBgColor;
+                hideFlashNumber(); // Ensure number is hidden during pause
+                flashNumber = 0; // Reset for next sequence
             } else if (superCycleFlashIndex % cycleLength === 0) {
                 // This is the start of a new 'cycleLength' sequence (e.g., flash 0, flash 6)
                 // So it should be red.
                 currentColor = 'red';
+                flashNumber = 1; // Reset to 1 for the red flash
+                currentDisplayNumber = flashNumber; // Display 1 for red flash
+                showNumber = true;
             } else {
                 // All other flashes within a cycle are green
                 currentColor = 'green';
+                flashNumber++; // Increment flashNumber for green flashes
+                currentDisplayNumber = flashNumber; // Display the incremented number
+                showNumber = true;
             }
 
-            applyBriefFlash(currentColor);
+            applyBriefFlash(currentColor); // Apply the color flash
+
+            if (showNumber) {
+                showFlashNumber(currentDisplayNumber); // Display the determined number
+            } else {
+                hideFlashNumber(); // Hide if no number should be shown
+            }
 
             // Increment superCycleFlashIndex and loop it
             superCycleFlashIndex++;
@@ -359,6 +430,7 @@
             scriptMode = true;
             currentScriptLineIndex = 0;
             superCycleFlashIndex = 0; // Reset super cycle index for new script
+            flashNumber = 0; // Reset flash number for new script
             executeCurrentScriptLine();
             showMessage('Script applied and started!');
         }
@@ -402,6 +474,7 @@
             // Revert flashDuration to the value in the input field
             flashDuration = parseFloat(flashIntervalInput.value) * 1000;
             superCycleFlashIndex = 0; // Reset super cycle index when clearing script
+            flashNumber = 0; // Reset flash number when clearing script
             startFlashing();
             showMessage('Script cleared. Reverted to manual settings.');
         }
@@ -443,6 +516,7 @@
             if (!isNaN(newLength) && newLength >= 1) {
                 cycleLength = newLength;
                 superCycleFlashIndex = 0; // Reset super cycle index when cycle length changes
+                flashNumber = 0; // Reset flash number when cycle length changes
                 showMessage('Cycle length updated.');
             } else {
                 showMessage('Please enter a valid positive integer for cycle length.', 'error');
@@ -453,6 +527,7 @@
         disablePauseCheckbox.addEventListener('change', (e) => {
             disablePause = e.target.checked;
             superCycleFlashIndex = 0; // Reset super cycle index when pause setting changes
+            flashNumber = 0; // Reset flash number when pause setting changes
             showMessage(`Pause between cycles ${disablePause ? 'disabled' : 'enabled'}.`);
         });
 

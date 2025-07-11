@@ -49,14 +49,13 @@ function midiToNote(midiNumber) {
     return `${noteNames[pitchClass]}${octave}`;
 }
 
-// --- Note Constraining Logic ---
-
-// Constrains a note to a specific octave range (e.g., C4 to B4).
-// It 'wraps' notes into the target octave.
+// --- Note Constraining Logic (REMOVED) ---
+// The `constrainToOctave` function is no longer used, but kept for reference if needed later.
+// You can delete it entirely if you're sure you won't use it.
 function constrainToOctave(noteString, targetOctaveStartNote = "C4") {
     const originalMidi = noteToMidi(noteString);
     if (originalMidi === null) {
-        return noteString; // Cannot constrain if original is invalid
+        return noteString;
     }
 
     const targetOctaveStartMidi = noteToMidi(targetOctaveStartNote);
@@ -65,19 +64,17 @@ function constrainToOctave(noteString, targetOctaveStartNote = "C4") {
         targetOctaveStartMidi = noteToMidi("C4");
     }
 
-    // Calculate the difference in semitones from the target octave's C
     const offsetFromTargetC = originalMidi - targetOctaveStartMidi;
-
-    // Use modulo 12 to wrap the pitch class, then add it back to the target C
-    // The `+ 12) % 12` handles potential negative results from modulo for negative offsets
-    const constrainedMidi = ((offsetFromTargetC % 12) + 12) % 12 + targetOctaveStartMidi;
+    const constrainedMidi = ((offsetFromTargetC % 12) + 0) % 12 + targetOctaveStartMidi;
 
     return midiToNote(constrainedMidi);
 }
 
-// --- LilyPond Conversion (Receives already constrained notes) ---
 
-function convertToLilypond(noteString, duration = '4') {
+// --- LilyPond Conversion (Receives already processed notes) ---
+
+// This function now also accepts a duration parameter and uses it.
+function convertToLilypond(noteString, durationType = '1') { // Default to whole note
     const noteMap = {
         C: 'c', D: 'd', E: 'e', F: 'f', G: 'g', A: 'a', B: 'b'
     };
@@ -89,8 +86,6 @@ function convertToLilypond(noteString, duration = '4') {
 
     const match = noteString.match(/^([A-Ga-g])([#♯b♭]?)(-?\d+)$/);
     if (!match) {
-        // This should ideally not happen if notes are first passed through constrainToOctave
-        // and midiToNote, but as a safeguard:
         console.warn(`Skipping invalid note format in convertToLilypond: ${noteString}`);
         return null;
     }
@@ -110,13 +105,14 @@ function convertToLilypond(noteString, duration = '4') {
         lilyOctaveModifier = ','.repeat(referenceOctaveForLilypondCPrime - octave);
     }
 
-    return `${pitch}${lilyOctaveModifier}${duration}`;
+    return `${pitch}${lilyOctaveModifier}${durationType}`;
 }
 
 // --- LilyPond Content Generation ---
 
-function generateLilypondContent(notes) {
-  const notesArray = Array.isArray(notes) ? notes : [notes];
+function generateLilypondContent(trebleContent, bassContent) {
+  const finalTreble = trebleContent.length > 0 ? trebleContent.join(' ') : "s1";
+  const finalBass = bassContent.length > 0 ? bassContent.join(' ') : "s1";
 
   return `
 \\version "2.24.2"
@@ -125,18 +121,60 @@ function generateLilypondContent(notes) {
   indent = 0
   left-margin = 1.5 \\cm
   right-margin = 1.5 \\cm
-  system-system-spacing = #'((basic-distance . 10) (minimum-distance . 8) (padding . 1) (stretchability . 50))
-  bottom-margin = 1.0 \\cm
+  % Adjusted for grand staff layout
+  system-system-spacing = #'((basic-distance . 20) (minimum-distance . 18) (padding . 1) (stretchability . 50))
+  bottom-margin = 1.5 \\cm
 }
-\\score {
-  \\new Staff {
-    \\clef treble
-    \\key c \\major
-    \\time 4/4
-    \\relative c' {
-      ${notesArray.join(' ')}
-    }
+
+\\layout {
+  % Proportional Notation settings
+  \\context {
+    \\Score
+    \\override BarLine.transparent = ##t % No barlines on score level
+    \\override Score.SpacingSpanner.uniform-horizontal-spacing = ##f % Disable uniform spacing
   }
+  \\context {
+    \\Staff
+    \\remove "Time_signature_engraver" % Remove time signature from staff
+    \\remove "Clef_engraver" % Remove clef from staff
+    \\remove "Key_engraver" % Remove key signature from staff
+
+    \\override Staff.Stem.transparent = ##t % No stems on notes
+    \\override Staff.Beam.transparent = ##t % No beams
+    \\override Staff.Flag.transparent = ##t % No flags
+    \\override Staff.Rest.transparent = ##t % Make rests transparent (s-rests are already invisible)
+    \\override Staff.Clef.transparent = ##t % Make clef transparent
+    \\override Staff.KeySignature.transparent = ##t % Make key signature transparent
+    \\override Staff.TimeSignature.transparent = ##t % Make time signature transparent
+    \\override Staff.BarLine.transparent = ##t % No barlines on staff level
+  }
+  \\context {
+    \\GrandStaff % Target the GrandStaff context
+    \\override BarLine.allow-span-bar = ##f % This is the key: prevents span bars
+    \\override SpanBar.transparent = ##t % Also explicitly make it transparent, though allow-span-bar should take care of it
+  }
+}
+
+
+\\score {
+  \\new GrandStaff = "grand staff" <<
+    \\new Staff = "trebleStaff" {
+      \\clef treble % Treble clef (still needed for vertical positioning, but transparent)
+      \\key c \\major % Key signature (still needed for accidental calculation, but transparent)
+      \\time 4/4 % Time signature (still needed for rhythmic parsing, but transparent)
+      \\relative c' { % C4 is 'c'
+        ${finalTreble}
+      }
+    }
+    \\new Staff = "bassStaff" {
+      \\clef bass % Bass clef (still needed for vertical positioning, but transparent)
+      \\key c \\major % Key signature (still needed for accidental calculation, but transparent)
+      \\time 4/4 % Time signature (still needed for rhythmic parsing, but transparent)
+      \\relative c { % C3 is 'c'
+        ${finalBass}
+      }
+    }
+  >>
 }
 `.trim();
 }
@@ -160,7 +198,8 @@ function getViewBox(filePath) {
 
 function injectIntoTemplate(musicSVG, scale, translateX) {
   const template = fs.readFileSync(TEMPLATE_FILE, 'utf8');
-  const translateY = 20;
+  // Adjusted Y-translation for grand staff. You might need to fine-tune this.
+  const translateY = 40;
 
   const updated = template.replace(
     /<g id="music"[^>]*>[\s\S]*?<\/g>/,
@@ -174,23 +213,42 @@ function injectIntoTemplate(musicSVG, scale, translateX) {
 function generateAndInjectAllNotes() {
   const rawNotes = JSON.parse(fs.readFileSync('notes.json', 'utf8'));
 
-  // Define your target octave here. For C4-B4, use "C4". For C3-B3, use "C3", etc.
-  const targetConstrainedOctaveStart = "C4"; // Example: Constrain all notes to the C4-B4 octave
+  // 1. No more octave constraint processing.
+  // We'll directly use rawNotes and filter out invalid ones.
+  const validRawNotes = rawNotes.filter(noteString => noteToMidi(noteString) !== null);
 
-  // First, constrain all notes to the desired octave
-  const constrainedNotes = rawNotes.map(noteString =>
-    constrainToOctave(noteString, targetConstrainedOctaveStart)
-  ).filter(Boolean); // Filter out any notes that couldn't be constrained
+  // 2. Prepare aligned LilyPond content for both staves
+  const alignedTrebleContent = [];
+  const alignedBassContent = [];
+  const C4_MIDI = noteToMidi("C4"); // Middle C is still the split point
 
-  // Then, convert the constrained notes to LilyPond format
-  const allLilypondNotes = constrainedNotes.map(n => convertToLilypond(n, '4')).filter(Boolean);
+  const defaultDuration = '1'; // All notes are treated as semibreves ('1')
 
-  if (allLilypondNotes.length === 0) {
-    console.warn("No valid notes found in notes.json after constraining and conversion. Nothing to display.");
+  validRawNotes.forEach(noteString => {
+    const midi = noteToMidi(noteString);
+    // midi will not be null here thanks to the filter above, but a safety check is fine
+    if (midi !== null) {
+      const lilypondNote = convertToLilypond(noteString, defaultDuration);
+
+      // Logic: If a note is C4 or higher, add it to treble and a rest to bass.
+      // If a note is below C4, add it to bass and a rest to treble.
+      if (midi >= C4_MIDI) { // C4 and higher go to treble
+        alignedTrebleContent.push(lilypondNote);
+        alignedBassContent.push(`s${defaultDuration}`); // Add equivalent invisible rest in bass
+      } else { // Below C4 go to bass
+        alignedBassContent.push(lilypondNote);
+        alignedTrebleContent.push(`s${defaultDuration}`); // Add equivalent invisible rest in treble
+      }
+    }
+  });
+
+  if (alignedTrebleContent.length === 0 && alignedBassContent.length === 0) {
+    console.warn("No valid notes found after processing and splitting. Nothing to display.");
     return;
   }
 
-  const content = generateLilypondContent(allLilypondNotes);
+  // Generate LilyPond content for two staves using the aligned content
+  const content = generateLilypondContent(alignedTrebleContent, alignedBassContent);
   fs.writeFileSync(OUTPUT_LY, content);
 
   exec(`lilypond -dbackend=svg -o ${OUTPUT_SVG.replace('.svg', '')} ${OUTPUT_LY}`, (err, stdout, stderr) => {
@@ -214,7 +272,7 @@ function generateAndInjectAllNotes() {
       const translateX = (svgOuterWidth - TARGET_WIDTH) / 2;
 
       injectIntoTemplate(musicSVG, scale, translateX);
-      console.log(`✅ Successfully generated and updated combined.svg with ${allLilypondNotes.length} notes constrained to the ${targetConstrainedOctaveStart} octave.`);
+      console.log(`✅ Successfully generated and updated combined.svg with aligned notes/rests.`);
       console.log(`Check ${FINAL_SVG}`);
     }
   });

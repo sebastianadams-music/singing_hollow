@@ -52,7 +52,7 @@ def constrain_midi_to_octave(midi_note, target_octave_midi_start=60):
     # But "constrain to a single octave" usually implies wrapping.
 
 def extract_prominent_frequencies(audio_path, top_n=12, frame_size=2048, hop_length=512, sr=None, freq_min=20, freq_max=20000,
-                                  prominence_factor=0.01, constrain_octave_start_note=None):
+                                  prominence_factor=0.2, constrain_octave_start_note=None):
     """
     Extracts the N most prominent frequencies, converts them to MIDI note numbers,
     and optionally constrains them to a single octave, along with their average magnitudes
@@ -124,8 +124,8 @@ def extract_prominent_frequencies(audio_path, top_n=12, frame_size=2048, hop_len
     all_found_notes_data.sort(key=lambda x: x[1], reverse=True)
     top_notes_by_magnitude = all_found_notes_data[:top_n]
 
-    # Finally, sort the top N by pitch (MIDI value derived from note_name)
-    top_notes_by_magnitude.sort(key=lambda x: librosa.note_to_midi(x[0]), reverse=False)
+    # # Finally, sort the top N by pitch (MIDI value derived from note_name)
+    # top_notes_by_magnitude.sort(key=lambda x: librosa.note_to_midi(x[0]), reverse=False)
 
     return top_notes_by_magnitude
 
@@ -144,7 +144,7 @@ if __name__ == "__main__":
                         help="Minimum frequency to consider (Hz) (default: 20).")
     parser.add_argument("--freq_max", type=float, default=20000,
                         help="Maximum frequency to consider (Hz) (default: 20000).")
-    parser.add_argument("--prominence_factor", type=float, default=0.01,
+    parser.add_argument("--prominence_factor", type=float, default=0.05,
                         help="Factor for peak prominence threshold (default: 0.01).")
     parser.add_argument("-o", "--output_json", type=str,
                         help="Optional: Path to output JSON file. If not provided, output to console.")

@@ -7,196 +7,304 @@ xmlns:xlink="http://www.w3.org/1999/xLink"
   <rect width="100%" height="100%" fill="#fefefe"/>
   
   <!-- Static decorative circles -->
-  <circle cx="50" cy="50" r="20" fill="red"/>
+  <!-- <circle cx="50" cy="50" r="20" fill="red"/>
   <circle cx="150" cy="100" r="30" fill="blue"/>
-  <circle cx="250" cy="200" r="25" fill="green"/>
+  <circle cx="250" cy="200" r="25" fill="green"/> -->
 
   <!-- Music placeholder -->
-  <g id="music" transform="translate(0.00, 20) scale(6.694)">
+  <g id="music" transform="translate(0.00, 40) scale(6.694)">
 <style type="text/css">
 <![CDATA[
 tspan { white-space: pre; }
 ]]>
 </style>
-<g transform="translate(29.5926, 10.8453)">
-<rect x="0.0000" y="-2.0000" width="0.1900" height="4.0000" ry="0.0000" fill="currentColor"/>
+<g transform="translate(8.5358, 7.8953)">
+<line stroke-linejoin="round" stroke-linecap="round" stroke-width="0.1000" stroke="currentColor" x1="0.0500" y1="0" x2="96.5006" y2="0"/>
 </g>
-<g transform="translate(8.5358, 12.8453)">
-<line stroke-linejoin="round" stroke-linecap="round" stroke-width="0.1000" stroke="currentColor" x1="0.0500" y1="0" x2="48.3024" y2="0"/>
+<g transform="translate(8.5358, 6.8953)">
+<line stroke-linejoin="round" stroke-linecap="round" stroke-width="0.1000" stroke="currentColor" x1="0.0500" y1="0" x2="96.5006" y2="0"/>
 </g>
-<g transform="translate(8.5358, 11.8453)">
-<line stroke-linejoin="round" stroke-linecap="round" stroke-width="0.1000" stroke="currentColor" x1="0.0500" y1="0" x2="48.3024" y2="0"/>
+<g transform="translate(8.5358, 5.8953)">
+<line stroke-linejoin="round" stroke-linecap="round" stroke-width="0.1000" stroke="currentColor" x1="0.0500" y1="0" x2="96.5006" y2="0"/>
 </g>
-<g transform="translate(8.5358, 10.8453)">
-<line stroke-linejoin="round" stroke-linecap="round" stroke-width="0.1000" stroke="currentColor" x1="0.0500" y1="0" x2="48.3024" y2="0"/>
+<g transform="translate(8.5358, 4.8953)">
+<line stroke-linejoin="round" stroke-linecap="round" stroke-width="0.1000" stroke="currentColor" x1="0.0500" y1="0" x2="96.5006" y2="0"/>
 </g>
-<g transform="translate(8.5358, 9.8453)">
-<line stroke-linejoin="round" stroke-linecap="round" stroke-width="0.1000" stroke="currentColor" x1="0.0500" y1="0" x2="48.3024" y2="0"/>
+<g transform="translate(8.5358, 3.8953)">
+<line stroke-linejoin="round" stroke-linecap="round" stroke-width="0.1000" stroke="currentColor" x1="0.0500" y1="0" x2="96.5006" y2="0"/>
 </g>
-<g transform="translate(8.5358, 8.8453)">
-<line stroke-linejoin="round" stroke-linecap="round" stroke-width="0.1000" stroke="currentColor" x1="0.0500" y1="0" x2="48.3024" y2="0"/>
+<g transform="translate(8.5358, 21.9453)">
+<line stroke-linejoin="round" stroke-linecap="round" stroke-width="0.1000" stroke="currentColor" x1="0.0500" y1="0" x2="96.5006" y2="0"/>
 </g>
-<g transform="translate(56.6983, 10.8453)">
-<rect x="0.0000" y="-2.0000" width="0.1900" height="4.0000" ry="0.0000" fill="currentColor"/>
+<g transform="translate(8.5358, 20.9453)">
+<line stroke-linejoin="round" stroke-linecap="round" stroke-width="0.1000" stroke="currentColor" x1="0.0500" y1="0" x2="96.5006" y2="0"/>
 </g>
-<g transform="translate(42.9239, 10.8453)">
-<rect x="0.0000" y="-2.0000" width="0.1900" height="4.0000" ry="0.0000" fill="currentColor"/>
+<g transform="translate(8.5358, 19.9453)">
+<line stroke-linejoin="round" stroke-linecap="round" stroke-width="0.1000" stroke="currentColor" x1="0.0500" y1="0" x2="96.5006" y2="0"/>
 </g>
-<g transform="translate(8.5358, 5.8453)">
-<rect x="45.1280" y="-0.1000" width="1.8053" height="0.2000" ry="0.1000" fill="currentColor"/>
+<g transform="translate(8.5358, 18.9453)">
+<line stroke-linejoin="round" stroke-linecap="round" stroke-width="0.1000" stroke="currentColor" x1="0.0500" y1="0" x2="96.5006" y2="0"/>
 </g>
-<g transform="translate(8.5358, 6.8453)">
-<rect x="44.9770" y="-0.1000" width="1.9563" height="0.2000" ry="0.1000" fill="currentColor"/>
+<g transform="translate(8.5358, 17.9453)">
+<line stroke-linejoin="round" stroke-linecap="round" stroke-width="0.1000" stroke="currentColor" x1="0.0500" y1="0" x2="96.5006" y2="0"/>
 </g>
-<g transform="translate(8.5358, 7.8453)">
-<rect x="44.9770" y="-0.1000" width="1.9563" height="0.2000" ry="0.1000" fill="currentColor"/>
+<g transform="translate(8.5358, 8.8953)">
+<rect x="89.8100" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
 </g>
-<g transform="translate(8.5358, 6.8453)">
-<rect x="41.6228" y="-0.1000" width="1.9563" height="0.2000" ry="0.1000" fill="currentColor"/>
+<g transform="translate(8.5358, 9.8953)">
+<rect x="89.8100" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
 </g>
-<g transform="translate(8.5358, 7.8453)">
-<rect x="41.6228" y="-0.1000" width="1.9563" height="0.2000" ry="0.1000" fill="currentColor"/>
+<g transform="translate(8.5358, 10.8953)">
+<rect x="89.8100" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
 </g>
-<g transform="translate(8.5358, 6.8453)">
-<rect x="38.7716" y="-0.1000" width="1.8053" height="0.2000" ry="0.1000" fill="currentColor"/>
+<g transform="translate(8.5358, 11.8953)">
+<rect x="89.8100" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
 </g>
-<g transform="translate(8.5358, 7.8453)">
-<rect x="38.6205" y="-0.1000" width="1.9563" height="0.2000" ry="0.1000" fill="currentColor"/>
+<g transform="translate(8.5358, 12.8953)">
+<rect x="89.8100" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
 </g>
-<g transform="translate(8.5358, 7.8453)">
-<rect x="35.2663" y="-0.1000" width="1.9563" height="0.2000" ry="0.1000" fill="currentColor"/>
+<g transform="translate(8.5358, 13.8953)">
+<rect x="89.8100" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
 </g>
-<g transform="translate(8.5358, 7.8453)">
-<rect x="31.2383" y="-0.1000" width="1.9563" height="0.2000" ry="0.1000" fill="currentColor"/>
+<g transform="translate(8.5358, 8.8953)">
+<rect x="81.6600" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
 </g>
-<a style="color:inherit;" xlink:href="textedit:///Volumes/seb/Documents/Projects/1Active/singing_hollow/get_loudest_frequencies/notes.ly:16:6:7">
-<g transform="translate(17.2358, 12.3453)">
-<path transform="scale(0.0040, -0.0040)" d="M218 136c66 0 108 -36 108 -89c0 -89 -113 -183 -218 -183c-66 0 -108 36 -108 89c0 89 113 183 218 183z" fill="currentColor"/>
+<g transform="translate(8.5358, 9.8953)">
+<rect x="81.6600" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 10.8953)">
+<rect x="81.6600" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 11.8953)">
+<rect x="81.6600" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 12.8953)">
+<rect x="81.6600" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 13.8953)">
+<rect x="81.9755" y="-0.1000" width="2.6275" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 8.8953)">
+<rect x="73.5099" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 9.8953)">
+<rect x="73.5099" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 10.8953)">
+<rect x="73.5099" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 11.8953)">
+<rect x="73.5099" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 12.8953)">
+<rect x="73.5099" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 13.8953)">
+<rect x="73.5099" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 8.8953)">
+<rect x="65.3599" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 9.8953)">
+<rect x="65.3599" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 10.8953)">
+<rect x="65.3599" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 11.8953)">
+<rect x="65.3599" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 12.8953)">
+<rect x="65.3599" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 13.8953)">
+<rect x="65.3599" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 14.8953)">
+<rect x="65.6754" y="-0.1000" width="2.6275" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 8.8953)">
+<rect x="57.2098" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 9.8953)">
+<rect x="57.2098" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 10.8953)">
+<rect x="57.2098" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 11.8953)">
+<rect x="57.2098" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 12.8953)">
+<rect x="57.2098" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 13.8953)">
+<rect x="57.2098" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 14.8953)">
+<rect x="57.5253" y="-0.1000" width="2.6275" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 8.8953)">
+<rect x="49.0598" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 9.8953)">
+<rect x="49.0598" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 10.8953)">
+<rect x="49.0598" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 11.8953)">
+<rect x="49.0598" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 12.8953)">
+<rect x="49.0598" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 13.8953)">
+<rect x="49.0598" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 8.8953)">
+<rect x="40.9097" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 9.8953)">
+<rect x="40.9097" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 10.8953)">
+<rect x="40.9097" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 11.8953)">
+<rect x="40.9097" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 12.8953)">
+<rect x="40.9097" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 13.8953)">
+<rect x="40.9097" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 8.8953)">
+<rect x="32.7597" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 9.8953)">
+<rect x="32.7597" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 10.8953)">
+<rect x="32.7597" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 11.8953)">
+<rect x="32.7597" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 8.8953)">
+<rect x="24.6096" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 9.8953)">
+<rect x="24.6096" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 10.8953)">
+<rect x="24.6096" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 8.8953)">
+<rect x="16.4596" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 9.8953)">
+<rect x="16.7751" y="-0.1000" width="2.6275" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 8.8953)">
+<rect x="8.1595" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 9.8953)">
+<rect x="8.1595" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<g transform="translate(8.5358, 8.8953)">
+<rect x="0.0095" y="-0.1000" width="2.9430" height="0.2000" ry="0.1000" fill="currentColor"/>
+</g>
+<a style="color:inherit;" xlink:href="textedit:///Volumes/seb/Documents/Projects/1Active/singing_hollow/get_loudest_frequencies/notes.ly:49:49:50">
+<g transform="translate(98.8363, 13.8953)">
+<path transform="scale(0.0040, -0.0040)" d="M213 112c-45 0 -69 -34 -69 -88c0 -102 89 -136 134 -136s69 34 69 88c0 102 -89 136 -134 136zM245 136c144 0 246 -65 246 -136s-102 -136 -246 -136s-245 65 -245 136s101 136 245 136z" fill="currentColor"/>
 </g>
 </a>
-<g transform="translate(9.3358, 11.8453)">
-<path transform="scale(0.0040, -0.0040)" d="M266 -635h-6c-108 0 -195 88 -195 197c0 58 53 103 112 103c54 0 95 -47 95 -103c0 -52 -43 -95 -95 -95c-11 0 -21 2 -31 6c26 -39 68 -65 117 -65h4zM461 -203c68 24 113 90 113 164c0 90 -66 179 -173 190c19 -89 48 -242 60 -354zM74 28c0 -145 141 -247 264 -247
-c1 0 47 0 82 6c-7 64 -29 203 -63 364c-79 -8 -124 -61 -124 -119c0 -44 25 -91 81 -123c5 -5 7 -10 7 -15c0 -11 -10 -22 -22 -22c-15 0 -126 62 -126 187c0 88 58 174 160 197c-14 58 -29 117 -46 175c-107 -121 -213 -243 -213 -403zM250 553c-29 96 -52 170 -52 346
-c0 115 55 224 149 292c6 5 14 5 20 0c68 -80 133 -245 133 -358c0 -143 -86 -255 -180 -364c21 -68 39 -138 56 -207c2 0 7 1 13 1c155 0 256 -128 256 -261c0 -113 -74 -212 -180 -246c3 -35 5 -70 5 -105c0 -19 -1 -39 -2 -58c-7 -119 -88 -225 -202 -228l1 43
-c93 2 153 92 159 191c1 18 2 37 2 55c0 31 -1 61 -4 92c-5 -1 -44 -8 -89 -8c-193 0 -333 180 -333 374c0 177 131 306 248 441zM428 916c0 34 1 66 -20 129c-99 -48 -162 -149 -162 -259c0 -52 12 -115 36 -194c80 97 146 198 146 324z" fill="currentColor"/>
-</g>
-<a style="color:inherit;" xlink:href="textedit:///Volumes/seb/Documents/Projects/1Active/singing_hollow/get_loudest_frequencies/notes.ly:13:4:5">
-</a>
-<a style="color:inherit;" xlink:href="textedit:///Volumes/seb/Documents/Projects/1Active/singing_hollow/get_loudest_frequencies/notes.ly:14:4:5">
-<g transform="translate(13.5358, 10.8453)">
-<path transform="scale(0.0040, -0.0040)" d="M250 262c116 0 176 -106 176 -163c0 -40 -30 -72 -67 -72c-31 0 -75 25 -75 75c0 38 27 77 72 77c4 0 9 0 14 -1c-28 37 -72 59 -120 59c-106 0 -113 -73 -113 -186v-51v-51c0 -113 7 -187 113 -187c80 0 139 70 158 151c2 7 7 10 12 10c6 0 13 -4 13 -12
-c0 -22 -50 -174 -183 -174c-59 0 -250 19 -250 263c0 62 18 262 250 262z" fill="currentColor"/>
-</g>
-</a>
-<g transform="translate(18.4750, 10.8453)">
-<rect x="-0.0650" y="-2.0000" width="0.1300" height="3.3139" ry="0.0400" fill="currentColor"/>
-</g>
-<a style="color:inherit;" xlink:href="textedit:///Volumes/seb/Documents/Projects/1Active/singing_hollow/get_loudest_frequencies/notes.ly:16:9:10">
-<g transform="translate(20.5900, 11.3453)">
-<path transform="scale(0.0040, -0.0040)" d="M218 136c66 0 108 -36 108 -89c0 -89 -113 -183 -218 -183c-66 0 -108 36 -108 89c0 89 113 183 218 183z" fill="currentColor"/>
-</g>
-</a>
-<g transform="translate(21.8292, 10.8453)">
-<rect x="-0.0650" y="-3.0000" width="0.1300" height="3.3139" ry="0.0400" fill="currentColor"/>
-</g>
-<g transform="translate(19.1400, 11.3453)">
+<g transform="translate(24.0359, 10.3953)">
 <path transform="scale(0.0040, -0.0040)" d="M0 119c0 8 5 15 13 18l46 17v158c0 10 8 19 18 19s19 -9 19 -19v-145l83 31v158c0 10 9 19 19 19s18 -9 18 -19v-145l32 12c2 1 5 1 7 1c11 0 20 -9 20 -20v-60c0 -8 -5 -16 -13 -19l-46 -16v-160l32 11c2 1 5 1 7 1c11 0 20 -9 20 -20v-60c0 -8 -5 -15 -13 -18l-46 -17
 v-158c0 -10 -8 -19 -18 -19s-19 9 -19 19v145l-83 -31v-158c0 -10 -9 -19 -19 -19s-18 9 -18 19v145l-32 -12c-2 -1 -5 -1 -7 -1c-11 0 -20 9 -20 20v60c0 8 5 16 13 19l46 16v160l-32 -11c-2 -1 -5 -1 -7 -1c-11 0 -20 9 -20 20v60zM179 95l-83 -30v-160l83 30v160z" fill="currentColor"/>
 </g>
-<a style="color:inherit;" xlink:href="textedit:///Volumes/seb/Documents/Projects/1Active/singing_hollow/get_loudest_frequencies/notes.ly:16:14:15">
-<g transform="translate(23.7534, 9.8453)">
-<path transform="scale(0.0040, -0.0040)" d="M218 136c66 0 108 -36 108 -89c0 -89 -113 -183 -218 -183c-66 0 -108 36 -108 89c0 89 113 183 218 183z" fill="currentColor"/>
+<a style="color:inherit;" xlink:href="textedit:///Volumes/seb/Documents/Projects/1Active/singing_hollow/get_loudest_frequencies/notes.ly:49:19:20">
+<g transform="translate(33.6360, 10.8953)">
+<path transform="scale(0.0040, -0.0040)" d="M213 112c-45 0 -69 -34 -69 -88c0 -102 89 -136 134 -136s69 34 69 88c0 102 -89 136 -134 136zM245 136c144 0 246 -65 246 -136s-102 -136 -246 -136s-245 65 -245 136s101 136 245 136z" fill="currentColor"/>
 </g>
 </a>
-<g transform="translate(23.8184, 10.8453)">
-<rect x="-0.0650" y="-0.8139" width="0.1300" height="3.3139" ry="0.0400" fill="currentColor"/>
-</g>
-<a style="color:inherit;" xlink:href="textedit:///Volumes/seb/Documents/Projects/1Active/singing_hollow/get_loudest_frequencies/notes.ly:16:17:18">
-<g transform="translate(26.7557, 10.3453)">
-<path transform="scale(0.0040, -0.0040)" d="M218 136c66 0 108 -36 108 -89c0 -89 -113 -183 -218 -183c-66 0 -108 36 -108 89c0 89 113 183 218 183z" fill="currentColor"/>
+<a style="color:inherit;" xlink:href="textedit:///Volumes/seb/Documents/Projects/1Active/singing_hollow/get_loudest_frequencies/notes.ly:49:14:15">
+<g transform="translate(25.4859, 10.3953)">
+<path transform="scale(0.0040, -0.0040)" d="M213 112c-45 0 -69 -34 -69 -88c0 -102 89 -136 134 -136s69 34 69 88c0 102 -89 136 -134 136zM245 136c144 0 246 -65 246 -136s-102 -136 -246 -136s-245 65 -245 136s101 136 245 136z" fill="currentColor"/>
 </g>
 </a>
-<g transform="translate(26.8207, 10.8453)">
-<rect x="-0.0650" y="-0.3139" width="0.1300" height="3.3139" ry="0.0400" fill="currentColor"/>
-</g>
-<a style="color:inherit;" xlink:href="textedit:///Volumes/seb/Documents/Projects/1Active/singing_hollow/get_loudest_frequencies/notes.ly:16:20:21">
-<g transform="translate(30.8434, 9.8453)">
-<path transform="scale(0.0040, -0.0040)" d="M218 136c66 0 108 -36 108 -89c0 -89 -113 -183 -218 -183c-66 0 -108 36 -108 89c0 89 113 183 218 183z" fill="currentColor"/>
+<a style="color:inherit;" xlink:href="textedit:///Volumes/seb/Documents/Projects/1Active/singing_hollow/get_loudest_frequencies/notes.ly:49:22:23">
+<g transform="translate(41.7860, 12.3953)">
+<path transform="scale(0.0040, -0.0040)" d="M213 112c-45 0 -69 -34 -69 -88c0 -102 89 -136 134 -136s69 34 69 88c0 102 -89 136 -134 136zM245 136c144 0 246 -65 246 -136s-102 -136 -246 -136s-245 65 -245 136s101 136 245 136z" fill="currentColor"/>
 </g>
 </a>
-<g transform="translate(30.9084, 10.8453)">
-<rect x="-0.0650" y="-0.8139" width="0.1300" height="3.3139" ry="0.0400" fill="currentColor"/>
-</g>
-<a style="color:inherit;" xlink:href="textedit:///Volumes/seb/Documents/Projects/1Active/singing_hollow/get_loudest_frequencies/notes.ly:16:23:24">
-<g transform="translate(34.0957, 8.8453)">
-<path transform="scale(0.0040, -0.0040)" d="M218 136c66 0 108 -36 108 -89c0 -89 -113 -183 -218 -183c-66 0 -108 36 -108 89c0 89 113 183 218 183z" fill="currentColor"/>
+<a style="color:inherit;" xlink:href="textedit:///Volumes/seb/Documents/Projects/1Active/singing_hollow/get_loudest_frequencies/notes.ly:49:25:26">
+<g transform="translate(49.9361, 13.8953)">
+<path transform="scale(0.0040, -0.0040)" d="M213 112c-45 0 -69 -34 -69 -88c0 -102 89 -136 134 -136s69 34 69 88c0 102 -89 136 -134 136zM245 136c144 0 246 -65 246 -136s-102 -136 -246 -136s-245 65 -245 136s101 136 245 136z" fill="currentColor"/>
 </g>
 </a>
-<g transform="translate(34.1607, 10.8453)">
-<rect x="-0.0650" y="-1.8139" width="0.1300" height="3.3139" ry="0.0400" fill="currentColor"/>
-</g>
-<a style="color:inherit;" xlink:href="textedit:///Volumes/seb/Documents/Projects/1Active/singing_hollow/get_loudest_frequencies/notes.ly:16:26:27">
-<g transform="translate(37.0979, 8.3453)">
-<path transform="scale(0.0040, -0.0040)" d="M218 136c66 0 108 -36 108 -89c0 -89 -113 -183 -218 -183c-66 0 -108 36 -108 89c0 89 113 183 218 183z" fill="currentColor"/>
+<a style="color:inherit;" xlink:href="textedit:///Volumes/seb/Documents/Projects/1Active/singing_hollow/get_loudest_frequencies/notes.ly:49:28:29">
+<g transform="translate(58.0861, 13.8953)">
+<path transform="scale(0.0040, -0.0040)" d="M213 112c-45 0 -69 -34 -69 -88c0 -102 89 -136 134 -136s69 34 69 88c0 102 -89 136 -134 136zM245 136c144 0 246 -65 246 -136s-102 -136 -246 -136s-245 65 -245 136s101 136 245 136z" fill="currentColor"/>
 </g>
 </a>
-<g transform="translate(37.1629, 10.8453)">
-<rect x="-0.0650" y="-2.3139" width="0.1300" height="3.3139" ry="0.0400" fill="currentColor"/>
-</g>
-<a style="color:inherit;" xlink:href="textedit:///Volumes/seb/Documents/Projects/1Active/singing_hollow/get_loudest_frequencies/notes.ly:16:29:30">
-<g transform="translate(40.1002, 7.8453)">
-<path transform="scale(0.0040, -0.0040)" d="M218 136c66 0 108 -36 108 -89c0 -89 -113 -183 -218 -183c-66 0 -108 36 -108 89c0 89 113 183 218 183z" fill="currentColor"/>
+<a style="color:inherit;" xlink:href="textedit:///Volumes/seb/Documents/Projects/1Active/singing_hollow/get_loudest_frequencies/notes.ly:49:31:32">
+<g transform="translate(66.2362, 15.3953)">
+<path transform="scale(0.0040, -0.0040)" d="M213 112c-45 0 -69 -34 -69 -88c0 -102 89 -136 134 -136s69 34 69 88c0 102 -89 136 -134 136zM245 136c144 0 246 -65 246 -136s-102 -136 -246 -136s-245 65 -245 136s101 136 245 136z" fill="currentColor"/>
 </g>
 </a>
-<g transform="translate(40.1652, 10.8453)">
-<rect x="-0.0650" y="-2.8139" width="0.1300" height="3.3139" ry="0.0400" fill="currentColor"/>
-</g>
-<a style="color:inherit;" xlink:href="textedit:///Volumes/seb/Documents/Projects/1Active/singing_hollow/get_loudest_frequencies/notes.ly:16:32:33">
-<g transform="translate(44.1282, 7.3453)">
-<path transform="scale(0.0040, -0.0040)" d="M218 136c66 0 108 -36 108 -89c0 -89 -113 -183 -218 -183c-66 0 -108 36 -108 89c0 89 113 183 218 183z" fill="currentColor"/>
+<a style="color:inherit;" xlink:href="textedit:///Volumes/seb/Documents/Projects/1Active/singing_hollow/get_loudest_frequencies/notes.ly:49:11:12">
+<g transform="translate(17.1859, 9.8953)">
+<path transform="scale(0.0040, -0.0040)" d="M213 112c-45 0 -69 -34 -69 -88c0 -102 89 -136 134 -136s69 34 69 88c0 102 -89 136 -134 136zM245 136c144 0 246 -65 246 -136s-102 -136 -246 -136s-245 65 -245 136s101 136 245 136z" fill="currentColor"/>
 </g>
 </a>
-<g transform="translate(44.1932, 10.8453)">
-<rect x="-0.0650" y="-3.3139" width="0.1300" height="3.3139" ry="0.0400" fill="currentColor"/>
-</g>
-<g transform="translate(52.3889, 5.3453)">
+<g transform="translate(64.7862, 15.3953)">
 <path transform="scale(0.0040, -0.0040)" d="M0 119c0 8 5 15 13 18l46 17v158c0 10 8 19 18 19s19 -9 19 -19v-145l83 31v158c0 10 9 19 19 19s18 -9 18 -19v-145l32 12c2 1 5 1 7 1c11 0 20 -9 20 -20v-60c0 -8 -5 -16 -13 -19l-46 -16v-160l32 11c2 1 5 1 7 1c11 0 20 -9 20 -20v-60c0 -8 -5 -15 -13 -18l-46 -17
 v-158c0 -10 -8 -19 -18 -19s-19 9 -19 19v145l-83 -31v-158c0 -10 -9 -19 -19 -19s-18 9 -18 19v145l-32 -12c-2 -1 -5 -1 -7 -1c-11 0 -20 9 -20 20v60c0 8 5 16 13 19l46 16v160l-32 -11c-2 -1 -5 -1 -7 -1c-11 0 -20 9 -20 20v60zM179 95l-83 -30v-160l83 30v160z" fill="currentColor"/>
 </g>
-<a style="color:inherit;" xlink:href="textedit:///Volumes/seb/Documents/Projects/1Active/singing_hollow/get_loudest_frequencies/notes.ly:16:35:36">
-<g transform="translate(47.4824, 6.8453)">
-<path transform="scale(0.0040, -0.0040)" d="M218 136c66 0 108 -36 108 -89c0 -89 -113 -183 -218 -183c-66 0 -108 36 -108 89c0 89 113 183 218 183z" fill="currentColor"/>
+<g transform="translate(8.1758, 12.9203)">
+<path transform="scale(0.0040, -0.0040)" d="M-88 -508c0 348 -168 504 -168 508s168 160 168 508c0 360 -144 688 -144 1092c0 248 56 488 220 680c16 20 40 -4 24 -24c-124 -144 -160 -320 -160 -504c0 -356 136 -672 136 -1072c0 -248 -56 -488 -216 -680c160 -192 216 -432 216 -680c0 -400 -136 -716 -136 -1072
+c0 -184 36 -360 160 -504c16 -20 -8 -44 -24 -24c-164 192 -220 432 -220 680c0 404 144 732 144 1092z" fill="currentColor"/>
+</g>
+<a style="color:inherit;" xlink:href="textedit:///Volumes/seb/Documents/Projects/1Active/singing_hollow/get_loudest_frequencies/notes.ly:49:36:37">
+<g transform="translate(74.3862, 15.3953)">
+<path transform="scale(0.0040, -0.0040)" d="M213 112c-45 0 -69 -34 -69 -88c0 -102 89 -136 134 -136s69 34 69 88c0 102 -89 136 -134 136zM245 136c144 0 246 -65 246 -136s-102 -136 -246 -136s-245 65 -245 136s101 136 245 136z" fill="currentColor"/>
 </g>
 </a>
-<g transform="translate(47.5474, 10.8453)">
-<rect x="-0.0650" y="-3.8139" width="0.1300" height="3.8139" ry="0.0400" fill="currentColor"/>
-</g>
-<g transform="translate(46.0324, 6.8453)">
+<g transform="translate(72.9362, 15.3953)">
 <path transform="scale(0.0040, -0.0040)" d="M0 119c0 8 5 15 13 18l46 17v158c0 10 8 19 18 19s19 -9 19 -19v-145l83 31v158c0 10 9 19 19 19s18 -9 18 -19v-145l32 12c2 1 5 1 7 1c11 0 20 -9 20 -20v-60c0 -8 -5 -16 -13 -19l-46 -16v-160l32 11c2 1 5 1 7 1c11 0 20 -9 20 -20v-60c0 -8 -5 -15 -13 -18l-46 -17
 v-158c0 -10 -8 -19 -18 -19s-19 9 -19 19v145l-83 -31v-158c0 -10 -9 -19 -19 -19s-18 9 -18 19v145l-32 -12c-2 -1 -5 -1 -7 -1c-11 0 -20 9 -20 20v60c0 8 5 16 13 19l46 16v160l-32 -11c-2 -1 -5 -1 -7 -1c-11 0 -20 9 -20 20v60zM179 95l-83 -30v-160l83 30v160z" fill="currentColor"/>
 </g>
-<a style="color:inherit;" xlink:href="textedit:///Volumes/seb/Documents/Projects/1Active/singing_hollow/get_loudest_frequencies/notes.ly:16:40:41">
-<g transform="translate(50.4846, 6.3453)">
-<path transform="scale(0.0040, -0.0040)" d="M218 136c66 0 108 -36 108 -89c0 -89 -113 -183 -218 -183c-66 0 -108 36 -108 89c0 89 113 183 218 183z" fill="currentColor"/>
+<a style="color:inherit;" xlink:href="textedit:///Volumes/seb/Documents/Projects/1Active/singing_hollow/get_loudest_frequencies/notes.ly:49:41:42">
+<g transform="translate(82.5362, 14.3953)">
+<path transform="scale(0.0040, -0.0040)" d="M213 112c-45 0 -69 -34 -69 -88c0 -102 89 -136 134 -136s69 34 69 88c0 102 -89 136 -134 136zM245 136c144 0 246 -65 246 -136s-102 -136 -246 -136s-245 65 -245 136s101 136 245 136z" fill="currentColor"/>
 </g>
 </a>
-<g transform="translate(50.5496, 10.8453)">
-<rect x="-0.0650" y="-4.3139" width="0.1300" height="4.3139" ry="0.0400" fill="currentColor"/>
-</g>
-<a style="color:inherit;" xlink:href="textedit:///Volumes/seb/Documents/Projects/1Active/singing_hollow/get_loudest_frequencies/notes.ly:16:43:44">
-<g transform="translate(53.8389, 5.3453)">
-<path transform="scale(0.0040, -0.0040)" d="M218 136c66 0 108 -36 108 -89c0 -89 -113 -183 -218 -183c-66 0 -108 36 -108 89c0 89 113 183 218 183z" fill="currentColor"/>
+<a style="color:inherit;" xlink:href="textedit:///Volumes/seb/Documents/Projects/1Active/singing_hollow/get_loudest_frequencies/notes.ly:49:8:9">
+<g transform="translate(9.0358, 8.8953)">
+<path transform="scale(0.0040, -0.0040)" d="M213 112c-45 0 -69 -34 -69 -88c0 -102 89 -136 134 -136s69 34 69 88c0 102 -89 136 -134 136zM245 136c144 0 246 -65 246 -136s-102 -136 -246 -136s-245 65 -245 136s101 136 245 136z" fill="currentColor"/>
 </g>
 </a>
-<g transform="translate(53.9039, 10.8453)">
-<rect x="-0.0650" y="-5.3139" width="0.1300" height="5.3139" ry="0.0400" fill="currentColor"/>
+<a style="color:inherit;" xlink:href="textedit:///Volumes/seb/Documents/Projects/1Active/singing_hollow/get_loudest_frequencies/notes.ly:49:44:45">
+<g transform="translate(90.6863, 13.8953)">
+<path transform="scale(0.0040, -0.0040)" d="M213 112c-45 0 -69 -34 -69 -88c0 -102 89 -136 134 -136s69 34 69 88c0 102 -89 136 -134 136zM245 136c144 0 246 -65 246 -136s-102 -136 -246 -136s-245 65 -245 136s101 136 245 136z" fill="currentColor"/>
 </g>
-<g transform="translate(31.7362, 162.8656)">
+</a>
+<g transform="translate(89.2363, 13.8953)">
+<path transform="scale(0.0040, -0.0040)" d="M0 119c0 8 5 15 13 18l46 17v158c0 10 8 19 18 19s19 -9 19 -19v-145l83 31v158c0 10 9 19 19 19s18 -9 18 -19v-145l32 12c2 1 5 1 7 1c11 0 20 -9 20 -20v-60c0 -8 -5 -16 -13 -19l-46 -16v-160l32 11c2 1 5 1 7 1c11 0 20 -9 20 -20v-60c0 -8 -5 -15 -13 -18l-46 -17
+v-158c0 -10 -8 -19 -18 -19s-19 9 -19 19v145l-83 -31v-158c0 -10 -9 -19 -19 -19s-18 9 -18 19v145l-32 -12c-2 -1 -5 -1 -7 -1c-11 0 -20 9 -20 20v60c0 8 5 16 13 19l46 16v160l-32 -11c-2 -1 -5 -1 -7 -1c-11 0 -20 9 -20 20v60zM179 95l-83 -30v-160l83 30v160z" fill="currentColor"/>
+</g>
+<g transform="translate(8.4758, 12.9203)">
+<rect x="0.0000" y="-9.0750" width="0.1600" height="18.1500" ry="0.0500" fill="currentColor"/>
+</g>
+<g transform="translate(31.7362, 160.0203)">
 <a xlink:href="https://lilypond.org/">
 <rect x="0.0000" y="-0.4532" width="56.0292" height="2.0746" fill="none" stroke="none" stroke-width="0.0"/>
 </a>
 </g>
-<g transform="translate(31.7362, 162.8656)">
+<g transform="translate(31.7362, 160.0203)">
 <text font-family="serif" font-size="2.2000" text-anchor="start" fill="currentColor">
 <tspan>Music engraving by LilyPond 2.24.4—www.lilypond.org</tspan>
 </text>
