@@ -146,20 +146,22 @@
         // --- Configuration Variables ---
         const SVG_FOLDER_PATH = 'static_svg/'; // Path relative to index.html
         const NUM_STATIC_SVGS = 6; // notes_1.svg to notes_6.svg
-        const SVG_CYCLE_INTERVAL_SECONDS = 5; // How often the SVG image changes
+        // Removed fixed SVG_CYCLE_INTERVAL_SECONDS, now calculated dynamically
         const MATERIAL_DURATION_UPDATE_INTERVAL_SECONDS = 3 * 60; // 3 minutes
 
         const POSSIBLE_DURATIONS = [3, 5, 8, 13, 21, 34, 59];
 
         // --- Mockup Status Cycle ---
-        const MOCKUP_STATUS_MESSAGES = [
-            'Stop Playing!',
-            'Recording bells...',
-            'Analysing bells...',
-            '' // Empty string means no message, overlay hidden
+        // These will be displayed in sequence before the SVG actually changes
+        const MOCKUP_STATUS_SEQUENCE = [
+            { message: 'Stop Playing!', color: '#FF0000' },
+            { message: 'Recording bells...', color: '#008000' },
+            { message: 'Analysing bells...', color: '#0000FF' }
         ];
-        let currentMockupStatusIndex = 0;
-        const MOCKUP_STATUS_CYCLE_INTERVAL = 3000; // Cycle every 3 seconds for demo
+        // How long each of the above status messages stays on screen before advancing to the next.
+        // Adjust these to simulate realistic processing times if desired.
+        const MOCKUP_STATUS_PHASE_DURATION = 1500; // 1.5 seconds per phase (Stop, Recording, Analysing)
+
 
         // --- Template SVG structure (without the inner <g id="music"> placeholder) ---
         // We will inject the content of notes_X.svg into this template
@@ -188,8 +190,27 @@
         // --- State Variables ---
         let currentSvgIndex = 1; // Start with notes_1.svg
         let currentMaterialDurations = []; // Will store the generated durations for the 6 segments
+        let svgCycleTimer; // Timer for cycling SVGs (now a setTimeout that reschedules itself)
+        let statusPhaseTimer; // Timer for controlling status message phases
+
 
         // --- Functions ---
+
+        /**
+         * Calculates a random interval between 5 and 60 seconds (in 5-second steps).
+         * @returns {number} The random interval in seconds.
+         */
+        function getRandomSvgCycleInterval() {
+            const minSeconds = 5;
+            const maxSeconds = 60;
+            const step = 5;
+
+            const numberOfSteps = (maxSeconds - minSeconds) / step + 1;
+            const randomStep = Math.floor(Math.random() * numberOfSteps); // 0 to (numberOfSteps - 1)
+            const randomInterval = minSeconds + (randomStep * step);
+
+            return randomInterval;
+        }
 
         /**
          * Generates random durations for the 6 material segments from POSSIBLE_DURATIONS.
@@ -221,53 +242,77 @@
         }
 
         /**
-         * Fetches the content of the current SVG part and injects it into the template.
+         * Controls the sequence of mockup status messages before the SVG changes.
+         * @param {number} phaseIndex The current index in MOCKUP_STATUS_SEQUENCE.
+         * @param {function} callback The function to call once all status phases are complete.
          */
-        async function cycleSvg() {
-            // Increment index, wrap around if it exceeds NUM_STATIC_SVGS
-            currentSvgIndex = (currentSvgIndex % NUM_STATIC_SVGS) + 1;
-            const svgContentPath = SVG_FOLDER_PATH + `notes_${currentSvgIndex}.svg`;
-            console.log(`Fetching content for ${svgContentPath}`);
+        function runMockupStatusSequence(phaseIndex, callback) {
+            if (statusPhaseTimer) {
+                clearTimeout(statusPhaseTimer);
+            }
 
-            try {
-                const response = await fetch(svgContentPath);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const svgInnerContent = await response.text();
-
-                // Inject the inner SVG content into our template
-                scoreSvgWrapper.innerHTML = SVG_TEMPLATE_START + svgInnerContent + SVG_TEMPLATE_END;
-
-            } catch (error) {
-                console.error('Error fetching or embedding SVG:', error);
-                statusOverlay.textContent = 'Error loading music SVG!';
+            if (phaseIndex < MOCKUP_STATUS_SEQUENCE.length) {
+                const { message, color } = MOCKUP_STATUS_SEQUENCE[phaseIndex];
+                statusOverlay.textContent = message;
+                statusOverlay.style.color = color;
                 statusOverlay.classList.add('visible');
-                statusOverlay.style.color = '#FFA500'; // Orange for client-side error
+                console.log(`Status: ${message}`);
+
+                statusPhaseTimer = setTimeout(() => {
+                    runMockupStatusSequence(phaseIndex + 1, callback); // Move to next phase
+                }, MOCKUP_STATUS_PHASE_DURATION);
+            } else {
+                // All status phases complete, hide overlay and proceed with SVG update
+                statusOverlay.textContent = '';
+                statusOverlay.classList.remove('visible');
+                if (callback) {
+                    callback();
+                }
             }
         }
 
         /**
-         * Cycles through the mockup status messages and updates the overlay.
+         * Fetches the content of the current SVG part, injects it into the template,
+         * and schedules the next SVG cycle with a random delay, starting with status messages.
          */
-        function cycleMockupStatus() {
-            const statusMessage = MOCKUP_STATUS_MESSAGES[currentMockupStatusIndex];
-            statusOverlay.textContent = statusMessage;
+        async function cycleSvgAndReschedule() {
+            // First, start the status message sequence
+            runMockupStatusSequence(0, async () => {
+                // This callback runs AFTER all status messages have completed their cycle
 
-            if (statusMessage) {
-                statusOverlay.classList.add('visible');
-                if (statusMessage === 'Recording bells...') {
-                    statusOverlay.style.color = '#008000'; // Green
-                } else if (statusMessage === 'Analysing bells...') {
-                    statusOverlay.style.color = '#0000FF'; // Blue
-                } else {
-                    statusOverlay.style.color = '#FF0000'; // Red
+                // Clear any existing main SVG cycle timer before setting a new one
+                if (svgCycleTimer) {
+                    clearTimeout(svgCycleTimer);
                 }
-            } else {
-                statusOverlay.classList.remove('visible');
-            }
 
-            currentMockupStatusIndex = (currentMockupStatusIndex + 1) % MOCKUP_STATUS_MESSAGES.length;
+                // Increment index, wrap around if it exceeds NUM_STATIC_SVGS
+                currentSvgIndex = (currentSvgIndex % NUM_STATIC_SVGS) + 1;
+                const svgContentPath = SVG_FOLDER_PATH + `notes_${currentSvgIndex}.svg`;
+                console.log(`Fetching content for ${svgContentPath}`);
+
+                try {
+                    const response = await fetch(svgContentPath);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const svgInnerContent = await response.text();
+
+                    // Inject the inner SVG content into our template
+                    scoreSvgWrapper.innerHTML = SVG_TEMPLATE_START + svgInnerContent + SVG_TEMPLATE_END;
+
+                } catch (error) {
+                    console.error('Error fetching or embedding SVG:', error);
+                    statusOverlay.textContent = 'Error loading music SVG!';
+                    statusOverlay.classList.add('visible');
+                    statusOverlay.style.color = '#FFA500'; // Orange for client-side error
+                } finally {
+                    // Schedule the next SVG cycle with a random interval,
+                    // which will also re-trigger the status sequence.
+                    const nextInterval = getRandomSvgCycleInterval();
+                    console.log(`Next SVG cycle scheduled in ${nextInterval} seconds.`);
+                    svgCycleTimer = setTimeout(cycleSvgAndReschedule, nextInterval * 1000);
+                }
+            });
         }
 
 
@@ -277,13 +322,9 @@
         generateRandomMaterialDurations(); // Generate initial durations
         setInterval(generateRandomMaterialDurations, MATERIAL_DURATION_UPDATE_INTERVAL_SECONDS * 1000);
 
-        // 2. Start the SVG cycling timer
-        cycleSvg(); // Display the first SVG and start the cycle
-        setInterval(cycleSvg, SVG_CYCLE_INTERVAL_SECONDS * 1000);
-
-        // 3. Start the mockup status message cycling
-        cycleMockupStatus(); // Display initial status
-        setInterval(cycleMockupStatus, MOCKUP_STATUS_CYCLE_INTERVAL);
+        // 2. Start the SVG cycling (now includes status messages)
+        // Call this once initially. It will manage its own delays for status and next SVG.
+        cycleSvgAndReschedule();
     </script>
 </body>
 </html>
