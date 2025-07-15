@@ -33,6 +33,8 @@ __pycache__/
 .Python/
 env/
 venv/
+.venv
+/.venv/
 pip-log.log
 pip-delete-this-arg.log
 .pytest_cache/
