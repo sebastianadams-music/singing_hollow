@@ -43,7 +43,7 @@
       \key c \major
       \time 4/4
       % REMOVE \relative c' {
-        gis'1 cis'1 d'1
+        ais'1 d'1
       % REMOVE }
     }
 

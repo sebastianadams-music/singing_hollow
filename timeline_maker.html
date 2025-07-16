@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alternating Material Visualiser</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the Inter font */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Main container for the entire timeline visualization, handles horizontal scrolling */
+        .timeline-main-wrapper {
+            display: block; /* Allows vertical stacking of tracks */
+            overflow-x: auto; /* Enables horizontal scrolling for the entire timeline */
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            background-color: #f9fafb;
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+            padding: 0.25rem;
+            min-height: 100px; /* Reduced minimum height */
+        }
+
+        /* Inner container that holds all material tracks and determines scrollable width */
+        .timeline-content-area {
+            display: flex;
+            flex-direction: column; /* Stacks material tracks vertically */
+            min-width: 100%; /* Ensures it takes at least the wrapper's width */
+            /* Its width will be dynamically set by JS based on content */
+        }
+
+        /* Styles for each individual material's track */
+        .material-track {
+            position: relative; /* Crucial for absolute positioning of segments */
+            height: 40px; /* Reduced fixed height for each track */
+            margin-bottom: 0.25rem; /* Reduced space between tracks */
+            background-color: #ffffff; /* White background for each track */
+            border-radius: 0.375rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            display: flex; /* Use flex for the track name and the segments */
+            align-items: center; /* Vertically align track name */
+            padding-left: 1rem; /* Padding for the track name */
+            box-sizing: border-box;
+        }
+        .material-track:last-child {
+            margin-bottom: 0; /* No margin after the last track */
+        }
+
+        /* Styles for individual segment items within a track */
+        .segment-item {
+            position: absolute; /* Positioned relative to its .material-track parent */
+            height: 100%; /* Segment takes full height of its parent track */
+            min-width: 5px; /* Reduced minimum width for very short segments */
+            display: flex;
+            flex-direction: column; /* Stack text elements vertically */
+            text-align: center;
+            padding: 0.1rem; /* Adjusted padding for smaller height */
+            border-radius: 0.375rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            box-sizing: border-box; /* Include padding and border in the element's total width */
+            justify-content: center; /* Center content vertically within the segment */
+            overflow: visible; /* Allow text to overhang */
+        }
+
+        /* Styles for the inner content of each segment on separate lines, allowing overhang */
+        .segment-content {
+            display: flex;
+            flex-direction: column; /* Stack text elements vertically */
+            align-items: flex-start; /* Align content to the left */
+            justify-content: center; /* Center content vertically */
+            width: 100%; /* Keep width for internal layout */
+            height: 100%; /* Keep height for internal layout */
+            padding-left: 0.2rem; /* Adjusted padding for smaller segments */
+            line-height: 1.1; /* Adjusted line height for better spacing */
+            color: #1a202c; /* Dark text color for visibility against white background */
+        }
+        .segment-content span {
+            white-space: nowrap; /* Prevent text from wrapping within a span */
+            font-size: 0.65rem; /* Smaller font size for tighter layout */
+        }
+        .segment-content .font-bold {
+            font-size: 0.75rem; /* Slightly larger for the name */
+        }
+
+        /* Modal specific styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* shadow-2xl */
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh; /* Limit modal height */
+            overflow-y: auto; /* Enable scrolling within modal */
+            position: relative;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col p-4">
+    <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-full mx-auto">
+        <h1 class="text-4xl font-extrabold text-gray-900 mb-6 text-center">Alternating Material Visualiser</h1>
+
+        <p class="text-gray-700 mb-6 text-center">
+            Configure your material types and durations, then visualize their alternating timeline.
+        </p>
+
+        <div class="flex flex-col md:flex-row gap-4 mb-8">
+            <button id="configureMaterialsBtn" class="flex-grow bg-blue-500 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-blue-600 transition duration-300 ease-in-out transform hover:scale-105">
+                Configure Materials
+            </button>
+            <div class="flex-grow flex items-center gap-2">
+                <label for="scaleFactorInput" class="text-lg font-semibold text-gray-800">Scale Factor (px/s):</label>
+                <input type="number" id="scaleFactorInput" value="5" min="1" max="500" step="1"
+                       class="p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm w-24 text-center">
+            </div>
+        </div>
+
+        <button onclick="generateTimeline()" class="w-full bg-gradient-to-r from-blue-600 to-blue-800 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:from-blue-700 hover:to-blue-900 transition duration-300 ease-in-out transform hover:scale-105 mb-4">
+            Generate Timeline
+        </button>
+
+        <button onclick="exportToJson()" class="w-full bg-gray-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-gray-700 transition duration-300 ease-in-out transform hover:scale-105">
+            Export Configuration (JSON)
+        </button>
+
+        <div id="timelineContainer" class="mt-8 flex-grow flex flex-col">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4 text-center">Timeline Visualization</h2>
+            <p id="totalLength" class="text-xl font-semibold text-gray-800 mb-4 text-center">Overall Length: 0.00 seconds</p>
+
+            <!-- The main wrapper for the entire timeline, enabling horizontal scrolling -->
+            <div id="timelineMainWrapper" class="timeline-main-wrapper">
+                <!-- This inner div will dynamically size to contain all tracks and enable proper scrolling -->
+                <div id="timelineContentArea" class="timeline-content-area">
+                    <p class="text-gray-600 w-full text-center py-4">Click "Generate Timeline" to see the visualization.</p>
+                </div>
+            </div>
+
+            <!-- Legend will be rendered here -->
+            <div id="legendContainer" class="flex flex-wrap justify-center gap-4 mt-8 p-4 bg-white rounded-lg shadow border border-gray-200">
+                <h3 class="w-full text-center text-lg font-semibold text-gray-800 mb-2">Material Legend</h3>
+                <!-- Legend items will be dynamically added here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Material Configuration Modal -->
+    <div id="materialModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Material Configuration</h2>
+            <div id="materialInputsContainer" class="flex flex-col gap-4 mb-8">
+                <!-- Material input rows will be dynamically added here by JavaScript -->
+            </div>
+            <button id="addMaterialBtn" class="w-full bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md hover:bg-gray-400 transition duration-300 ease-in-out mb-4">
+                Add Material Type
+            </button>
+            <button onclick="closeMaterialModal()" class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-blue-700 transition duration-300 ease-in-out">
+                Save & Close
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let materialCounter = 0; // Counter for unique material IDs
+        let currentMaterialData = []; // Store current material data
+
+        // Predefined array of distinct colors for materials
+        const predefinedColors = [
+            'bg-blue-500', 'bg-green-500', 'bg-yellow-500', 'bg-red-500',
+            'bg-purple-500', 'bg-indigo-500', 'bg-pink-500', 'bg-teal-500',
+            'bg-orange-500', 'bg-cyan-500', 'bg-lime-500', 'bg-fuchsia-500'
+        ];
+
+        /**
+         * Generates a string of random positive durations.
+         * @param {number} count - The number of durations to generate.
+         * @param {number} maxDuration - The maximum value for a single duration.
+         * @returns {string} A space-separated string of random durations.
+         */
+        function generateRandomDurations(count, maxDuration) {
+            let durations = [];
+            for (let i = 0; i < count; i++) {
+                // Generate a random number between 0.5 and maxDuration
+                durations.push((Math.random() * (maxDuration - 0.5) + 0.5).toFixed(1));
+            }
+            return durations.join(' ');
+        }
+
+        /**
+         * Opens the material configuration modal and populates it with current data.
+         */
+        function openMaterialModal() {
+            document.getElementById('materialModal').classList.remove('hidden');
+            const container = document.getElementById('materialInputsContainer');
+            container.innerHTML = ''; // Clear existing inputs in modal
+
+            // Re-populate modal with current material data
+            currentMaterialData.forEach(data => {
+                addMaterialInput(data.name, data.durations.join(' '));
+            });
+        }
+
+        /**
+         * Closes the material configuration modal and regenerates the timeline.
+         */
+        function closeMaterialModal() {
+            document.getElementById('materialModal').classList.add('hidden');
+            // Update currentMaterialData from the modal's inputs before regenerating
+            updateCurrentMaterialDataFromModal();
+            generateTimeline(); // Regenerate timeline after closing modal
+        }
+
+        /**
+         * Adds a new material input row to the form.
+         * @param {string} defaultName - The default name for the new material.
+         * @param {string} defaultDurations - The default durations string for the new material.
+         */
+        function addMaterialInput(defaultName = '', defaultDurations = '') {
+            materialCounter++;
+            const container = document.getElementById('materialInputsContainer');
+            const newMaterialDiv = document.createElement('div');
+            newMaterialDiv.className = 'flex flex-col md:flex-row md:items-end gap-3 p-4 border border-gray-200 rounded-lg shadow-sm bg-gray-50';
+            newMaterialDiv.id = `material-row-${materialCounter}`;
+
+            newMaterialDiv.innerHTML = `
+                <div class="flex-grow">
+                    <label for="materialName-${materialCounter}" class="text-lg font-semibold text-gray-800 mb-2 block">Material Name:</label>
+                    <input type="text" id="materialName-${materialCounter}" value="${defaultName}" class="p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm w-full" placeholder="e.g., Melody, Rhythm">
+                </div>
+                <div class="flex-grow">
+                    <label for="materialDurations-${materialCounter}" class="text-lg font-semibold text-gray-800 mb-2 block">Durations (space-separated):</label>
+                    <input type="text" id="materialDurations-${materialCounter}" value="${defaultDurations}" class="p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm w-full" placeholder="e.g., 1 2 3 5 8">
+                </div>
+                <button onclick="removeMaterialInput(${materialCounter})" class="bg-red-500 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-red-600 transition duration-300 ease-in-out transform hover:scale-105 md:self-end">
+                    Remove
+                </button>
+            `;
+            container.appendChild(newMaterialDiv);
+        }
+
+        /**
+         * Removes a material input row from the form.
+         * @param {number} id - The unique ID of the material row to remove.
+         */
+        function removeMaterialInput(id) {
+            const rowToRemove = document.getElementById(`material-row-${id}`);
+            if (rowToRemove) {
+                rowToRemove.remove();
+                // No need to regenerate timeline immediately, as it will be regenerated on modal close
+            }
+        }
+
+        /**
+         * Exports the current material configuration as a JSON file.
+         */
+        function exportToJson() {
+            // Ensure currentMaterialData is up-to-date before exporting
+            updateCurrentMaterialDataFromModal();
+
+            const dataStr = JSON.stringify(currentMaterialData, null, 2); // Pretty print JSON
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'alternating_materials_config.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url); // Clean up the URL object
+        }
+
+        /**
+         * Updates the currentMaterialData array by reading values from the modal's inputs.
+         * This ensures the data is fresh before generating the timeline or exporting.
+         */
+        function updateCurrentMaterialDataFromModal() {
+            currentMaterialData = []; // Clear existing data
+            const materialRows = document.querySelectorAll('#materialModal #materialInputsContainer > div'); // Select from modal
+
+            materialRows.forEach(row => {
+                const id = row.id.split('-')[2];
+                const nameInput = document.getElementById(`materialName-${id}`);
+                const durationsInput = document.getElementById(`materialDurations-${id}`);
+
+                const name = nameInput ? nameInput.value.trim() : `Material ${id}`;
+                const durations = durationsInput ? durationsInput.value.split(' ')
+                                                .map(s => parseFloat(s.trim()))
+                                                .filter(n => !isNaN(n) && n > 0) : [];
+                currentMaterialData.push({ name, durations });
+            });
+        }
+
+        /**
+         * Function to generate and display the musical timeline based on user inputs.
+         */
+        function generateTimeline() {
+            // currentMaterialData is assumed to be up-to-date (either from initial load or modal close)
+
+            const timelineMainWrapper = document.getElementById('timelineMainWrapper');
+            timelineMainWrapper.innerHTML = ''; // Clear previous timelines
+
+            const legendContainer = document.getElementById('legendContainer');
+            legendContainer.innerHTML = '<h3 class="w-full text-center text-lg font-semibold text-gray-800 mb-2">Material Legend</h3>'; // Clear previous legend
+
+            // Create the inner content area that will hold all tracks
+            const timelineContentArea = document.createElement('div');
+            timelineContentArea.id = 'timelineContentArea';
+            timelineContentArea.className = 'timeline-content-area';
+            timelineMainWrapper.appendChild(timelineContentArea);
+
+
+            // This array will hold all segments in their chronological order in the *overall* piece
+            const overallSegments = [];
+            let currentTime = 0; // Tracks the current time in the overall timeline
+            const materialIndices = Array(currentMaterialData.length).fill(0); // Tracks the next duration index for each material
+
+            let continueGeneration = true;
+            let iterationCount = 0;
+            const maxIterations = 1000; // Safety break
+
+            // Loop to generate the single, continuous sequence of segments
+            while (continueGeneration && iterationCount < maxIterations) {
+                const materialTypeIndex = iterationCount % currentMaterialData.length;
+                const currentMaterial = currentMaterialData[materialTypeIndex];
+
+                if (!currentMaterial || materialIndices[materialTypeIndex] >= currentMaterial.durations.length) {
+                    // If any material's duration list is exhausted, the piece ends
+                    continueGeneration = false;
+                    continue;
+                }
+
+                const duration = currentMaterial.durations[materialIndices[materialTypeIndex]];
+
+                overallSegments.push({
+                    name: currentMaterial.name,
+                    typeIndex: materialTypeIndex,
+                    startTime: currentTime, // This is the actual start time in the continuous piece
+                    duration: duration
+                });
+
+                currentTime += duration; // Update current time for the overall timeline
+                materialIndices[materialTypeIndex]++; // Move to the next duration for this material
+                iterationCount++;
+            }
+
+            const totalDuration = currentTime; // The total length of the continuous piece
+            document.getElementById('totalLength').textContent = `Overall Length: ${totalDuration.toFixed(2)} seconds`;
+
+            if (overallSegments.length === 0) {
+                timelineContentArea.innerHTML = '<p class="text-gray-600 w-full text-center py-4">No segments generated. Please add materials and enter valid positive durations.</p>';
+                return;
+            }
+
+            const scaleFactorInput = document.getElementById('scaleFactorInput');
+            const scaleFactor = parseFloat(scaleFactorInput.value) || 5; // Default to 5
+
+            // Create and append a track for each material
+            const materialTracks = [];
+            currentMaterialData.forEach((material, index) => {
+                const trackDiv = document.createElement('div');
+                trackDiv.className = 'material-track'; // Apply track styling
+                
+                // Add a label for the track
+                const trackLabel = document.createElement('span');
+                trackLabel.className = 'font-bold text-gray-800 text-sm absolute left-1 top-1'; // Position label
+                trackLabel.textContent = material.name;
+                trackDiv.appendChild(trackLabel);
+
+                // This div will hold the actual segments for this track
+                const segmentsContainer = document.createElement('div');
+                segmentsContainer.className = 'flex flex-row items-stretch h-full w-full relative'; // Inner container for segments
+                trackDiv.appendChild(segmentsContainer);
+
+                timelineContentArea.appendChild(trackDiv); // Append to the new content area
+                materialTracks[index] = segmentsContainer; // Store reference to the segments container
+            });
+
+            // Render segments by distributing them to their respective material's horizontal track
+            overallSegments.forEach(segment => {
+                const segmentElement = document.createElement('div');
+                const widthInPixels = Math.max(segment.duration * scaleFactor, 5); // Minimum width of 5px
+                const leftPosition = segment.startTime * scaleFactor; // Calculate left offset
+
+                const colorClass = predefinedColors[segment.typeIndex % predefinedColors.length];
+
+                segmentElement.className = `segment-item ${colorClass}`; // Removed text-white
+                segmentElement.style.width = `${widthInPixels}px`;
+                segmentElement.style.left = `${leftPosition}px`; // Apply left offset
+
+                // Inner HTML for segment details on three separate lines, left-aligned
+                segmentElement.innerHTML = `
+                    <div class="segment-content">
+                        <span class="font-bold">${segment.name}</span>
+                        <span>Start: ${segment.startTime.toFixed(2)}s</span>
+                        <span>Dur: ${segment.duration.toFixed(2)}s</span>
+                    </div>
+                `;
+                // Append to the correct material's specific track
+                materialTracks[segment.typeIndex].appendChild(segmentElement);
+            });
+
+            // Set the overall width of the timelineContentArea to accommodate all segments
+            // This ensures the horizontal scrollbar appears correctly on timelineMainWrapper
+            const maxRightEdge = overallSegments.reduce((max, segment) => {
+                return Math.max(max, (segment.startTime + segment.duration) * scaleFactor);
+            }, 0);
+            // Add some padding to the end of the scrollable area
+            timelineContentArea.style.width = `${Math.max(maxRightEdge + 100, timelineMainWrapper.clientWidth)}px`;
+
+
+            // Populate the legend based on currentMaterialData
+            currentMaterialData.forEach((material, index) => {
+                const legendItem = document.createElement('div');
+                const colorClass = predefinedColors[index % predefinedColors.length];
+                legendItem.className = 'flex items-center space-x-2';
+                legendItem.innerHTML = `
+                    <span class="w-4 h-4 ${colorClass} rounded-full shadow"></span>
+                    <span class="text-gray-700">${material.name}</span>
+                `;
+                legendContainer.appendChild(legendItem);
+            });
+        }
+
+        // Initial setup on page load
+        window.onload = () => {
+            // Add 6 default materials with random data
+            for (let i = 1; i <= 6; i++) {
+                currentMaterialData.push({
+                    name: `Material ${i}`,
+                    durations: generateRandomDurations(5, 10).split(' ').map(Number) // 5 random durations, max 10s
+                });
+            }
+
+            // Event listener for opening the modal
+            document.getElementById('configureMaterialsBtn').addEventListener('click', openMaterialModal);
+            // Event listener for adding new material rows within the modal
+            document.getElementById('addMaterialBtn').addEventListener('click', () => addMaterialInput('', ''));
+            // Event listener for scale factor input changes
+            document.getElementById('scaleFactorInput').addEventListener('change', generateTimeline);
+
+            generateTimeline(); // Generate initial timeline with default data
+        };
+    </script>
+</body>
+</html>
