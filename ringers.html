@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Singing Hollow - Instructions for Bell Ringers</title>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+        <style>
+            body {
+                font-family: 'Inter', sans-serif;
+                line-height: 1.6;
+                margin: 0;
+                padding: 0;
+                background-color: #f4f4f4; /* Light grey background */
+                color: #333; /* Dark grey text */
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding-bottom: 50px;
+            }
+
+            .container {
+                max-width: 900px;
+                margin: 20px auto;
+                padding: 30px;
+                background-color: #fff;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            }
+
+            h1, h2, h3 {
+                color: #2c3e50; /* Darker blue-grey for headings */
+                margin-top: 20px;
+                margin-bottom: 15px;
+            }
+
+            h1 {
+                font-size: 2.8em;
+                text-align: center;
+                margin-bottom: 10px;
+            }
+
+            h2 {
+                font-size: 2.2em;
+                border-bottom: 2px solid #eee;
+                padding-bottom: 10px;
+                margin-bottom: 25px;
+            }
+
+            h3 {
+                font-size: 1.6em;
+            }
+
+            p {
+                margin-bottom: 1em;
+            }
+
+            .back-link {
+                display: block;
+                text-align: left;
+                margin-bottom: 20px;
+                font-size: 1.1em;
+            }
+
+            .section {
+                margin-bottom: 40px;
+            }
+
+            .section-intro {
+                font-size: 1.15em;
+                margin-bottom: 25px;
+                background-color: #eaf2f8; /* Light blue background */
+                padding: 15px;
+                border-left: 5px solid #3498db; /* Blue border */
+                border-radius: 5px;
+            }
+
+            .list-item {
+                margin-bottom: 0.5em;
+            }
+
+            a {
+                color: #3498db; /* Blue links */
+                text-decoration: none;
+            }
+
+            a:hover {
+                text-decoration: underline;
+            }
+
+            .color-list {
+                list-style-type: none; /* Remove bullet points */
+                padding-left: 0;
+            }
+            .color-list li {
+                margin-bottom: 0.5em;
+                display: flex;
+                align-items: center;
+            }
+            .color-box {
+                width: 20px;
+                height: 20px;
+                border-radius: 4px;
+                margin-right: 10px;
+                border: 1px solid rgba(0,0,0,0.2); /* Subtle border for contrast */
+            }
+            /* Bell Colors CSS (duplicated from conductor for consistency) */
+            .color-1 { background-color: #008000; } /* Green */
+            .color-2 { background-color: #0000FF; } /* Blue */
+            .color-3 { background-color: #FFFF00; } /* Yellow */
+            .color-4 { background-color: #FFC0CB; } /* Pink */
+            .color-5 { background-color: #4B0082; } /* Dark Purple */
+            .color-6 { background-color: #FF0000; } /* Red */
+
+            .schedule-item {
+                margin-bottom: 0.5em;
+            }
+            .schedule-time {
+                font-weight: bold;
+                color: #4CAF50; /* Green for schedule times */
+            }
+            .schedule-detail {
+                margin-left: 15px;
+            }
+
+            .important-note {
+                font-style: italic;
+                color: #d35400; /* Orange for warnings/important notes */
+                font-weight: 600;
+            }
+
+            .software-elements li {
+                margin-bottom: 0.8em;
+            }
+            .software-elements strong {
+                color: #2980b9; /* Blue for emphasized software elements */
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <a href="index.html" class="back-link">&larr; Back to Home Page</a>
+
+            <header>
+                <h1>Instructions for Bell Ringers</h1>
+            </header>
+
+            <hr>
+
+            <section class="section">
+                <h2>Performance Modes</h2>
+                <ul>
+                    <li class="list-item"><strong>Normal ringing:</strong> Act as if this is a normal bell-ringing session (rounds, bobs, methods etc.). Take breaks as desired.</li>
+                    <li class="list-item"><strong>Follow the score:</strong> Detailed instructions below.</li>
+                </ul>
+            </section>
+
+            <hr>
+
+            <section class="section">
+                <h2>Schedule of Performance</h2>
+                <p>Please adhere to the following approximate schedule:</p>
+                <ul>
+                    <li class="schedule-item">
+                        <span class="schedule-time">6:00 PM - 6:30 PM:</span>
+                        <span class="schedule-detail">Ring as in a normal session (rounds, bobs, methods etc.). Take breaks as desired.</span>
+                    </li>
+                    <li class="schedule-item">
+                        <span class="schedule-time">6:30 PM - 6:55 PM:</span>
+                        <span class="schedule-detail">One performance of the score, using the <strong>fast_to_slow</strong> preset. (Take a break afterwards)</span>
+                    </li>
+                    <li class="schedule-item">
+                        <span class="schedule-time">c. 7:00 PM - 7:30 PM:</span>
+                        <span class="schedule-detail">Ring as in a normal session (rounds, bobs, methods etc.). Take breaks as desired.</span>
+                    </li>
+                    <li class="schedule-item">
+                        <span class="schedule-time">7:30 PM - 7:55 PM:</span>
+                        <span class="schedule-detail">One performance of the score, using the <strong>slow_to_fast</strong> preset.</span>
+                    </li>
+                    <li class="schedule-item">
+                        <span class="schedule-time">7:55 PM - 8:00 PM:</span>
+                        <span class="schedule-detail">Ring rounds etc. to finish around 8:00 PM.</span>
+                    </li>
+                </ul>
+            </section>
+
+            <hr>
+
+            <section class="section">
+                <h2>How to Follow the Score</h2>
+                <p>
+                    Two sections of the bell-ringers’ performance are scored. The score is available as a website which comes pre-loaded with two different JSON files.
+                </p>
+                <p>
+                    In the first scored performance, at <strong>6:30 PM</strong>, the file <code>fast_to_slow.json</code> should be loaded.
+                    In the second, at <strong>7:30 PM</strong>, the <code>slow_to_fast.json</code> file should be loaded.
+                </p>
+                <p class="section-intro">
+                    The score is available here: <a href="bell_conductor.html">https://singinghollow.sebastianadams.net/bell_conductor.html</a>
+                </p>
+                <p>
+                    The purpose of the score is to provide a controlled speeding up or slowing down of the bells. Rather than relying on memorisation/change calling to tell you when to ring the bell, the score will do so.
+                </p>
+                <p>
+                    The score is essentially playing a modified version of Plain Hunt.
+                </p>
+                <p class="important-note">
+                    <strong>When your color and bell number appear on the screen, ring your bell.</strong><br>
+                    Immediately after ringing, attempt to stand your bell.<br>
+                    Don't worry if you aren't able to stand the bell perfectly or immediately. This striving, and even failure, is an intentional part of the piece's effect. Simply keep attempting to stand the bell until you manage it.
+                </p>
+
+                <h3>Bell Colors & Your Bell Number</h3>
+                <p>Each bell (and ringer) is assigned a specific color:</p>
+                <ul class="color-list">
+                    <li><div class="color-box color-1"></div> 1: Green</li>
+                    <li><div class="color-box color-2"></div> 2: Blue</li>
+                    <li><div class="color-box color-3"></div> 3: Yellow</li>
+                    <li><div class="color-box color-4"></div> 4: Pink</li>
+                    <li><div class="color-box color-5"></div> 5: Dark Purple</li>
+                    <li><div class="color-box color-6"></div> 6: Red</li>
+                </ul>
+
+                <h3>On-Screen Elements Explained:</h3>
+                <ul class="software-elements">
+                    <li>
+                        The large, full-screen display is your primary cue for when to ring your bell. When the screen flashes your bell's assigned color and displays your bell's number in large numerals, this is your signal to ring your bell. The flash and number will appear for exactly one second. Aim to ring your bell so it sounds during this one-second window.
+                    </li>
+                    <li>
+                        <strong>The Countdown (Top Center):</strong><br>
+                        "Countdown: XX.XXs": This number, located at the top center of the screen, shows you the time remaining in seconds until the next bell is due to ring. Use this to anticipate your upcoming rings and prepare.
+                    </li>
+                    <li>
+                        <strong>Next Bell Indicator (Center):</strong><br>
+                        "Next Bell: [Colored Square with Number]": Directly below the countdown, you'll see a label indicating "Next Bell," followed by a small square. This square will show the color and number of the bell that is next in the sequence. This helps you confirm who is ringing after you, or when your next turn is coming up.
+                    </li>
+                    <li>
+                        <strong>Current Row & Method Display (Top Right):</strong><br>
+                        "Current Row: [Number]": This displays the current row number you are performing. This helps you track your progress through the method.<br>
+                        "Row: [Bell Sequence]": Directly below the current row number, this shows the full sequence of bells for the current row in the method. For example, if it says "Row: 1 2 3 4 5 6", it means Bell 1 rings first, then Bell 2, and so on, for this specific row.
+                    </li>
+                    <li>
+                        <strong>Elapsed Time (Bottom Center):</strong><br>
+                        "Elapsed: MM:SS.ss": At the very bottom center of the screen, this clock displays the total time that has passed since the performance began, in minutes, seconds, and hundredths of a second.
+                    </li>
+                    <li>
+                        <strong>Bell Offsets (Handled by Software):</strong><br>
+                        The software can automatically account for any differences in bell speaking time. Before performing, you can input (if desired) a delay time which is the average amount of time it takes your bell to ring after you pull the rope. By setting this, you can simply ring the bell when your colour and number appear on the screen, and the software will handle the adjustment for speaking time. This setting can be ignored by all players or by individuals if it isn’t deemed useful.
+                    </li>
+                </ul>
+            </section>
+
+            <hr>
+
+            <footer class="contact-info">
+                <p>&copy; 2025 Sebastian Adams. All rights reserved.</p>
+            </footer>
+        </div>
+    </body>
+    </html>
