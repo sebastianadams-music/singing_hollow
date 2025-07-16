@@ -1,0 +1,621 @@
+{
+  "parameters": {
+    "numRingers": 6,
+    "initialTimePerRing": 3,
+    "totalRows": 11,
+    "finalTimePerRing": 60,
+    "ignoreFirstNRows": 0,
+    "ignoreLastNRows": 0,
+    "curveType": "ease_in_quad",
+    "methodText": "1 2 3 4 5 6\n1 2 3 4 5 6\n2 1 4 3 5 6\n2 4 1 5 3 6\n4 2 5 1 3 6\n4 5 2 3 1 6\n5 4 3 2 1 6\n5 3 4 1 2 6\n3 5 1 4 2 6\n3 1 5 2 4 6\n1 3 2 5 4 6\n1 2 3 4 5 6"
+  },
+  "summary": {
+    "totalDuration": 1586.1818181818185,
+    "detectedNumRingers": 6,
+    "detectedTotalRows": 12
+  },
+  "methodDataParsed": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    [
+      2,
+      1,
+      4,
+      3,
+      5,
+      6
+    ],
+    [
+      2,
+      4,
+      1,
+      5,
+      3,
+      6
+    ],
+    [
+      4,
+      2,
+      5,
+      1,
+      3,
+      6
+    ],
+    [
+      4,
+      5,
+      2,
+      3,
+      1,
+      6
+    ],
+    [
+      5,
+      4,
+      3,
+      2,
+      1,
+      6
+    ],
+    [
+      5,
+      3,
+      4,
+      1,
+      2,
+      6
+    ],
+    [
+      3,
+      5,
+      1,
+      4,
+      2,
+      6
+    ],
+    [
+      3,
+      1,
+      5,
+      2,
+      4,
+      6
+    ],
+    [
+      1,
+      3,
+      2,
+      5,
+      4,
+      6
+    ],
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ]
+  ],
+  "timeline": [
+    {
+      "row": 1,
+      "ringer": 1,
+      "position_in_row": 1,
+      "time_between_rings_in_row": 3,
+      "absolute_time_start": 0
+    },
+    {
+      "row": 1,
+      "ringer": 2,
+      "position_in_row": 2,
+      "time_between_rings_in_row": 3,
+      "absolute_time_start": 3
+    },
+    {
+      "row": 1,
+      "ringer": 3,
+      "position_in_row": 3,
+      "time_between_rings_in_row": 3,
+      "absolute_time_start": 6
+    },
+    {
+      "row": 1,
+      "ringer": 4,
+      "position_in_row": 4,
+      "time_between_rings_in_row": 3,
+      "absolute_time_start": 9
+    },
+    {
+      "row": 1,
+      "ringer": 5,
+      "position_in_row": 5,
+      "time_between_rings_in_row": 3,
+      "absolute_time_start": 12
+    },
+    {
+      "row": 1,
+      "ringer": 6,
+      "position_in_row": 6,
+      "time_between_rings_in_row": 3,
+      "absolute_time_start": 15
+    },
+    {
+      "row": 2,
+      "ringer": 1,
+      "position_in_row": 1,
+      "time_between_rings_in_row": 3.4710743801652892,
+      "absolute_time_start": 18
+    },
+    {
+      "row": 2,
+      "ringer": 2,
+      "position_in_row": 2,
+      "time_between_rings_in_row": 3.4710743801652892,
+      "absolute_time_start": 21.47107438016529
+    },
+    {
+      "row": 2,
+      "ringer": 3,
+      "position_in_row": 3,
+      "time_between_rings_in_row": 3.4710743801652892,
+      "absolute_time_start": 24.942148760330582
+    },
+    {
+      "row": 2,
+      "ringer": 4,
+      "position_in_row": 4,
+      "time_between_rings_in_row": 3.4710743801652892,
+      "absolute_time_start": 28.413223140495873
+    },
+    {
+      "row": 2,
+      "ringer": 5,
+      "position_in_row": 5,
+      "time_between_rings_in_row": 3.4710743801652892,
+      "absolute_time_start": 31.884297520661164
+    },
+    {
+      "row": 2,
+      "ringer": 6,
+      "position_in_row": 6,
+      "time_between_rings_in_row": 3.4710743801652892,
+      "absolute_time_start": 35.355371900826455
+    },
+    {
+      "row": 3,
+      "ringer": 2,
+      "position_in_row": 1,
+      "time_between_rings_in_row": 4.884297520661157,
+      "absolute_time_start": 38.826446280991746
+    },
+    {
+      "row": 3,
+      "ringer": 1,
+      "position_in_row": 2,
+      "time_between_rings_in_row": 4.884297520661157,
+      "absolute_time_start": 43.7107438016529
+    },
+    {
+      "row": 3,
+      "ringer": 4,
+      "position_in_row": 3,
+      "time_between_rings_in_row": 4.884297520661157,
+      "absolute_time_start": 48.59504132231406
+    },
+    {
+      "row": 3,
+      "ringer": 3,
+      "position_in_row": 4,
+      "time_between_rings_in_row": 4.884297520661157,
+      "absolute_time_start": 53.47933884297522
+    },
+    {
+      "row": 3,
+      "ringer": 5,
+      "position_in_row": 5,
+      "time_between_rings_in_row": 4.884297520661157,
+      "absolute_time_start": 58.363636363636374
+    },
+    {
+      "row": 3,
+      "ringer": 6,
+      "position_in_row": 6,
+      "time_between_rings_in_row": 4.884297520661157,
+      "absolute_time_start": 63.24793388429753
+    },
+    {
+      "row": 4,
+      "ringer": 2,
+      "position_in_row": 1,
+      "time_between_rings_in_row": 7.239669421487602,
+      "absolute_time_start": 68.13223140495869
+    },
+    {
+      "row": 4,
+      "ringer": 4,
+      "position_in_row": 2,
+      "time_between_rings_in_row": 7.239669421487602,
+      "absolute_time_start": 75.37190082644629
+    },
+    {
+      "row": 4,
+      "ringer": 1,
+      "position_in_row": 3,
+      "time_between_rings_in_row": 7.239669421487602,
+      "absolute_time_start": 82.6115702479339
+    },
+    {
+      "row": 4,
+      "ringer": 5,
+      "position_in_row": 4,
+      "time_between_rings_in_row": 7.239669421487602,
+      "absolute_time_start": 89.8512396694215
+    },
+    {
+      "row": 4,
+      "ringer": 3,
+      "position_in_row": 5,
+      "time_between_rings_in_row": 7.239669421487602,
+      "absolute_time_start": 97.09090909090911
+    },
+    {
+      "row": 4,
+      "ringer": 6,
+      "position_in_row": 6,
+      "time_between_rings_in_row": 7.239669421487602,
+      "absolute_time_start": 104.33057851239671
+    },
+    {
+      "row": 5,
+      "ringer": 4,
+      "position_in_row": 1,
+      "time_between_rings_in_row": 10.537190082644628,
+      "absolute_time_start": 111.57024793388432
+    },
+    {
+      "row": 5,
+      "ringer": 2,
+      "position_in_row": 2,
+      "time_between_rings_in_row": 10.537190082644628,
+      "absolute_time_start": 122.10743801652895
+    },
+    {
+      "row": 5,
+      "ringer": 5,
+      "position_in_row": 3,
+      "time_between_rings_in_row": 10.537190082644628,
+      "absolute_time_start": 132.6446280991736
+    },
+    {
+      "row": 5,
+      "ringer": 1,
+      "position_in_row": 4,
+      "time_between_rings_in_row": 10.537190082644628,
+      "absolute_time_start": 143.18181818181822
+    },
+    {
+      "row": 5,
+      "ringer": 3,
+      "position_in_row": 5,
+      "time_between_rings_in_row": 10.537190082644628,
+      "absolute_time_start": 153.71900826446284
+    },
+    {
+      "row": 5,
+      "ringer": 6,
+      "position_in_row": 6,
+      "time_between_rings_in_row": 10.537190082644628,
+      "absolute_time_start": 164.25619834710747
+    },
+    {
+      "row": 6,
+      "ringer": 4,
+      "position_in_row": 1,
+      "time_between_rings_in_row": 14.77685950413223,
+      "absolute_time_start": 174.7933884297521
+    },
+    {
+      "row": 6,
+      "ringer": 5,
+      "position_in_row": 2,
+      "time_between_rings_in_row": 14.77685950413223,
+      "absolute_time_start": 189.57024793388433
+    },
+    {
+      "row": 6,
+      "ringer": 2,
+      "position_in_row": 3,
+      "time_between_rings_in_row": 14.77685950413223,
+      "absolute_time_start": 204.34710743801656
+    },
+    {
+      "row": 6,
+      "ringer": 3,
+      "position_in_row": 4,
+      "time_between_rings_in_row": 14.77685950413223,
+      "absolute_time_start": 219.1239669421488
+    },
+    {
+      "row": 6,
+      "ringer": 1,
+      "position_in_row": 5,
+      "time_between_rings_in_row": 14.77685950413223,
+      "absolute_time_start": 233.90082644628103
+    },
+    {
+      "row": 6,
+      "ringer": 6,
+      "position_in_row": 6,
+      "time_between_rings_in_row": 14.77685950413223,
+      "absolute_time_start": 248.67768595041326
+    },
+    {
+      "row": 7,
+      "ringer": 5,
+      "position_in_row": 1,
+      "time_between_rings_in_row": 19.95867768595041,
+      "absolute_time_start": 263.4545454545455
+    },
+    {
+      "row": 7,
+      "ringer": 4,
+      "position_in_row": 2,
+      "time_between_rings_in_row": 19.95867768595041,
+      "absolute_time_start": 283.4132231404959
+    },
+    {
+      "row": 7,
+      "ringer": 3,
+      "position_in_row": 3,
+      "time_between_rings_in_row": 19.95867768595041,
+      "absolute_time_start": 303.37190082644634
+    },
+    {
+      "row": 7,
+      "ringer": 2,
+      "position_in_row": 4,
+      "time_between_rings_in_row": 19.95867768595041,
+      "absolute_time_start": 323.33057851239676
+    },
+    {
+      "row": 7,
+      "ringer": 1,
+      "position_in_row": 5,
+      "time_between_rings_in_row": 19.95867768595041,
+      "absolute_time_start": 343.2892561983472
+    },
+    {
+      "row": 7,
+      "ringer": 6,
+      "position_in_row": 6,
+      "time_between_rings_in_row": 19.95867768595041,
+      "absolute_time_start": 363.2479338842976
+    },
+    {
+      "row": 8,
+      "ringer": 5,
+      "position_in_row": 1,
+      "time_between_rings_in_row": 26.08264462809917,
+      "absolute_time_start": 383.206611570248
+    },
+    {
+      "row": 8,
+      "ringer": 3,
+      "position_in_row": 2,
+      "time_between_rings_in_row": 26.08264462809917,
+      "absolute_time_start": 409.2892561983472
+    },
+    {
+      "row": 8,
+      "ringer": 4,
+      "position_in_row": 3,
+      "time_between_rings_in_row": 26.08264462809917,
+      "absolute_time_start": 435.37190082644634
+    },
+    {
+      "row": 8,
+      "ringer": 1,
+      "position_in_row": 4,
+      "time_between_rings_in_row": 26.08264462809917,
+      "absolute_time_start": 461.4545454545455
+    },
+    {
+      "row": 8,
+      "ringer": 2,
+      "position_in_row": 5,
+      "time_between_rings_in_row": 26.08264462809917,
+      "absolute_time_start": 487.53719008264466
+    },
+    {
+      "row": 8,
+      "ringer": 6,
+      "position_in_row": 6,
+      "time_between_rings_in_row": 26.08264462809917,
+      "absolute_time_start": 513.6198347107438
+    },
+    {
+      "row": 9,
+      "ringer": 3,
+      "position_in_row": 1,
+      "time_between_rings_in_row": 33.14876033057851,
+      "absolute_time_start": 539.702479338843
+    },
+    {
+      "row": 9,
+      "ringer": 5,
+      "position_in_row": 2,
+      "time_between_rings_in_row": 33.14876033057851,
+      "absolute_time_start": 572.8512396694215
+    },
+    {
+      "row": 9,
+      "ringer": 1,
+      "position_in_row": 3,
+      "time_between_rings_in_row": 33.14876033057851,
+      "absolute_time_start": 606
+    },
+    {
+      "row": 9,
+      "ringer": 4,
+      "position_in_row": 4,
+      "time_between_rings_in_row": 33.14876033057851,
+      "absolute_time_start": 639.1487603305785
+    },
+    {
+      "row": 9,
+      "ringer": 2,
+      "position_in_row": 5,
+      "time_between_rings_in_row": 33.14876033057851,
+      "absolute_time_start": 672.297520661157
+    },
+    {
+      "row": 9,
+      "ringer": 6,
+      "position_in_row": 6,
+      "time_between_rings_in_row": 33.14876033057851,
+      "absolute_time_start": 705.4462809917355
+    },
+    {
+      "row": 10,
+      "ringer": 3,
+      "position_in_row": 1,
+      "time_between_rings_in_row": 41.15702479338844,
+      "absolute_time_start": 738.595041322314
+    },
+    {
+      "row": 10,
+      "ringer": 1,
+      "position_in_row": 2,
+      "time_between_rings_in_row": 41.15702479338844,
+      "absolute_time_start": 779.7520661157025
+    },
+    {
+      "row": 10,
+      "ringer": 5,
+      "position_in_row": 3,
+      "time_between_rings_in_row": 41.15702479338844,
+      "absolute_time_start": 820.909090909091
+    },
+    {
+      "row": 10,
+      "ringer": 2,
+      "position_in_row": 4,
+      "time_between_rings_in_row": 41.15702479338844,
+      "absolute_time_start": 862.0661157024795
+    },
+    {
+      "row": 10,
+      "ringer": 4,
+      "position_in_row": 5,
+      "time_between_rings_in_row": 41.15702479338844,
+      "absolute_time_start": 903.2231404958679
+    },
+    {
+      "row": 10,
+      "ringer": 6,
+      "position_in_row": 6,
+      "time_between_rings_in_row": 41.15702479338844,
+      "absolute_time_start": 944.3801652892564
+    },
+    {
+      "row": 11,
+      "ringer": 1,
+      "position_in_row": 1,
+      "time_between_rings_in_row": 50.10743801652892,
+      "absolute_time_start": 985.5371900826449
+    },
+    {
+      "row": 11,
+      "ringer": 3,
+      "position_in_row": 2,
+      "time_between_rings_in_row": 50.10743801652892,
+      "absolute_time_start": 1035.6446280991738
+    },
+    {
+      "row": 11,
+      "ringer": 2,
+      "position_in_row": 3,
+      "time_between_rings_in_row": 50.10743801652892,
+      "absolute_time_start": 1085.7520661157027
+    },
+    {
+      "row": 11,
+      "ringer": 5,
+      "position_in_row": 4,
+      "time_between_rings_in_row": 50.10743801652892,
+      "absolute_time_start": 1135.8595041322317
+    },
+    {
+      "row": 11,
+      "ringer": 4,
+      "position_in_row": 5,
+      "time_between_rings_in_row": 50.10743801652892,
+      "absolute_time_start": 1185.9669421487606
+    },
+    {
+      "row": 11,
+      "ringer": 6,
+      "position_in_row": 6,
+      "time_between_rings_in_row": 50.10743801652892,
+      "absolute_time_start": 1236.0743801652895
+    },
+    {
+      "row": 12,
+      "ringer": 1,
+      "position_in_row": 1,
+      "time_between_rings_in_row": 60,
+      "absolute_time_start": 1286.1818181818185
+    },
+    {
+      "row": 12,
+      "ringer": 2,
+      "position_in_row": 2,
+      "time_between_rings_in_row": 60,
+      "absolute_time_start": 1346.1818181818185
+    },
+    {
+      "row": 12,
+      "ringer": 3,
+      "position_in_row": 3,
+      "time_between_rings_in_row": 60,
+      "absolute_time_start": 1406.1818181818185
+    },
+    {
+      "row": 12,
+      "ringer": 4,
+      "position_in_row": 4,
+      "time_between_rings_in_row": 60,
+      "absolute_time_start": 1466.1818181818185
+    },
+    {
+      "row": 12,
+      "ringer": 5,
+      "position_in_row": 5,
+      "time_between_rings_in_row": 60,
+      "absolute_time_start": 1526.1818181818185
+    },
+    {
+      "row": 12,
+      "ringer": 6,
+      "position_in_row": 6,
+      "time_between_rings_in_row": 60,
+      "absolute_time_start": 1586.1818181818185
+    }
+  ]
+}

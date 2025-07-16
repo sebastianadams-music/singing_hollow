@@ -8,7 +8,10 @@
         <style>
             body { font-family: sans-serif; margin: 20px; }
             h1, h2 { color: #333; }
-            #parameters { background-color: #f0f0f0; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+            #parameters { background-color: #f0f0f0; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+            #parameters > div { display: flex; flex-direction: column; }
+            #parameters .full-width { grid-column: span 2; }
+            textarea { width: 100%; min-height: 150px; font-family: monospace; border: 1px solid #ccc; border-radius: 4px; padding: 8px; }
             #timeline-container { position: relative; width: 100%; height: 600px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; }
             .ring-event {
                 position: absolute;
@@ -37,7 +40,8 @@
             #summary { margin-top: 20px; padding: 10px; background-color: #e6f7ff; border-left: 5px solid #2196F3; }
             label { display: block; margin-bottom: 5px; font-weight: bold; }
             input[type="number"], select { padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; width: 150px; }
-            button { padding: 10px 15px; background-color: #007BFF; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;} /* Added margin-right for buttons */
+            .button-group { grid-column: span 2; text-align: right; }
+            button { padding: 10px 15px; background-color: #007BFF; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;}
             button:hover { background-color: #0056b3; }
 
             /* Legend for colors */
@@ -51,10 +55,9 @@
         <h1>Bell Ringing Timeline Visualizer</h1>
 
         <div id="parameters">
-            <h2>Adjust Parameters</h2>
             <div>
                 <label for="numRingers">Number of Ringers:</label>
-                <input type="number" id="numRingers" value="6" min="1">
+                <input type="number" id="numRingers" value="6" min="1" disabled>
             </div>
             <div>
                 <label for="initialTimePerRing">Initial Time Per Ring (seconds):</label>
@@ -62,7 +65,7 @@
             </div>
             <div>
                 <label for="totalRows">Total Rows:</label>
-                <input type="number" id="totalRows" value="40" min="1">
+                <input type="number" id="totalRows" value="11" min="1" disabled>
             </div>
             <div>
                 <label for="finalTimePerRing">Final Time Per Ring (seconds):</label>
@@ -70,13 +73,13 @@
             </div>
             <div>
                 <label for="ignoreFirstNRows">Ignore First N Rows (constant initial time):</label>
-                <input type="number" id="ignoreFirstNRows" value="5" min="0">
+                <input type="number" id="ignoreFirstNRows" value="0" min="0">
             </div>
             <div>
                 <label for="ignoreLastNRows">Ignore Last N Rows (constant final time):</label>
-                <input type="number" id="ignoreLastNRows" value="5" min="0">
+                <input type="number" id="ignoreLastNRows" value="0" min="0">
             </div>
-            <div>
+            <div class="full-width">
                 <label for="curveType">Slowing Curve Type:</label>
                 <select id="curveType">
                     <option value="linear" selected>Linear</option>
@@ -85,12 +88,35 @@
                     <option value="ease_in_out_sine" >Ease In/Out Sine</option>
                 </select>
             </div>
-            <button onclick="updateTimeline()">Update Timeline</button>
-            <button onclick="exportToJson()">Export to JSON</button> </div>
+            <div class="full-width">
+                <label for="methodInput">Bell-Ringing Method (each line is a row, space-separated ringers):</label>
+                <textarea id="methodInput" placeholder="e.g.,
+1 2 3 4 5 6
+2 1 4 3 5 6
+...">1 2 3 4 5 6
+2 1 4 3 5 6
+2 4 1 5 3 6
+4 2 5 1 3 6
+4 5 2 3 1 6
+5 4 3 2 1 6
+5 3 4 1 2 6
+3 5 1 4 2 6
+3 1 5 2 4 6
+1 3 2 5 4 6
+1 2 3 4 5 6</textarea>
+                <small>Number of Ringers and Total Rows will be determined by this input if provided.</small>
+            </div>
+            <div class="button-group">
+                <button onclick="updateTimeline()">Update Timeline</button>
+                <button onclick="exportToJson()">Export to JSON</button>
+            </div>
+        </div>
 
         <div id="summary">
             <h2>Process Summary</h2>
-            <p>Total Duration: <strong id="totalDurationDisplay">1250.00 seconds</strong></p>
+            <p>Total Duration: <strong id="totalDurationDisplay">336.50 seconds</strong></p>
+            <p>Detected Number of Ringers: <strong id="detectedNumRingers">6</strong></p>
+            <p>Detected Total Rows: <strong id="detectedTotalRows">11</strong></p>
         </div>
 
         <h2>Visual Timeline Overview</h2>
@@ -121,17 +147,43 @@
                 return `${minutes}m ${remainingSeconds.toFixed(2)}s`;
             }
 
-            let currentTimelineData = [{"row": 1, "ringer": 1, "time_between_rings_in_row": 0.5, "absolute_time_start": 0.0}, {"row": 1, "ringer": 2, "time_between_rings_in_row": 0.5, "absolute_time_start": 0.5}, {"row": 1, "ringer": 3, "time_between_rings_in_row": 0.5, "absolute_time_start": 1.0}, {"row": 1, "ringer": 4, "time_between_rings_in_row": 0.5, "absolute_time_start": 1.5}, {"row": 1, "ringer": 5, "time_between_rings_in_row": 0.5, "absolute_time_start": 2.0}, {"row": 1, "ringer": 6, "time_between_rings_in_row": 0.5, "absolute_time_start": 2.5}, {"row": 2, "ringer": 1, "time_between_rings_in_row": 0.5, "absolute_time_start": 3.0}, {"row": 2, "ringer": 2, "time_between_rings_in_row": 0.5, "absolute_time_start": 3.5}, {"row": 2, "ringer": 3, "time_between_rings_in_row": 0.5, "absolute_time_start": 4.0}, {"row": 2, "ringer": 4, "time_between_rings_in_row": 0.5, "absolute_time_start": 4.5}, {"row": 2, "ringer": 5, "time_between_rings_in_row": 0.5, "absolute_time_start": 5.0}, {"row": 2, "ringer": 6, "time_between_rings_in_row": 0.5, "absolute_time_start": 5.5}, {"row": 3, "ringer": 1, "time_between_rings_in_row": 0.5, "absolute_time_start": 6.0}, {"row": 3, "ringer": 2, "time_between_rings_in_row": 0.5, "absolute_time_start": 6.5}, {"row": 3, "ringer": 3, "time_between_rings_in_row": 0.5, "absolute_time_start": 7.0}, {"row": 3, "ringer": 4, "time_between_rings_in_row": 0.5, "absolute_time_start": 7.5}, {"row": 3, "ringer": 5, "time_between_rings_in_row": 0.5, "absolute_time_start": 8.0}, {"row": 3, "ringer": 6, "time_between_rings_in_row": 0.5, "absolute_time_start": 8.5}, {"row": 4, "ringer": 1, "time_between_rings_in_row": 0.5, "absolute_time_start": 9.0}, {"row": 4, "ringer": 2, "time_between_rings_in_row": 0.5, "absolute_time_start": 9.5}, {"row": 4, "ringer": 3, "time_between_rings_in_row": 0.5, "absolute_time_start": 10.0}, {"row": 4, "ringer": 4, "time_between_rings_in_row": 0.5, "absolute_time_start": 10.5}, {"row": 4, "ringer": 5, "time_between_rings_in_row": 0.5, "absolute_time_start": 11.0}, {"row": 4, "ringer": 6, "time_between_rings_in_row": 0.5, "absolute_time_start": 11.5}, {"row": 5, "ringer": 1, "time_between_rings_in_row": 0.5, "absolute_time_start": 12.0}, {"row": 5, "ringer": 2, "time_between_rings_in_row": 0.5, "absolute_time_start": 12.5}, {"row": 5, "ringer": 3, "time_between_rings_in_row": 0.5, "absolute_time_start": 13.0}, {"row": 5, "ringer": 4, "time_between_rings_in_row": 0.5, "absolute_time_start": 13.5}, {"row": 5, "ringer": 5, "time_between_rings_in_row": 0.5, "absolute_time_start": 14.0}, {"row": 5, "ringer": 6, "time_between_rings_in_row": 0.5, "absolute_time_start": 14.5}, {"row": 6, "ringer": 1, "time_between_rings_in_row": 0.5, "absolute_time_start": 15.0}, {"row": 6, "ringer": 2, "time_between_rings_in_row": 0.5, "absolute_time_start": 15.5}, {"row": 6, "ringer": 3, "time_between_rings_in_row": 0.5, "absolute_time_start": 16.0}, {"row": 6, "ringer": 4, "time_between_rings_in_row": 0.5, "absolute_time_start": 16.5}, {"row": 6, "ringer": 5, "time_between_rings_in_row": 0.5, "absolute_time_start": 17.0}, {"row": 6, "ringer": 6, "time_between_rings_in_row": 0.5, "absolute_time_start": 17.5}, {"row": 7, "ringer": 1, "time_between_rings_in_row": 0.8275862068965517, "absolute_time_start": 18.0}, {"row": 7, "ringer": 2, "time_between_rings_in_row": 0.8275862068965517, "absolute_time_start": 18.82758620689655}, {"row": 7, "ringer": 3, "time_between_rings_in_row": 0.8275862068965517, "absolute_time_start": 19.655172413793103}, {"row": 7, "ringer": 4, "time_between_rings_in_row": 0.8275862068965517, "absolute_time_start": 20.482758620689655}, {"row": 7, "ringer": 5, "time_between_rings_in_row": 0.8275862068965517, "absolute_time_start": 21.310344827586206}, {"row": 7, "ringer": 6, "time_between_rings_in_row": 0.8275862068965517, "absolute_time_start": 22.137931034482758}, {"row": 8, "ringer": 1, "time_between_rings_in_row": 1.1551724137931034, "absolute_time_start": 22.96551724137931}, {"row": 8, "ringer": 2, "time_between_rings_in_row": 1.1551724137931034, "absolute_time_start": 24.120689655172413}, {"row": 8, "ringer": 3, "time_between_rings_in_row": 1.1551724137931034, "absolute_time_start": 25.275862068965516}, {"row": 8, "ringer": 4, "time_between_rings_in_row": 1.1551724137931034, "absolute_time_start": 26.43103448275862}, {"row": 8, "ringer": 5, "time_between_rings_in_row": 1.1551724137931034, "absolute_time_start": 27.586206896551722}, {"row": 8, "ringer": 6, "time_between_rings_in_row": 1.1551724137931034, "absolute_time_start": 28.741379310344826}, {"row": 9, "ringer": 1, "time_between_rings_in_row": 1.4827586206896552, "absolute_time_start": 29.89655172413793}, {"row": 9, "ringer": 2, "time_between_rings_in_row": 1.4827586206896552, "absolute_time_start": 31.379310344827584}, {"row": 9, "ringer": 3, "time_between_rings_in_row": 1.4827586206896552, "absolute_time_start": 32.86206896551724}, {"row": 9, "ringer": 4, "time_between_rings_in_row": 1.4827586206896552, "absolute_time_start": 34.3448275862069}, {"row": 9, "ringer": 5, "time_between_rings_in_row": 1.4827586206896552, "absolute_time_start": 35.827586206896555}, {"row": 9, "ringer": 6, "time_between_rings_in_row": 1.4827586206896552, "absolute_time_start": 37.31034482758621}, {"row": 10, "ringer": 1, "time_between_rings_in_row": 1.8103448275862069, "absolute_time_start": 38.79310344827587}, {"row": 10, "ringer": 2, "time_between_rings_in_row": 1.8103448275862069, "absolute_time_start": 40.60344827586208}, {"row": 10, "ringer": 3, "time_between_rings_in_row": 1.8103448275862069, "absolute_time_start": 42.413793103448285}, {"row": 10, "ringer": 4, "time_between_rings_in_row": 1.8103448275862069, "absolute_time_start": 44.22413793103449}, {"row": 10, "ringer": 5, "time_between_rings_in_row": 1.8103448275862069, "absolute_time_start": 46.0344827586207}, {"row": 10, "ringer": 6, "time_between_rings_in_row": 1.8103448275862069, "absolute_time_start": 47.844827586206904}, {"row": 11, "ringer": 1, "time_between_rings_in_row": 2.137931034482759, "absolute_time_start": 49.65517241379311}, {"row": 11, "ringer": 2, "time_between_rings_in_row": 2.137931034482759, "absolute_time_start": 51.79310344827587}, {"row": 11, "ringer": 3, "time_between_rings_in_row": 2.137931034482759, "absolute_time_start": 53.93103448275863}, {"row": 11, "ringer": 4, "time_between_rings_in_row": 2.137931034482759, "absolute_time_start": 56.068965517241395}, {"row": 11, "ringer": 5, "time_between_rings_in_row": 2.137931034482759, "absolute_time_start": 58.20689655172416}, {"row": 11, "ringer": 6, "time_between_rings_in_row": 2.137931034482759, "absolute_time_start": 60.34482758620692}, {"row": 12, "ringer": 1, "time_between_rings_in_row": 2.4655172413793105, "absolute_time_start": 62.48275862068968}, {"row": 12, "ringer": 2, "time_between_rings_in_row": 2.4655172413793105, "absolute_time_start": 64.948275862069}, {"row": 12, "ringer": 3, "time_between_rings_in_row": 2.4655172413793105, "absolute_time_start": 67.41379310344831}, {"row": 12, "ringer": 4, "time_between_rings_in_row": 2.4655172413793105, "absolute_time_start": 69.87931034482763}, {"row": 12, "ringer": 5, "time_between_rings_in_row": 2.4655172413793105, "absolute_time_start": 72.34482758620695}, {"row": 12, "ringer": 6, "time_between_rings_in_row": 2.4655172413793105, "absolute_time_start": 74.81034482758626}, {"row": 13, "ringer": 1, "time_between_rings_in_row": 2.793103448275862, "absolute_time_start": 77.27586206896558}, {"row": 13, "ringer": 2, "time_between_rings_in_row": 2.793103448275862, "absolute_time_start": 80.06896551724144}, {"row": 13, "ringer": 3, "time_between_rings_in_row": 2.793103448275862, "absolute_time_start": 82.8620689655173}, {"row": 13, "ringer": 4, "time_between_rings_in_row": 2.793103448275862, "absolute_time_start": 85.65517241379315}, {"row": 13, "ringer": 5, "time_between_rings_in_row": 2.793103448275862, "absolute_time_start": 88.44827586206901}, {"row": 13, "ringer": 6, "time_between_rings_in_row": 2.793103448275862, "absolute_time_start": 91.24137931034487}, {"row": 14, "ringer": 1, "time_between_rings_in_row": 3.1206896551724137, "absolute_time_start": 94.03448275862073}, {"row": 14, "ringer": 2, "time_between_rings_in_row": 3.1206896551724137, "absolute_time_start": 97.15517241379314}, {"row": 14, "ringer": 3, "time_between_rings_in_row": 3.1206896551724137, "absolute_time_start": 100.27586206896555}, {"row": 14, "ringer": 4, "time_between_rings_in_row": 3.1206896551724137, "absolute_time_start": 103.39655172413796}, {"row": 14, "ringer": 5, "time_between_rings_in_row": 3.1206896551724137, "absolute_time_start": 106.51724137931038}, {"row": 14, "ringer": 6, "time_between_rings_in_row": 3.1206896551724137, "absolute_time_start": 109.63793103448279}, {"row": 15, "ringer": 1, "time_between_rings_in_row": 3.4482758620689657, "absolute_time_start": 112.7586206896552}, {"row": 15, "ringer": 2, "time_between_rings_in_row": 3.4482758620689657, "absolute_time_start": 116.20689655172417}, {"row": 15, "ringer": 3, "time_between_rings_in_row": 3.4482758620689657, "absolute_time_start": 119.65517241379314}, {"row": 15, "ringer": 4, "time_between_rings_in_row": 3.4482758620689657, "absolute_time_start": 123.1034482758621}, {"row": 15, "ringer": 5, "time_between_rings_in_row": 3.4482758620689657, "absolute_time_start": 126.55172413793107}, {"row": 15, "ringer": 6, "time_between_rings_in_row": 3.4482758620689657, "absolute_time_start": 130.00000000000003}, {"row": 16, "ringer": 1, "time_between_rings_in_row": 3.7758620689655173, "absolute_time_start": 133.44827586206898}, {"row": 16, "ringer": 2, "time_between_rings_in_row": 3.7758620689655173, "absolute_time_start": 137.2241379310345}, {"row": 16, "ringer": 3, "time_between_rings_in_row": 3.7758620689655173, "absolute_time_start": 141.00000000000003}, {"row": 16, "ringer": 4, "time_between_rings_in_row": 3.7758620689655173, "absolute_time_start": 144.77586206896555}, {"row": 16, "ringer": 5, "time_between_rings_in_row": 3.7758620689655173, "absolute_time_start": 148.55172413793107}, {"row": 16, "ringer": 6, "time_between_rings_in_row": 3.7758620689655173, "absolute_time_start": 152.3275862068966}, {"row": 17, "ringer": 1, "time_between_rings_in_row": 4.103448275862069, "absolute_time_start": 156.10344827586212}, {"row": 17, "ringer": 2, "time_between_rings_in_row": 4.103448275862069, "absolute_time_start": 160.20689655172418}, {"row": 17, "ringer": 3, "time_between_rings_in_row": 4.103448275862069, "absolute_time_start": 164.31034482758625}, {"row": 17, "ringer": 4, "time_between_rings_in_row": 4.103448275862069, "absolute_time_start": 168.4137931034483}, {"row": 17, "ringer": 5, "time_between_rings_in_row": 4.103448275862069, "absolute_time_start": 172.51724137931038}, {"row": 17, "ringer": 6, "time_between_rings_in_row": 4.103448275862069, "absolute_time_start": 176.62068965517244}, {"row": 18, "ringer": 1, "time_between_rings_in_row": 4.431034482758621, "absolute_time_start": 180.7241379310345}, {"row": 18, "ringer": 2, "time_between_rings_in_row": 4.431034482758621, "absolute_time_start": 185.15517241379314}, {"row": 18, "ringer": 3, "time_between_rings_in_row": 4.431034482758621, "absolute_time_start": 189.58620689655177}, {"row": 18, "ringer": 4, "time_between_rings_in_row": 4.431034482758621, "absolute_time_start": 194.0172413793104}, {"row": 18, "ringer": 5, "time_between_rings_in_row": 4.431034482758621, "absolute_time_start": 198.44827586206904}, {"row": 18, "ringer": 6, "time_between_rings_in_row": 4.431034482758621, "absolute_time_start": 202.87931034482767}, {"row": 19, "ringer": 1, "time_between_rings_in_row": 4.758620689655173, "absolute_time_start": 207.3103448275863}, {"row": 19, "ringer": 2, "time_between_rings_in_row": 4.758620689655173, "absolute_time_start": 212.06896551724148}, {"row": 19, "ringer": 3, "time_between_rings_in_row": 4.758620689655173, "absolute_time_start": 216.82758620689665}, {"row": 19, "ringer": 4, "time_between_rings_in_row": 4.758620689655173, "absolute_time_start": 221.58620689655183}, {"row": 19, "ringer": 5, "time_between_rings_in_row": 4.758620689655173, "absolute_time_start": 226.344827586207}, {"row": 19, "ringer": 6, "time_between_rings_in_row": 4.758620689655173, "absolute_time_start": 231.10344827586218}, {"row": 20, "ringer": 1, "time_between_rings_in_row": 5.086206896551724, "absolute_time_start": 235.86206896551735}, {"row": 20, "ringer": 2, "time_between_rings_in_row": 5.086206896551724, "absolute_time_start": 240.94827586206907}, {"row": 20, "ringer": 3, "time_between_rings_in_row": 5.086206896551724, "absolute_time_start": 246.03448275862078}, {"row": 20, "ringer": 4, "time_between_rings_in_row": 5.086206896551724, "absolute_time_start": 251.1206896551725}, {"row": 20, "ringer": 5, "time_between_rings_in_row": 5.086206896551724, "absolute_time_start": 256.20689655172424}, {"row": 20, "ringer": 6, "time_between_rings_in_row": 5.086206896551724, "absolute_time_start": 261.293103448276}, {"row": 21, "ringer": 1, "time_between_rings_in_row": 5.413793103448276, "absolute_time_start": 266.37931034482773}, {"row": 21, "ringer": 2, "time_between_rings_in_row": 5.413793103448276, "absolute_time_start": 271.793103448276}, {"row": 21, "ringer": 3, "time_between_rings_in_row": 5.413793103448276, "absolute_time_start": 277.20689655172424}, {"row": 21, "ringer": 4, "time_between_rings_in_row": 5.413793103448276, "absolute_time_start": 282.6206896551725}, {"row": 21, "ringer": 5, "time_between_rings_in_row": 5.413793103448276, "absolute_time_start": 288.03448275862075}, {"row": 21, "ringer": 6, "time_between_rings_in_row": 5.413793103448276, "absolute_time_start": 293.448275862069}, {"row": 22, "ringer": 1, "time_between_rings_in_row": 5.741379310344827, "absolute_time_start": 298.86206896551727}, {"row": 22, "ringer": 2, "time_between_rings_in_row": 5.741379310344827, "absolute_time_start": 304.6034482758621}, {"row": 22, "ringer": 3, "time_between_rings_in_row": 5.741379310344827, "absolute_time_start": 310.3448275862069}, {"row": 22, "ringer": 4, "time_between_rings_in_row": 5.741379310344827, "absolute_time_start": 316.08620689655174}, {"row": 22, "ringer": 5, "time_between_rings_in_row": 5.741379310344827, "absolute_time_start": 321.82758620689657}, {"row": 22, "ringer": 6, "time_between_rings_in_row": 5.741379310344827, "absolute_time_start": 327.5689655172414}, {"row": 23, "ringer": 1, "time_between_rings_in_row": 6.068965517241379, "absolute_time_start": 333.3103448275862}, {"row": 23, "ringer": 2, "time_between_rings_in_row": 6.068965517241379, "absolute_time_start": 339.3793103448276}, {"row": 23, "ringer": 3, "time_between_rings_in_row": 6.068965517241379, "absolute_time_start": 345.448275862069}, {"row": 23, "ringer": 4, "time_between_rings_in_row": 6.068965517241379, "absolute_time_start": 351.5172413793104}, {"row": 23, "ringer": 5, "time_between_rings_in_row": 6.068965517241379, "absolute_time_start": 357.5862068965518}, {"row": 23, "ringer": 6, "time_between_rings_in_row": 6.068965517241379, "absolute_time_start": 363.6551724137932}, {"row": 24, "ringer": 1, "time_between_rings_in_row": 6.3965517241379315, "absolute_time_start": 369.7241379310346}, {"row": 24, "ringer": 2, "time_between_rings_in_row": 6.3965517241379315, "absolute_time_start": 376.1206896551725}, {"row": 24, "ringer": 3, "time_between_rings_in_row": 6.3965517241379315, "absolute_time_start": 382.5172413793104}, {"row": 24, "ringer": 4, "time_between_rings_in_row": 6.3965517241379315, "absolute_time_start": 388.9137931034483}, {"row": 24, "ringer": 5, "time_between_rings_in_row": 6.3965517241379315, "absolute_time_start": 395.3103448275862}, {"row": 24, "ringer": 6, "time_between_rings_in_row": 6.3965517241379315, "absolute_time_start": 401.7068965517241}, {"row": 25, "ringer": 1, "time_between_rings_in_row": 6.724137931034482, "absolute_time_start": 408.10344827586204}, {"row": 25, "ringer": 2, "time_between_rings_in_row": 6.724137931034482, "absolute_time_start": 414.8275862068965}, {"row": 25, "ringer": 3, "time_between_rings_in_row": 6.724137931034482, "absolute_time_start": 421.551724137931}, {"row": 25, "ringer": 4, "time_between_rings_in_row": 6.724137931034482, "absolute_time_start": 428.27586206896547}, {"row": 25, "ringer": 5, "time_between_rings_in_row": 6.724137931034482, "absolute_time_start": 434.99999999999994}, {"row": 25, "ringer": 6, "time_between_rings_in_row": 6.724137931034482, "absolute_time_start": 441.7241379310344}, {"row": 26, "ringer": 1, "time_between_rings_in_row": 7.051724137931035, "absolute_time_start": 448.4482758620689}, {"row": 26, "ringer": 2, "time_between_rings_in_row": 7.051724137931035, "absolute_time_start": 455.49999999999994}, {"row": 26, "ringer": 3, "time_between_rings_in_row": 7.051724137931035, "absolute_time_start": 462.551724137931}, {"row": 26, "ringer": 4, "time_between_rings_in_row": 7.051724137931035, "absolute_time_start": 469.60344827586204}, {"row": 26, "ringer": 5, "time_between_rings_in_row": 7.051724137931035, "absolute_time_start": 476.6551724137931}, {"row": 26, "ringer": 6, "time_between_rings_in_row": 7.051724137931035, "absolute_time_start": 483.7068965517241}, {"row": 27, "ringer": 1, "time_between_rings_in_row": 7.379310344827586, "absolute_time_start": 490.7586206896552}, {"row": 27, "ringer": 2, "time_between_rings_in_row": 7.379310344827586, "absolute_time_start": 498.13793103448273}, {"row": 27, "ringer": 3, "time_between_rings_in_row": 7.379310344827586, "absolute_time_start": 505.5172413793103}, {"row": 27, "ringer": 4, "time_between_rings_in_row": 7.379310344827586, "absolute_time_start": 512.8965517241379}, {"row": 27, "ringer": 5, "time_between_rings_in_row": 7.379310344827586, "absolute_time_start": 520.2758620689655}, {"row": 27, "ringer": 6, "time_between_rings_in_row": 7.379310344827586, "absolute_time_start": 527.655172413793}, {"row": 28, "ringer": 1, "time_between_rings_in_row": 7.706896551724138, "absolute_time_start": 535.0344827586206}, {"row": 28, "ringer": 2, "time_between_rings_in_row": 7.706896551724138, "absolute_time_start": 542.7413793103448}, {"row": 28, "ringer": 3, "time_between_rings_in_row": 7.706896551724138, "absolute_time_start": 550.448275862069}, {"row": 28, "ringer": 4, "time_between_rings_in_row": 7.706896551724138, "absolute_time_start": 558.1551724137931}, {"row": 28, "ringer": 5, "time_between_rings_in_row": 7.706896551724138, "absolute_time_start": 565.8620689655173}, {"row": 28, "ringer": 6, "time_between_rings_in_row": 7.706896551724138, "absolute_time_start": 573.5689655172415}, {"row": 29, "ringer": 1, "time_between_rings_in_row": 8.03448275862069, "absolute_time_start": 581.2758620689657}, {"row": 29, "ringer": 2, "time_between_rings_in_row": 8.03448275862069, "absolute_time_start": 589.3103448275864}, {"row": 29, "ringer": 3, "time_between_rings_in_row": 8.03448275862069, "absolute_time_start": 597.3448275862071}, {"row": 29, "ringer": 4, "time_between_rings_in_row": 8.03448275862069, "absolute_time_start": 605.3793103448278}, {"row": 29, "ringer": 5, "time_between_rings_in_row": 8.03448275862069, "absolute_time_start": 613.4137931034485}, {"row": 29, "ringer": 6, "time_between_rings_in_row": 8.03448275862069, "absolute_time_start": 621.4482758620692}, {"row": 30, "ringer": 1, "time_between_rings_in_row": 8.362068965517242, "absolute_time_start": 629.4827586206899}, {"row": 30, "ringer": 2, "time_between_rings_in_row": 8.362068965517242, "absolute_time_start": 637.8448275862071}, {"row": 30, "ringer": 3, "time_between_rings_in_row": 8.362068965517242, "absolute_time_start": 646.2068965517243}, {"row": 30, "ringer": 4, "time_between_rings_in_row": 8.362068965517242, "absolute_time_start": 654.5689655172415}, {"row": 30, "ringer": 5, "time_between_rings_in_row": 8.362068965517242, "absolute_time_start": 662.9310344827587}, {"row": 30, "ringer": 6, "time_between_rings_in_row": 8.362068965517242, "absolute_time_start": 671.2931034482759}, {"row": 31, "ringer": 1, "time_between_rings_in_row": 8.689655172413792, "absolute_time_start": 679.6551724137931}, {"row": 31, "ringer": 2, "time_between_rings_in_row": 8.689655172413792, "absolute_time_start": 688.344827586207}, {"row": 31, "ringer": 3, "time_between_rings_in_row": 8.689655172413792, "absolute_time_start": 697.0344827586208}, {"row": 31, "ringer": 4, "time_between_rings_in_row": 8.689655172413792, "absolute_time_start": 705.7241379310346}, {"row": 31, "ringer": 5, "time_between_rings_in_row": 8.689655172413792, "absolute_time_start": 714.4137931034485}, {"row": 31, "ringer": 6, "time_between_rings_in_row": 8.689655172413792, "absolute_time_start": 723.1034482758623}, {"row": 32, "ringer": 1, "time_between_rings_in_row": 9.017241379310345, "absolute_time_start": 731.7931034482762}, {"row": 32, "ringer": 2, "time_between_rings_in_row": 9.017241379310345, "absolute_time_start": 740.8103448275865}, {"row": 32, "ringer": 3, "time_between_rings_in_row": 9.017241379310345, "absolute_time_start": 749.8275862068969}, {"row": 32, "ringer": 4, "time_between_rings_in_row": 9.017241379310345, "absolute_time_start": 758.8448275862072}, {"row": 32, "ringer": 5, "time_between_rings_in_row": 9.017241379310345, "absolute_time_start": 767.8620689655176}, {"row": 32, "ringer": 6, "time_between_rings_in_row": 9.017241379310345, "absolute_time_start": 776.8793103448279}, {"row": 33, "ringer": 1, "time_between_rings_in_row": 9.344827586206897, "absolute_time_start": 785.8965517241382}, {"row": 33, "ringer": 2, "time_between_rings_in_row": 9.344827586206897, "absolute_time_start": 795.2413793103451}, {"row": 33, "ringer": 3, "time_between_rings_in_row": 9.344827586206897, "absolute_time_start": 804.586206896552}, {"row": 33, "ringer": 4, "time_between_rings_in_row": 9.344827586206897, "absolute_time_start": 813.9310344827588}, {"row": 33, "ringer": 5, "time_between_rings_in_row": 9.344827586206897, "absolute_time_start": 823.2758620689657}, {"row": 33, "ringer": 6, "time_between_rings_in_row": 9.344827586206897, "absolute_time_start": 832.6206896551726}, {"row": 34, "ringer": 1, "time_between_rings_in_row": 9.672413793103448, "absolute_time_start": 841.9655172413794}, {"row": 34, "ringer": 2, "time_between_rings_in_row": 9.672413793103448, "absolute_time_start": 851.6379310344829}, {"row": 34, "ringer": 3, "time_between_rings_in_row": 9.672413793103448, "absolute_time_start": 861.3103448275864}, {"row": 34, "ringer": 4, "time_between_rings_in_row": 9.672413793103448, "absolute_time_start": 870.9827586206899}, {"row": 34, "ringer": 5, "time_between_rings_in_row": 9.672413793103448, "absolute_time_start": 880.6551724137934}, {"row": 34, "ringer": 6, "time_between_rings_in_row": 9.672413793103448, "absolute_time_start": 890.3275862068969}, {"row": 35, "ringer": 1, "time_between_rings_in_row": 10.0, "absolute_time_start": 900.0000000000003}, {"row": 35, "ringer": 2, "time_between_rings_in_row": 10.0, "absolute_time_start": 910.0000000000003}, {"row": 35, "ringer": 3, "time_between_rings_in_row": 10.0, "absolute_time_start": 920.0000000000003}, {"row": 35, "ringer": 4, "time_between_rings_in_row": 10.0, "absolute_time_start": 930.0000000000003}, {"row": 35, "ringer": 5, "time_between_rings_in_row": 10.0, "absolute_time_start": 940.0000000000003}, {"row": 35, "ringer": 6, "time_between_rings_in_row": 10.0, "absolute_time_start": 950.0000000000003}, {"row": 36, "ringer": 1, "time_between_rings_in_row": 10.0, "absolute_time_start": 960.0000000000003}, {"row": 36, "ringer": 2, "time_between_rings_in_row": 10.0, "absolute_time_start": 970.0000000000003}, {"row": 36, "ringer": 3, "time_between_rings_in_row": 10.0, "absolute_time_start": 980.0000000000003}, {"row": 36, "ringer": 4, "time_between_rings_in_row": 10.0, "absolute_time_start": 990.0000000000003}, {"row": 36, "ringer": 5, "time_between_rings_in_row": 10.0, "absolute_time_start": 1000.0000000000003}, {"row": 36, "ringer": 6, "time_between_rings_in_row": 10.0, "absolute_time_start": 1010.0000000000003}, {"row": 37, "ringer": 1, "time_between_rings_in_row": 10.0, "absolute_time_start": 1020.0000000000003}, {"row": 37, "ringer": 2, "time_between_rings_in_row": 10.0, "absolute_time_start": 1030.0000000000005}, {"row": 37, "ringer": 3, "time_between_rings_in_row": 10.0, "absolute_time_start": 1040.0000000000005}, {"row": 37, "ringer": 4, "time_between_rings_in_row": 10.0, "absolute_time_start": 1050.0000000000005}, {"row": 37, "ringer": 5, "time_between_rings_in_row": 10.0, "absolute_time_start": 1060.0000000000005}, {"row": 37, "ringer": 6, "time_between_rings_in_row": 10.0, "absolute_time_start": 1070.0000000000005}, {"row": 38, "ringer": 1, "time_between_rings_in_row": 10.0, "absolute_time_start": 1080.0000000000005}, {"row": 38, "ringer": 2, "time_between_rings_in_row": 10.0, "absolute_time_start": 1090.0000000000005}, {"row": 38, "ringer": 3, "time_between_rings_in_row": 10.0, "absolute_time_start": 1100.0000000000005}, {"row": 38, "ringer": 4, "time_between_rings_in_row": 10.0, "absolute_time_start": 1110.0000000000005}, {"row": 38, "ringer": 5, "time_between_rings_in_row": 10.0, "absolute_time_start": 1120.0000000000005}, {"row": 38, "ringer": 6, "time_between_rings_in_row": 10.0, "absolute_time_start": 1130.0000000000005}, {"row": 39, "ringer": 1, "time_between_rings_in_row": 10.0, "absolute_time_start": 1140.0000000000005}, {"row": 39, "ringer": 2, "time_between_rings_in_row": 10.0, "absolute_time_start": 1150.0000000000005}, {"row": 39, "ringer": 3, "time_between_rings_in_row": 10.0, "absolute_time_start": 1160.0000000000005}, {"row": 39, "ringer": 4, "time_between_rings_in_row": 10.0, "absolute_time_start": 1170.0000000000005}, {"row": 39, "ringer": 5, "time_between_rings_in_row": 10.0, "absolute_time_start": 1180.0000000000005}, {"row": 39, "ringer": 6, "time_between_rings_in_row": 10.0, "absolute_time_start": 1190.0000000000005}, {"row": 40, "ringer": 1, "time_between_rings_in_row": 10.0, "absolute_time_start": 1200.0000000000005}, {"row": 40, "ringer": 2, "time_between_rings_in_row": 10.0, "absolute_time_start": 1210.0000000000005}, {"row": 40, "ringer": 3, "time_between_rings_in_row": 10.0, "absolute_time_start": 1220.0000000000005}, {"row": 40, "ringer": 4, "time_between_rings_in_row": 10.0, "absolute_time_start": 1230.0000000000005}, {"row": 40, "ringer": 5, "time_between_rings_in_row": 10.0, "absolute_time_start": 1240.0000000000005}, {"row": 40, "ringer": 6, "time_between_rings_in_row": 10.0, "absolute_time_start": 1250.0000000000005}]; // Global variable to hold current data
-            let currentTotalDuration = 1250.0000000000005; // Global variable to hold current duration
+            let currentTimelineData = [{"row": 1, "ringer": 1, "position_in_row": 1, "time_between_rings_in_row": 0.5, "absolute_time_start": 0.0}, {"row": 1, "ringer": 2, "position_in_row": 2, "time_between_rings_in_row": 0.5, "absolute_time_start": 0.5}, {"row": 1, "ringer": 3, "position_in_row": 3, "time_between_rings_in_row": 0.5, "absolute_time_start": 1.0}, {"row": 1, "ringer": 4, "position_in_row": 4, "time_between_rings_in_row": 0.5, "absolute_time_start": 1.5}, {"row": 1, "ringer": 5, "position_in_row": 5, "time_between_rings_in_row": 0.5, "absolute_time_start": 2.0}, {"row": 1, "ringer": 6, "position_in_row": 6, "time_between_rings_in_row": 0.5, "absolute_time_start": 2.5}, {"row": 2, "ringer": 2, "position_in_row": 1, "time_between_rings_in_row": 1.4500000000000002, "absolute_time_start": 3.0}, {"row": 2, "ringer": 1, "position_in_row": 2, "time_between_rings_in_row": 1.4500000000000002, "absolute_time_start": 4.45}, {"row": 2, "ringer": 4, "position_in_row": 3, "time_between_rings_in_row": 1.4500000000000002, "absolute_time_start": 5.9}, {"row": 2, "ringer": 3, "position_in_row": 4, "time_between_rings_in_row": 1.4500000000000002, "absolute_time_start": 7.3500000000000005}, {"row": 2, "ringer": 5, "position_in_row": 5, "time_between_rings_in_row": 1.4500000000000002, "absolute_time_start": 8.8}, {"row": 2, "ringer": 6, "position_in_row": 6, "time_between_rings_in_row": 1.4500000000000002, "absolute_time_start": 10.25}, {"row": 3, "ringer": 2, "position_in_row": 1, "time_between_rings_in_row": 2.4000000000000004, "absolute_time_start": 11.7}, {"row": 3, "ringer": 4, "position_in_row": 2, "time_between_rings_in_row": 2.4000000000000004, "absolute_time_start": 14.1}, {"row": 3, "ringer": 1, "position_in_row": 3, "time_between_rings_in_row": 2.4000000000000004, "absolute_time_start": 16.5}, {"row": 3, "ringer": 5, "position_in_row": 4, "time_between_rings_in_row": 2.4000000000000004, "absolute_time_start": 18.9}, {"row": 3, "ringer": 3, "position_in_row": 5, "time_between_rings_in_row": 2.4000000000000004, "absolute_time_start": 21.299999999999997}, {"row": 3, "ringer": 6, "position_in_row": 6, "time_between_rings_in_row": 2.4000000000000004, "absolute_time_start": 23.699999999999996}, {"row": 4, "ringer": 4, "position_in_row": 1, "time_between_rings_in_row": 3.35, "absolute_time_start": 26.099999999999994}, {"row": 4, "ringer": 2, "position_in_row": 2, "time_between_rings_in_row": 3.35, "absolute_time_start": 29.449999999999996}, {"row": 4, "ringer": 5, "position_in_row": 3, "time_between_rings_in_row": 3.35, "absolute_time_start": 32.8}, {"row": 4, "ringer": 1, "position_in_row": 4, "time_between_rings_in_row": 3.35, "absolute_time_start": 36.15}, {"row": 4, "ringer": 3, "position_in_row": 5, "time_between_rings_in_row": 3.35, "absolute_time_start": 39.5}, {"row": 4, "ringer": 6, "position_in_row": 6, "time_between_rings_in_row": 3.35, "absolute_time_start": 42.85}, {"row": 5, "ringer": 4, "position_in_row": 1, "time_between_rings_in_row": 4.300000000000001, "absolute_time_start": 46.2}, {"row": 5, "ringer": 5, "position_in_row": 2, "time_between_rings_in_row": 4.300000000000001, "absolute_time_start": 50.5}, {"row": 5, "ringer": 2, "position_in_row": 3, "time_between_rings_in_row": 4.300000000000001, "absolute_time_start": 54.8}, {"row": 5, "ringer": 3, "position_in_row": 4, "time_between_rings_in_row": 4.300000000000001, "absolute_time_start": 59.099999999999994}, {"row": 5, "ringer": 1, "position_in_row": 5, "time_between_rings_in_row": 4.300000000000001, "absolute_time_start": 63.39999999999999}, {"row": 5, "ringer": 6, "position_in_row": 6, "time_between_rings_in_row": 4.300000000000001, "absolute_time_start": 67.69999999999999}, {"row": 6, "ringer": 5, "position_in_row": 1, "time_between_rings_in_row": 5.25, "absolute_time_start": 71.99999999999999}, {"row": 6, "ringer": 4, "position_in_row": 2, "time_between_rings_in_row": 5.25, "absolute_time_start": 77.24999999999999}, {"row": 6, "ringer": 3, "position_in_row": 3, "time_between_rings_in_row": 5.25, "absolute_time_start": 82.49999999999999}, {"row": 6, "ringer": 2, "position_in_row": 4, "time_between_rings_in_row": 5.25, "absolute_time_start": 87.74999999999999}, {"row": 6, "ringer": 1, "position_in_row": 5, "time_between_rings_in_row": 5.25, "absolute_time_start": 92.99999999999999}, {"row": 6, "ringer": 6, "position_in_row": 6, "time_between_rings_in_row": 5.25, "absolute_time_start": 98.24999999999999}, {"row": 7, "ringer": 5, "position_in_row": 1, "time_between_rings_in_row": 6.2, "absolute_time_start": 103.49999999999999}, {"row": 7, "ringer": 3, "position_in_row": 2, "time_between_rings_in_row": 6.2, "absolute_time_start": 109.69999999999999}, {"row": 7, "ringer": 4, "position_in_row": 3, "time_between_rings_in_row": 6.2, "absolute_time_start": 115.89999999999999}, {"row": 7, "ringer": 1, "position_in_row": 4, "time_between_rings_in_row": 6.2, "absolute_time_start": 122.1}, {"row": 7, "ringer": 2, "position_in_row": 5, "time_between_rings_in_row": 6.2, "absolute_time_start": 128.29999999999998}, {"row": 7, "ringer": 6, "position_in_row": 6, "time_between_rings_in_row": 6.2, "absolute_time_start": 134.49999999999997}, {"row": 8, "ringer": 3, "position_in_row": 1, "time_between_rings_in_row": 7.1499999999999995, "absolute_time_start": 140.69999999999996}, {"row": 8, "ringer": 5, "position_in_row": 2, "time_between_rings_in_row": 7.1499999999999995, "absolute_time_start": 147.84999999999997}, {"row": 8, "ringer": 1, "position_in_row": 3, "time_between_rings_in_row": 7.1499999999999995, "absolute_time_start": 154.99999999999997}, {"row": 8, "ringer": 4, "position_in_row": 4, "time_between_rings_in_row": 7.1499999999999995, "absolute_time_start": 162.14999999999998}, {"row": 8, "ringer": 2, "position_in_row": 5, "time_between_rings_in_row": 7.1499999999999995, "absolute_time_start": 169.29999999999998}, {"row": 8, "ringer": 6, "position_in_row": 6, "time_between_rings_in_row": 7.1499999999999995, "absolute_time_start": 176.45}, {"row": 9, "ringer": 3, "position_in_row": 1, "time_between_rings_in_row": 8.100000000000001, "absolute_time_start": 183.6}, {"row": 9, "ringer": 1, "position_in_row": 2, "time_between_rings_in_row": 8.100000000000001, "absolute_time_start": 191.7}, {"row": 9, "ringer": 5, "position_in_row": 3, "time_between_rings_in_row": 8.100000000000001, "absolute_time_start": 199.79999999999998}, {"row": 9, "ringer": 2, "position_in_row": 4, "time_between_rings_in_row": 8.100000000000001, "absolute_time_start": 207.89999999999998}, {"row": 9, "ringer": 4, "position_in_row": 5, "time_between_rings_in_row": 8.100000000000001, "absolute_time_start": 215.99999999999997}, {"row": 9, "ringer": 6, "position_in_row": 6, "time_between_rings_in_row": 8.100000000000001, "absolute_time_start": 224.09999999999997}, {"row": 10, "ringer": 1, "position_in_row": 1, "time_between_rings_in_row": 9.05, "absolute_time_start": 232.19999999999996}, {"row": 10, "ringer": 3, "position_in_row": 2, "time_between_rings_in_row": 9.05, "absolute_time_start": 241.24999999999997}, {"row": 10, "ringer": 2, "position_in_row": 3, "time_between_rings_in_row": 9.05, "absolute_time_start": 250.29999999999998}, {"row": 10, "ringer": 5, "position_in_row": 4, "time_between_rings_in_row": 9.05, "absolute_time_start": 259.34999999999997}, {"row": 10, "ringer": 4, "position_in_row": 5, "time_between_rings_in_row": 9.05, "absolute_time_start": 268.4}, {"row": 10, "ringer": 6, "position_in_row": 6, "time_between_rings_in_row": 9.05, "absolute_time_start": 277.45}, {"row": 11, "ringer": 1, "position_in_row": 1, "time_between_rings_in_row": 10.0, "absolute_time_start": 286.5}, {"row": 11, "ringer": 2, "position_in_row": 2, "time_between_rings_in_row": 10.0, "absolute_time_start": 296.5}, {"row": 11, "ringer": 3, "position_in_row": 3, "time_between_rings_in_row": 10.0, "absolute_time_start": 306.5}, {"row": 11, "ringer": 4, "position_in_row": 4, "time_between_rings_in_row": 10.0, "absolute_time_start": 316.5}, {"row": 11, "ringer": 5, "position_in_row": 5, "time_between_rings_in_row": 10.0, "absolute_time_start": 326.5}, {"row": 11, "ringer": 6, "position_in_row": 6, "time_between_rings_in_row": 10.0, "absolute_time_start": 336.5}]; // Global variable to hold current data
+            let currentTotalDuration = 336.5; // Global variable to hold current duration
+            let currentMethodData = [[1, 2, 3, 4, 5, 6], [2, 1, 4, 3, 5, 6], [2, 4, 1, 5, 3, 6], [4, 2, 5, 1, 3, 6], [4, 5, 2, 3, 1, 6], [5, 4, 3, 2, 1, 6], [5, 3, 4, 1, 2, 6], [3, 5, 1, 4, 2, 6], [3, 1, 5, 2, 4, 6], [1, 3, 2, 5, 4, 6], [1, 2, 3, 4, 5, 6]]; // Global variable to hold current method data (parsed from Python)
 
-            function renderTimeline(timelineData, totalDuration) {
+            function parseMethodInput(methodText) {
+                const rows = methodText.trim().split('\n');
+                if (rows.length === 0 || (rows.length === 1 && rows[0].trim() === '')) {
+                    return []; // Return empty if no valid input
+                }
+                const parsedMethod = rows.map(row => {
+                    return row.trim().split(/\s+/).filter(Boolean).map(Number); // Split by space, filter empty strings, convert to numbers
+                }).filter(row => row.length > 0); // Remove any completely empty rows
+
+                // Basic validation: ensure all rows have the same number of ringers
+                if (parsedMethod.length > 1) {
+                    const firstRowRingerCount = parsedMethod[0].length;
+                    for (let i = 1; i < parsedMethod.length; i++) {
+                        if (parsedMethod[i].length !== firstRowRingerCount) {
+                            console.warn("Method input error: Rows have inconsistent number of ringers. Proceeding with first row count.");
+                            // For simplicity, we'll proceed but this might cause unexpected behavior
+                            // A more robust solution might truncate or pad rows, or block calculation.
+                        }
+                    }
+                }
+                return parsedMethod;
+            }
+
+            function renderTimeline(timelineData, totalDuration, detectedNumRingers, detectedTotalRows) {
                 const container = document.getElementById('timeline-container');
                 container.innerHTML = ''; // Clear previous timeline
                 const totalHeight = totalDuration * 10; // Scale: 10 pixels per second (adjust as needed)
                 container.style.height = Math.max(600, totalHeight + 50) + 'px'; // Ensure minimum height and expand with duration
 
-                // Display total duration
+                // Display summary info
                 document.getElementById('totalDurationDisplay').textContent = formatTime(totalDuration);
+                document.getElementById('detectedNumRingers').textContent = detectedNumRingers;
+                document.getElementById('detectedTotalRows').textContent = detectedTotalRows;
 
                 timelineData.forEach(event => {
                     const eventDiv = document.createElement('div');
@@ -139,12 +191,13 @@
                     // Position based on absolute_time_start
                     eventDiv.style.top = (event.absolute_time_start * 10) + 'px'; // 10px per second scaling
 
-                    // Content of the event
+                    // Content of the event: Now uses actual ringer number and position in row
                     eventDiv.innerHTML = `
-                        Row: ${event.row}, Ringer: ${event.ringer}
+                        Row: ${event.row}, Ringer: ${event.ringer} (#${event.position_in_row})
                         <div class="tooltip">
                             Time in Row: ${event.time_between_rings_in_row.toFixed(2)}s<br>
-                            Abs. Start: ${formatTime(event.absolute_time_start)}
+                            Abs. Start: ${formatTime(event.absolute_time_start)}<br>
+                            Position in Row: ${event.position_in_row}
                         </div>
                     `;
                     container.appendChild(eventDiv);
@@ -152,18 +205,36 @@
             }
 
             function updateTimeline() {
-                const numRingers = parseInt(document.getElementById('numRingers').value);
                 const initialTimePerRing = parseFloat(document.getElementById('initialTimePerRing').value);
-                const totalRows = parseInt(document.getElementById('totalRows').value);
                 const finalTimePerRing = parseFloat(document.getElementById('finalTimePerRing').value);
                 const ignoreFirstNRows = parseInt(document.getElementById('ignoreFirstNRows').value);
                 const ignoreLastNRows = parseInt(document.getElementById('ignoreLastNRows').value);
                 const curveType = document.getElementById('curveType').value;
+                const methodTextInput = document.getElementById('methodInput').value;
+
+                let numRingers;
+                let totalRows;
+                let methodData = parseMethodInput(methodTextInput);
+
+                const numRingersInput = document.getElementById('numRingers');
+                const totalRowsInput = document.getElementById('totalRows');
+
+                if (methodData.length > 0 && methodData[0].length > 0) {
+                    totalRows = methodData.length;
+                    numRingers = methodData[0].length;
+                    numRingersInput.disabled = true;
+                    totalRowsInput.disabled = true;
+                } else {
+                    numRingers = parseInt(numRingersInput.value) || 6;
+                    totalRows = parseInt(totalRowsInput.value) || 40;
+                    numRingersInput.disabled = false;
+                    totalRowsInput.disabled = false;
+                    methodData = []; // Ensure empty if not parsed
+                }
 
                 let newTimeline = [];
                 let currentAbsoluteTime = 0.0;
 
-                // Ensure valid 'n' values
                 let actualIgnoreFirstNRows = Math.max(0, ignoreFirstNRows);
                 let actualIgnoreLastNRows = Math.max(0, ignoreLastNRows);
 
@@ -177,7 +248,8 @@
 
                 const timeRange = finalTimePerRing - initialTimePerRing;
 
-                for (let rowNumber = 1; rowNumber <= totalRows; rowNumber++) {
+                for (let rowIdx = 0; rowIdx < totalRows; rowIdx++) {
+                    let rowNumber = rowIdx + 1; // 1-indexed row number
                     let currentRowTimePerRing;
 
                     if (rowNumber <= actualIgnoreFirstNRows) {
@@ -185,17 +257,14 @@
                     } else if (rowNumber > (totalRows - actualIgnoreLastNRows)) {
                         currentRowTimePerRing = finalTimePerRing;
                     } else {
-                        // Calculate progress within the active rows
-                        const progressInActiveRows = (rowNumber - 1) - actualIgnoreFirstNRows;
+                        const progressInActiveRows = rowIdx - actualIgnoreFirstNRows;
 
-                        // Normalize this progress to a 0-1 range for the curve function
                         let normalizedProgress;
                         if (activeRows > 1) {
                             normalizedProgress = progressInActiveRows / (activeRows - 1);
                         } else {
                             normalizedProgress = 0;
                         }
-
 
                         let progressOnCurve;
                         if (curveType === "ease_out_expo") {
@@ -211,16 +280,22 @@
                         currentRowTimePerRing = initialTimePerRing + (timeRange * progressOnCurve);
                     }
 
-                    for (let ringerIndex = 1; ringerIndex <= numRingers; ringerIndex++) {
+                    let currentRingersInOrder = methodData[rowIdx] || Array.from({length: numRingers}, (_, i) => i + 1);
+
+                    // NEW: Add position_in_row
+                    currentRingersInOrder.forEach((ringer, index) => {
+                        const position_in_row = index + 1; // 1-indexed position
                         newTimeline.push({
                             row: rowNumber,
-                            ringer: ringerIndex,
+                            ringer: ringer,
+                            position_in_row: position_in_row, // New field
                             time_between_rings_in_row: currentRowTimePerRing,
                             absolute_time_start: currentAbsoluteTime
                         });
                         currentAbsoluteTime += currentRowTimePerRing;
-                    }
+                    });
                 }
+
                 let newTotalDuration = currentAbsoluteTime;
                 if (newTimeline.length > 0) {
                     newTotalDuration = currentAbsoluteTime - newTimeline[newTimeline.length - 1].time_between_rings_in_row;
@@ -228,14 +303,35 @@
                     newTotalDuration = 0;
                 }
 
-                currentTimelineData = newTimeline; // Update global variable
-                currentTotalDuration = newTotalDuration; // Update global variable
-                renderTimeline(currentTimelineData, currentTotalDuration);
+                currentTimelineData = newTimeline;
+                currentTotalDuration = newTotalDuration;
+                currentMethodData = methodData;
+
+                renderTimeline(currentTimelineData, currentTotalDuration, numRingers, totalRows);
             }
 
-            // NEW FUNCTION: Export timeline data to JSON
             function exportToJson() {
-                const dataStr = JSON.stringify(currentTimelineData, null, 2); // Pretty print JSON
+                const exportData = {
+                    parameters: {
+                        numRingers: parseInt(document.getElementById('numRingers').value),
+                        initialTimePerRing: parseFloat(document.getElementById('initialTimePerRing').value),
+                        totalRows: parseInt(document.getElementById('totalRows').value),
+                        finalTimePerRing: parseFloat(document.getElementById('finalTimePerRing').value),
+                        ignoreFirstNRows: parseInt(document.getElementById('ignoreFirstNRows').value),
+                        ignoreLastNRows: parseInt(document.getElementById('ignoreLastNRows').value),
+                        curveType: document.getElementById('curveType').value,
+                        methodText: document.getElementById('methodInput').value
+                    },
+                    summary: {
+                        totalDuration: currentTotalDuration,
+                        detectedNumRingers: parseInt(document.getElementById('detectedNumRingers').textContent),
+                        detectedTotalRows: parseInt(document.getElementById('detectedTotalRows').textContent)
+                    },
+                    methodDataParsed: currentMethodData,
+                    timeline: currentTimelineData
+                };
+
+                const dataStr = JSON.stringify(exportData, null, 2);
                 const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
 
                 const exportFileDefaultName = 'bell_ringing_timeline.json';
@@ -243,14 +339,13 @@
                 const linkElement = document.createElement('a');
                 linkElement.setAttribute('href', dataUri);
                 linkElement.setAttribute('download', exportFileDefaultName);
-                linkElement.click(); // Programmatically click the link to trigger download
-                linkElement.remove(); // Clean up the temporary link
+                linkElement.click();
+                linkElement.remove();
             }
-
 
             // Initial render
             document.addEventListener('DOMContentLoaded', () => {
-                renderTimeline(currentTimelineData, currentTotalDuration);
+                updateTimeline();
             });
         </script>
     </body>

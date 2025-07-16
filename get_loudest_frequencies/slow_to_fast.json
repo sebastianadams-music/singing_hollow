@@ -1,0 +1,571 @@
+{
+  "parameters": {
+    "numRingers": 6,
+    "initialTimePerRing": 30,
+    "totalRows": 11,
+    "finalTimePerRing": 3,
+    "ignoreFirstNRows": 0,
+    "ignoreLastNRows": 0,
+    "curveType": "ease_in_quad",
+    "methodText": "1 2 3 4 5 6\n2 1 4 3 5 6\n2 4 1 5 3 6\n4 2 5 1 3 6\n4 5 2 3 1 6\n5 4 3 2 1 6\n5 3 4 1 2 6\n3 5 1 4 2 6\n3 1 5 2 4 6\n1 3 2 5 4 6\n1 2 3 4 5 6"
+  },
+  "summary": {
+    "totalDuration": 1353.3000000000006,
+    "detectedNumRingers": 6,
+    "detectedTotalRows": 11
+  },
+  "methodDataParsed": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    [
+      2,
+      1,
+      4,
+      3,
+      5,
+      6
+    ],
+    [
+      2,
+      4,
+      1,
+      5,
+      3,
+      6
+    ],
+    [
+      4,
+      2,
+      5,
+      1,
+      3,
+      6
+    ],
+    [
+      4,
+      5,
+      2,
+      3,
+      1,
+      6
+    ],
+    [
+      5,
+      4,
+      3,
+      2,
+      1,
+      6
+    ],
+    [
+      5,
+      3,
+      4,
+      1,
+      2,
+      6
+    ],
+    [
+      3,
+      5,
+      1,
+      4,
+      2,
+      6
+    ],
+    [
+      3,
+      1,
+      5,
+      2,
+      4,
+      6
+    ],
+    [
+      1,
+      3,
+      2,
+      5,
+      4,
+      6
+    ],
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ]
+  ],
+  "timeline": [
+    {
+      "row": 1,
+      "ringer": 1,
+      "position_in_row": 1,
+      "time_between_rings_in_row": 30,
+      "absolute_time_start": 0
+    },
+    {
+      "row": 1,
+      "ringer": 2,
+      "position_in_row": 2,
+      "time_between_rings_in_row": 30,
+      "absolute_time_start": 30
+    },
+    {
+      "row": 1,
+      "ringer": 3,
+      "position_in_row": 3,
+      "time_between_rings_in_row": 30,
+      "absolute_time_start": 60
+    },
+    {
+      "row": 1,
+      "ringer": 4,
+      "position_in_row": 4,
+      "time_between_rings_in_row": 30,
+      "absolute_time_start": 90
+    },
+    {
+      "row": 1,
+      "ringer": 5,
+      "position_in_row": 5,
+      "time_between_rings_in_row": 30,
+      "absolute_time_start": 120
+    },
+    {
+      "row": 1,
+      "ringer": 6,
+      "position_in_row": 6,
+      "time_between_rings_in_row": 30,
+      "absolute_time_start": 150
+    },
+    {
+      "row": 2,
+      "ringer": 2,
+      "position_in_row": 1,
+      "time_between_rings_in_row": 29.73,
+      "absolute_time_start": 180
+    },
+    {
+      "row": 2,
+      "ringer": 1,
+      "position_in_row": 2,
+      "time_between_rings_in_row": 29.73,
+      "absolute_time_start": 209.73
+    },
+    {
+      "row": 2,
+      "ringer": 4,
+      "position_in_row": 3,
+      "time_between_rings_in_row": 29.73,
+      "absolute_time_start": 239.45999999999998
+    },
+    {
+      "row": 2,
+      "ringer": 3,
+      "position_in_row": 4,
+      "time_between_rings_in_row": 29.73,
+      "absolute_time_start": 269.19
+    },
+    {
+      "row": 2,
+      "ringer": 5,
+      "position_in_row": 5,
+      "time_between_rings_in_row": 29.73,
+      "absolute_time_start": 298.92
+    },
+    {
+      "row": 2,
+      "ringer": 6,
+      "position_in_row": 6,
+      "time_between_rings_in_row": 29.73,
+      "absolute_time_start": 328.65000000000003
+    },
+    {
+      "row": 3,
+      "ringer": 2,
+      "position_in_row": 1,
+      "time_between_rings_in_row": 28.919999999999998,
+      "absolute_time_start": 358.38000000000005
+    },
+    {
+      "row": 3,
+      "ringer": 4,
+      "position_in_row": 2,
+      "time_between_rings_in_row": 28.919999999999998,
+      "absolute_time_start": 387.30000000000007
+    },
+    {
+      "row": 3,
+      "ringer": 1,
+      "position_in_row": 3,
+      "time_between_rings_in_row": 28.919999999999998,
+      "absolute_time_start": 416.2200000000001
+    },
+    {
+      "row": 3,
+      "ringer": 5,
+      "position_in_row": 4,
+      "time_between_rings_in_row": 28.919999999999998,
+      "absolute_time_start": 445.1400000000001
+    },
+    {
+      "row": 3,
+      "ringer": 3,
+      "position_in_row": 5,
+      "time_between_rings_in_row": 28.919999999999998,
+      "absolute_time_start": 474.0600000000001
+    },
+    {
+      "row": 3,
+      "ringer": 6,
+      "position_in_row": 6,
+      "time_between_rings_in_row": 28.919999999999998,
+      "absolute_time_start": 502.98000000000013
+    },
+    {
+      "row": 4,
+      "ringer": 4,
+      "position_in_row": 1,
+      "time_between_rings_in_row": 27.57,
+      "absolute_time_start": 531.9000000000001
+    },
+    {
+      "row": 4,
+      "ringer": 2,
+      "position_in_row": 2,
+      "time_between_rings_in_row": 27.57,
+      "absolute_time_start": 559.4700000000001
+    },
+    {
+      "row": 4,
+      "ringer": 5,
+      "position_in_row": 3,
+      "time_between_rings_in_row": 27.57,
+      "absolute_time_start": 587.0400000000002
+    },
+    {
+      "row": 4,
+      "ringer": 1,
+      "position_in_row": 4,
+      "time_between_rings_in_row": 27.57,
+      "absolute_time_start": 614.6100000000002
+    },
+    {
+      "row": 4,
+      "ringer": 3,
+      "position_in_row": 5,
+      "time_between_rings_in_row": 27.57,
+      "absolute_time_start": 642.1800000000003
+    },
+    {
+      "row": 4,
+      "ringer": 6,
+      "position_in_row": 6,
+      "time_between_rings_in_row": 27.57,
+      "absolute_time_start": 669.7500000000003
+    },
+    {
+      "row": 5,
+      "ringer": 4,
+      "position_in_row": 1,
+      "time_between_rings_in_row": 25.68,
+      "absolute_time_start": 697.3200000000004
+    },
+    {
+      "row": 5,
+      "ringer": 5,
+      "position_in_row": 2,
+      "time_between_rings_in_row": 25.68,
+      "absolute_time_start": 723.0000000000003
+    },
+    {
+      "row": 5,
+      "ringer": 2,
+      "position_in_row": 3,
+      "time_between_rings_in_row": 25.68,
+      "absolute_time_start": 748.6800000000003
+    },
+    {
+      "row": 5,
+      "ringer": 3,
+      "position_in_row": 4,
+      "time_between_rings_in_row": 25.68,
+      "absolute_time_start": 774.3600000000002
+    },
+    {
+      "row": 5,
+      "ringer": 1,
+      "position_in_row": 5,
+      "time_between_rings_in_row": 25.68,
+      "absolute_time_start": 800.0400000000002
+    },
+    {
+      "row": 5,
+      "ringer": 6,
+      "position_in_row": 6,
+      "time_between_rings_in_row": 25.68,
+      "absolute_time_start": 825.7200000000001
+    },
+    {
+      "row": 6,
+      "ringer": 5,
+      "position_in_row": 1,
+      "time_between_rings_in_row": 23.25,
+      "absolute_time_start": 851.4000000000001
+    },
+    {
+      "row": 6,
+      "ringer": 4,
+      "position_in_row": 2,
+      "time_between_rings_in_row": 23.25,
+      "absolute_time_start": 874.6500000000001
+    },
+    {
+      "row": 6,
+      "ringer": 3,
+      "position_in_row": 3,
+      "time_between_rings_in_row": 23.25,
+      "absolute_time_start": 897.9000000000001
+    },
+    {
+      "row": 6,
+      "ringer": 2,
+      "position_in_row": 4,
+      "time_between_rings_in_row": 23.25,
+      "absolute_time_start": 921.1500000000001
+    },
+    {
+      "row": 6,
+      "ringer": 1,
+      "position_in_row": 5,
+      "time_between_rings_in_row": 23.25,
+      "absolute_time_start": 944.4000000000001
+    },
+    {
+      "row": 6,
+      "ringer": 6,
+      "position_in_row": 6,
+      "time_between_rings_in_row": 23.25,
+      "absolute_time_start": 967.6500000000001
+    },
+    {
+      "row": 7,
+      "ringer": 5,
+      "position_in_row": 1,
+      "time_between_rings_in_row": 20.28,
+      "absolute_time_start": 990.9000000000001
+    },
+    {
+      "row": 7,
+      "ringer": 3,
+      "position_in_row": 2,
+      "time_between_rings_in_row": 20.28,
+      "absolute_time_start": 1011.1800000000001
+    },
+    {
+      "row": 7,
+      "ringer": 4,
+      "position_in_row": 3,
+      "time_between_rings_in_row": 20.28,
+      "absolute_time_start": 1031.46
+    },
+    {
+      "row": 7,
+      "ringer": 1,
+      "position_in_row": 4,
+      "time_between_rings_in_row": 20.28,
+      "absolute_time_start": 1051.74
+    },
+    {
+      "row": 7,
+      "ringer": 2,
+      "position_in_row": 5,
+      "time_between_rings_in_row": 20.28,
+      "absolute_time_start": 1072.02
+    },
+    {
+      "row": 7,
+      "ringer": 6,
+      "position_in_row": 6,
+      "time_between_rings_in_row": 20.28,
+      "absolute_time_start": 1092.3
+    },
+    {
+      "row": 8,
+      "ringer": 3,
+      "position_in_row": 1,
+      "time_between_rings_in_row": 16.770000000000003,
+      "absolute_time_start": 1112.58
+    },
+    {
+      "row": 8,
+      "ringer": 5,
+      "position_in_row": 2,
+      "time_between_rings_in_row": 16.770000000000003,
+      "absolute_time_start": 1129.35
+    },
+    {
+      "row": 8,
+      "ringer": 1,
+      "position_in_row": 3,
+      "time_between_rings_in_row": 16.770000000000003,
+      "absolute_time_start": 1146.12
+    },
+    {
+      "row": 8,
+      "ringer": 4,
+      "position_in_row": 4,
+      "time_between_rings_in_row": 16.770000000000003,
+      "absolute_time_start": 1162.8899999999999
+    },
+    {
+      "row": 8,
+      "ringer": 2,
+      "position_in_row": 5,
+      "time_between_rings_in_row": 16.770000000000003,
+      "absolute_time_start": 1179.6599999999999
+    },
+    {
+      "row": 8,
+      "ringer": 6,
+      "position_in_row": 6,
+      "time_between_rings_in_row": 16.770000000000003,
+      "absolute_time_start": 1196.4299999999998
+    },
+    {
+      "row": 9,
+      "ringer": 3,
+      "position_in_row": 1,
+      "time_between_rings_in_row": 12.719999999999995,
+      "absolute_time_start": 1213.1999999999998
+    },
+    {
+      "row": 9,
+      "ringer": 1,
+      "position_in_row": 2,
+      "time_between_rings_in_row": 12.719999999999995,
+      "absolute_time_start": 1225.9199999999998
+    },
+    {
+      "row": 9,
+      "ringer": 5,
+      "position_in_row": 3,
+      "time_between_rings_in_row": 12.719999999999995,
+      "absolute_time_start": 1238.6399999999999
+    },
+    {
+      "row": 9,
+      "ringer": 2,
+      "position_in_row": 4,
+      "time_between_rings_in_row": 12.719999999999995,
+      "absolute_time_start": 1251.36
+    },
+    {
+      "row": 9,
+      "ringer": 4,
+      "position_in_row": 5,
+      "time_between_rings_in_row": 12.719999999999995,
+      "absolute_time_start": 1264.08
+    },
+    {
+      "row": 9,
+      "ringer": 6,
+      "position_in_row": 6,
+      "time_between_rings_in_row": 12.719999999999995,
+      "absolute_time_start": 1276.8
+    },
+    {
+      "row": 10,
+      "ringer": 1,
+      "position_in_row": 1,
+      "time_between_rings_in_row": 8.129999999999999,
+      "absolute_time_start": 1289.52
+    },
+    {
+      "row": 10,
+      "ringer": 3,
+      "position_in_row": 2,
+      "time_between_rings_in_row": 8.129999999999999,
+      "absolute_time_start": 1297.65
+    },
+    {
+      "row": 10,
+      "ringer": 2,
+      "position_in_row": 3,
+      "time_between_rings_in_row": 8.129999999999999,
+      "absolute_time_start": 1305.7800000000002
+    },
+    {
+      "row": 10,
+      "ringer": 5,
+      "position_in_row": 4,
+      "time_between_rings_in_row": 8.129999999999999,
+      "absolute_time_start": 1313.9100000000003
+    },
+    {
+      "row": 10,
+      "ringer": 4,
+      "position_in_row": 5,
+      "time_between_rings_in_row": 8.129999999999999,
+      "absolute_time_start": 1322.0400000000004
+    },
+    {
+      "row": 10,
+      "ringer": 6,
+      "position_in_row": 6,
+      "time_between_rings_in_row": 8.129999999999999,
+      "absolute_time_start": 1330.1700000000005
+    },
+    {
+      "row": 11,
+      "ringer": 1,
+      "position_in_row": 1,
+      "time_between_rings_in_row": 3,
+      "absolute_time_start": 1338.3000000000006
+    },
+    {
+      "row": 11,
+      "ringer": 2,
+      "position_in_row": 2,
+      "time_between_rings_in_row": 3,
+      "absolute_time_start": 1341.3000000000006
+    },
+    {
+      "row": 11,
+      "ringer": 3,
+      "position_in_row": 3,
+      "time_between_rings_in_row": 3,
+      "absolute_time_start": 1344.3000000000006
+    },
+    {
+      "row": 11,
+      "ringer": 4,
+      "position_in_row": 4,
+      "time_between_rings_in_row": 3,
+      "absolute_time_start": 1347.3000000000006
+    },
+    {
+      "row": 11,
+      "ringer": 5,
+      "position_in_row": 5,
+      "time_between_rings_in_row": 3,
+      "absolute_time_start": 1350.3000000000006
+    },
+    {
+      "row": 11,
+      "ringer": 6,
+      "position_in_row": 6,
+      "time_between_rings_in_row": 3,
+      "absolute_time_start": 1353.3000000000006
+    }
+  ]
+}
