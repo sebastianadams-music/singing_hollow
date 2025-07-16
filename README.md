@@ -1,2 +1,4 @@
-bell tempo page: https://sebastianadams-music.github.io/singing_hollow/bell_tempo.html
+bell score: https://singinghollow.sebastianadams.net/bell_conductor.html
+
+bell tempo page: https://singinghollow.sebastianadams.net/bell_tempo.html
 
