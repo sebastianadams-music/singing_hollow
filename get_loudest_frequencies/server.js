@@ -14,16 +14,17 @@ const NOTES_JSON_PATH = path.join(__dirname, 'notes.json');
 // --- Absolute Paths for Executables (IMPROVED ROBUSTNESS) ---
 // CONFIRM THESE PATHS ARE CORRECT ON YOUR SYSTEM!
 const FFMPEG_PATH = "/opt/homebrew/bin/ffmpeg"; // From 'which ffmpeg'
-const PYTHON_PATH = "/Volumes/seb/Documents/Projects/1Active/singing_hollow/get_loudest_frequencies/.venv/bin/python"; // From 'which python' in activated venv
+const PYTHON_PATH = "/Users/sebastianadams/Desktop/singing_hollow/get_loudest_frequencies/.venv/bin/python"
+// const PYTHON_PATH = "/Volumes/seb/Documents/Projects/1Active/singing_hollow/get_loudest_frequencies/.venv/bin/python"; // From 'which python' in activated venv
 const LILYPOND_PATH = "/opt/homebrew/bin/lilypond"; // Assuming Homebrew install, verify with 'which lilypond'
 
 // --- FFmpeg Device Index (CRITICAL: ENSURE THIS IS CORRECT) ---
-const FFMPEG_DEVICE_INDEX = ":3"; // You confirmed this for your Focusrite. MAKE SURE IT'S ":3" in your actual file!
+const FFMPEG_DEVICE_INDEX = ":1"; // You confirmed this for your Focusrite. MAKE SURE IT'S ":3" in your actual file!
 
 // --- New Testing Mode Switch ---
 // Set to `true` to force 5-second interval for audio processing cycle.
 // Set to `false` to use random 5-60 second interval.
-const IS_TESTING_MODE = false; // <--- Set this to true or false as needed
+const IS_TESTING_MODE = true; // <--- Set this to true or false as needed
 
 if (!fs.existsSync(path.join(__dirname, 'public'))) {
     fs.mkdirSync(path.join(__dirname, 'public'));
