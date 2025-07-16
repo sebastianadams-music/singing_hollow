@@ -351,7 +351,7 @@ app.get('/', (req, res) => {
                         <p id="duration-2">8s</p>
                     </div>
                     <div class="column">
-                        <h3>4. Random runs</h3>
+                        <h3>4. Imitate bells</h3>
                         <p id="duration-3">5s</p>
                     </div>
                     <div class="column">

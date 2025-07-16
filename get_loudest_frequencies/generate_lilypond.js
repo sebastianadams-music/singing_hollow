@@ -73,11 +73,9 @@ function constrainToOctave(noteString, targetOctaveStartNote = "C4") {
 
 // --- LilyPond Conversion (Receives already processed notes) ---
 
-// This function now also accepts a duration parameter and uses it.
-function convertToLilypond(noteString, durationType = '1') { // Default to whole note
-    const noteMap = {
-        C: 'c', D: 'd', E: 'e', F: 'f', G: 'g', A: 'a', B: 'b'
-    };
+// This function now generates ABSOLUTE LilyPond notes (e.g., c'' for C5, c for C3, c, for C2)
+function convertToLilypond(noteString, durationType = '1') { // Removed relativeRefNote parameter
+    const noteMap = { C: 'c', D: 'd', E: 'e', F: 'f', G: 'g', A: 'a', B: 'b' };
     const accidentalMap = {
         '♯': 'is', '#': 'is',
         '♭': 'es', 'b': 'es',
@@ -94,18 +92,18 @@ function convertToLilypond(noteString, durationType = '1') { // Default to whole
     const pitch = noteMap[letter.toUpperCase()] + (accidentalMap[accidental] || '');
     const octave = parseInt(octaveStr, 10);
 
-    // LilyPond \relative c' mode: 'c' corresponds to C4 (MIDI 60).
-    // Calculate the correct number of ' or , modifiers relative to C4.
-    let lilyOctaveModifier = '';
-    const referenceOctaveForLilypondCPrime = 4; // C4 is the 'c' in \relative c'
+    // LilyPond's absolute 'c' (no apostrophes/commas) represents C3 (MIDI 48).
+    // We calculate octave modifiers relative to this C3.
+    const lilypondAbsoluteReferenceOctave = 3;
 
-    if (octave > referenceOctaveForLilypondCPrime) {
-        lilyOctaveModifier = "'".repeat(octave - referenceOctaveForLilypondCPrime);
-    } else if (octave < referenceOctaveForLilypondCPrime) {
-        lilyOctaveModifier = ','.repeat(referenceOctaveForLilypondCPrime - octave);
+    let lilypondAbsoluteModifier = '';
+    if (octave > lilypondAbsoluteReferenceOctave) {
+        lilypondAbsoluteModifier = "'".repeat(octave - lilypondAbsoluteReferenceOctave);
+    } else if (octave < lilypondAbsoluteReferenceOctave) {
+        lilypondAbsoluteModifier = ','.repeat(lilypondAbsoluteReferenceOctave - octave);
     }
 
-    return `${pitch}${lilyOctaveModifier}${durationType}`;
+    return `${pitch}${lilypondAbsoluteModifier}${durationType}`;
 }
 
 // --- LilyPond Content Generation ---
@@ -130,51 +128,40 @@ function generateLilypondContent(trebleContent, bassContent) {
   % Proportional Notation settings
   \\context {
     \\Score
-    \\override BarLine.transparent = ##t % No barlines on score level
-    \\override Score.SpacingSpanner.uniform-horizontal-spacing = ##f % Disable uniform spacing
+    \\override BarLine.transparent = ##t
+    \\override Score.SpacingSpanner.uniform-horizontal-spacing = ##f
   }
   \\context {
     \\Staff
-    \\remove "Time_signature_engraver" % Remove time signature from staff
-    \\remove "Clef_engraver" % Remove clef from staff
-    \\remove "Key_engraver" % Remove key signature from staff
+    \\remove "Time_signature_engraver"
+    \\remove "Key_engraver"
+    % You might want to remove this too if rests appear with stems/flags
+    % \\override Staff.Rest.transparent = ##t
 
-    \\override Staff.Stem.transparent = ##t % No stems on notes
-    \\override Staff.Beam.transparent = ##t % No beams
-    \\override Staff.Flag.transparent = ##t % No flags
-    \\override Staff.Rest.transparent = ##t % Make rests transparent (s-rests are already invisible)
-    \\override Staff.Clef.transparent = ##t % Make clef transparent
-    \\override Staff.KeySignature.transparent = ##t % Make key signature transparent
-    \\override Staff.TimeSignature.transparent = ##t % Make time signature transparent
-    \\override Staff.BarLine.transparent = ##t % No barlines on staff level
+    \\override Staff.Stem.transparent = ##t
+    \\override Staff.Beam.transparent = ##t
+    \\override Staff.Flag.transparent = ##t
+    \\override Staff.KeySignature.transparent = ##t
+    \\override Staff.TimeSignature.transparent = ##t
+    \\override Staff.BarLine.transparent = ##t
   }
   \\context {
-    \\GrandStaff % Target the GrandStaff context
-    \\override BarLine.allow-span-bar = ##f % This is the key: prevents span bars
-    \\override SpanBar.transparent = ##t % Also explicitly make it transparent, though allow-span-bar should take care of it
+    \\GrandStaff
+    \\override BarLine.allow-span-bar = ##f
+    \\override SpanBar.transparent = ##t
   }
 }
 
-
 \\score {
-  \\new GrandStaff = "grand staff" <<
     \\new Staff = "trebleStaff" {
-      \\clef treble % Treble clef (still needed for vertical positioning, but transparent)
-      \\key c \\major % Key signature (still needed for accidental calculation, but transparent)
-      \\time 4/4 % Time signature (still needed for rhythmic parsing, but transparent)
-      \\relative c' { % C4 is 'c'
+      \\clef treble
+      \\key c \\major
+      \\time 4/4
+      % REMOVE \\relative c' {
         ${finalTreble}
-      }
+      % REMOVE }
     }
-    \\new Staff = "bassStaff" {
-      \\clef bass % Bass clef (still needed for vertical positioning, but transparent)
-      \\key c \\major % Key signature (still needed for accidental calculation, but transparent)
-      \\time 4/4 % Time signature (still needed for rhythmic parsing, but transparent)
-      \\relative c { % C3 is 'c'
-        ${finalBass}
-      }
-    }
-  >>
+
 }
 `.trim();
 }
@@ -213,41 +200,41 @@ function injectIntoTemplate(musicSVG, scale, translateX) {
 function generateAndInjectAllNotes() {
   const rawNotes = JSON.parse(fs.readFileSync('notes.json', 'utf8'));
 
-  // 1. No more octave constraint processing.
-  // We'll directly use rawNotes and filter out invalid ones.
+  // Filter out invalid notes first
   const validRawNotes = rawNotes.filter(noteString => noteToMidi(noteString) !== null);
 
-  // 2. Prepare aligned LilyPond content for both staves
   const alignedTrebleContent = [];
   const alignedBassContent = [];
   const C4_MIDI = noteToMidi("C4"); // Middle C is still the split point
-
   const defaultDuration = '1'; // All notes are treated as semibreves ('1')
 
   validRawNotes.forEach(noteString => {
-    const midi = noteToMidi(noteString);
-    // midi will not be null here thanks to the filter above, but a safety check is fine
-    if (midi !== null) {
-      const lilypondNote = convertToLilypond(noteString, defaultDuration);
+  const midi = noteToMidi(noteString);
 
-      // Logic: If a note is C4 or higher, add it to treble and a rest to bass.
-      // If a note is below C4, add it to bass and a rest to treble.
-      if (midi >= C4_MIDI) { // C4 and higher go to treble
-        alignedTrebleContent.push(lilypondNote);
-        alignedBassContent.push(`s${defaultDuration}`); // Add equivalent invisible rest in bass
-      } else { // Below C4 go to bass
-        alignedBassContent.push(lilypondNote);
-        alignedTrebleContent.push(`s${defaultDuration}`); // Add equivalent invisible rest in treble
-      }
-    }
-  });
+  if (midi === null) {
+      console.warn(`Skipping note ${noteString} as its MIDI conversion failed within forEach.`);
+      return;
+  }
 
+  // Call the updated convertToLilypond, no relativeRefNote needed
+  const lilypondNote = convertToLilypond(noteString, defaultDuration);
+
+  if (midi >= C4_MIDI) { // C4 and higher go to treble
+    alignedTrebleContent.push(lilypondNote);
+    alignedBassContent.push(`s${defaultDuration}`);
+  } else { // Below C4 go to bass
+    alignedBassContent.push(lilypondNote);
+    alignedTrebleContent.push(`s${defaultDuration}`);
+  }
+});
+
+  
   if (alignedTrebleContent.length === 0 && alignedBassContent.length === 0) {
     console.warn("No valid notes found after processing and splitting. Nothing to display.");
     return;
   }
 
-  // Generate LilyPond content for two staves using the aligned content
+  // Rest of your LilyPond generation and SVG injection logic
   const content = generateLilypondContent(alignedTrebleContent, alignedBassContent);
   fs.writeFileSync(OUTPUT_LY, content);
 
