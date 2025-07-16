@@ -1,0 +1,189 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Singing Hollow - Instructions for Organist</title>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+        <style>
+            body {
+                font-family: 'Inter', sans-serif;
+                line-height: 1.6;
+                margin: 0;
+                padding: 0;
+                background-color: #f4f4f4; /* Light grey background */
+                color: #333; /* Dark grey text */
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding-bottom: 50px;
+            }
+
+            .container {
+                max-width: 900px;
+                margin: 20px auto;
+                padding: 30px;
+                background-color: #fff;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            }
+
+            h1, h2, h3 {
+                color: #2c3e50; /* Darker blue-grey for headings */
+                margin-top: 20px;
+                margin-bottom: 15px;
+            }
+
+            h1 {
+                font-size: 2.8em;
+                text-align: center;
+                margin-bottom: 10px;
+            }
+
+            h2 {
+                font-size: 2.2em;
+                border-bottom: 2px solid #eee;
+                padding-bottom: 10px;
+                margin-bottom: 25px;
+            }
+
+            h3 {
+                font-size: 1.6em;
+            }
+
+            p {
+                margin-bottom: 1em;
+            }
+
+            .back-link {
+                display: block;
+                text-align: left;
+                margin-bottom: 20px;
+                font-size: 1.1em;
+            }
+
+            .section {
+                margin-bottom: 40px;
+            }
+
+            .note-box {
+                font-size: 1.05em;
+                margin-bottom: 25px;
+                background-color: #fff3cd; /* Light yellow for notes */
+                padding: 15px;
+                border-left: 5px solid #ffc107; /* Orange border */
+                border-radius: 5px;
+            }
+            .note-box strong {
+                color: #856404; /* Darker yellow for bold text */
+            }
+
+            .list-item {
+                margin-bottom: 0.5em;
+            }
+
+            a {
+                color: #3498db; /* Blue links */
+                text-decoration: none;
+            }
+
+            a:hover {
+                text-decoration: underline;
+            }
+
+            .musical-material-list {
+                list-style-type: decimal; /* Numbered list */
+                margin-left: 20px;
+                padding-left: 0;
+            }
+            .musical-material-list li {
+                margin-bottom: 0.8em;
+                font-size: 1.1em;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <a href="index.html" class="back-link">&larr; Back to Home Page</a>
+
+            <header>
+                <h1>Instructions for Organist</h1>
+            </header>
+
+            <hr>
+
+            <section class="section">
+                <h2>Organ Control Interface</h2>
+                <p class="note-box">
+                    The organ part will be delivered via a computer running a server application. As this relies on server-based processing and direct microphone access in the church, it cannot be fully replicated by a fixed website.
+                </p>
+                <p>
+                    For testing and reference, a mockup of the interface is available locally:
+                </p>
+                <ul>
+                    <li class="list-item"><a href="/static_organ_mockup.html" target="_blank">View Mockup Webpage</a></li>
+                </ul>
+                <p>
+                    All the materials and instructions to run the server properly can be found at:
+                </p>
+                <ul>
+                    <li class="list-item"><a href="https://github.com/sebastianadams-music/singing_hollow/tree/main/get_loudest_frequencies" target="_blank">GitHub Repository: get_loudest_frequencies</a></li>
+                </ul>
+            </section>
+
+            <hr>
+
+            <section class="section">
+                <h2>Interface Elements Explained</h2>
+                <h3>Pitch Cells:</h3>
+                <p>
+                    The organist will always see on a screen in front of them an array of pitches. The pitches visible at any moment are the pitches that are available to play using the musical material below. They may be transposed freely across octaves. Other notes may be played too, as connective material, but should be treated as subordinate.
+                </p>
+
+                <h3>Sample Window:</h3>
+                <p>
+                    At intermittent intervals, the organ will see a message telling them not to play: they must pay very close attention to this, and fall completely silent, as this time will be used to obtain a sample of the current sound of the bells (which will be distorted by any sound the organist is making). The sample taken here will produce the new pitch cell.
+                </p>
+            </section>
+
+            <hr>
+
+            <section class="section">
+                <h2>Ordering the Musical Material</h2>
+                <p>
+                    The organist must play the six kinds of material described below in strict order throughout the performance.
+                </p>
+                <p>
+                    The rough durations of the cells of musical material will appear on the screen and will vary over the course of the performance. The organist should improvise freely with the material involved but try to create flow between the different types of material, and try to keep close to the specified durations.
+                </p>
+                <ul>
+                    <li class="list-item">Rests may be taken at any point.</li>
+                    <li class="list-item">The organ registration may be changed at will at any stage.</li>
+                </ul>
+            </section>
+
+            <hr>
+
+            <section class="section">
+                <h2>Musical Material Types</h2>
+                <ol class="musical-material-list">
+                    <li>Runs</li>
+                    <li>Cluster chords</li>
+                    <li>Very high squeaks</li>
+                    <li>Imitation of bells (try to sound like a bell)</li>
+                    <li>Ostinato chords</li>
+                    <li>Low rumbles</li>
+                </ol>
+                <p>
+                    The silences for sampling should also be treated as part of the improvisation, and will always follow the **Low Rumbles** material.
+                </p>
+            </section>
+
+            <hr>
+
+            <footer class="contact-info">
+                <p>&copy; 2025 Sebastian Adams. All rights reserved.</p>
+            </footer>
+        </div>
+    </body>
+    </html>
