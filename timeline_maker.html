@@ -307,132 +307,148 @@
          * Function to generate and display the musical timeline based on user inputs.
          */
         function generateTimeline() {
-            // currentMaterialData is assumed to be up-to-date (either from initial load or modal close)
+    // currentMaterialData is assumed to be up-to-date (either from initial load or modal close)
 
-            const timelineMainWrapper = document.getElementById('timelineMainWrapper');
-            timelineMainWrapper.innerHTML = ''; // Clear previous timelines
+    const timelineMainWrapper = document.getElementById('timelineMainWrapper');
+    timelineMainWrapper.innerHTML = ''; // Clear previous timelines
 
-            const legendContainer = document.getElementById('legendContainer');
-            legendContainer.innerHTML = '<h3 class="w-full text-center text-lg font-semibold text-gray-800 mb-2">Material Legend</h3>'; // Clear previous legend
+    const legendContainer = document.getElementById('legendContainer');
+    legendContainer.innerHTML = '<h3 class="w-full text-center text-lg font-semibold text-gray-800 mb-2">Material Legend</h3>'; // Clear previous legend
 
-            // Create the inner content area that will hold all tracks
-            const timelineContentArea = document.createElement('div');
-            timelineContentArea.id = 'timelineContentArea';
-            timelineContentArea.className = 'timeline-content-area';
-            timelineMainWrapper.appendChild(timelineContentArea);
-
-
-            // This array will hold all segments in their chronological order in the *overall* piece
-            const overallSegments = [];
-            let currentTime = 0; // Tracks the current time in the overall timeline
-            const materialIndices = Array(currentMaterialData.length).fill(0); // Tracks the next duration index for each material
-
-            let continueGeneration = true;
-            let iterationCount = 0;
-            const maxIterations = 1000; // Safety break
-
-            // Loop to generate the single, continuous sequence of segments
-            while (continueGeneration && iterationCount < maxIterations) {
-                const materialTypeIndex = iterationCount % currentMaterialData.length;
-                const currentMaterial = currentMaterialData[materialTypeIndex];
-
-                if (!currentMaterial || materialIndices[materialTypeIndex] >= currentMaterial.durations.length) {
-                    // If any material's duration list is exhausted, the piece ends
-                    continueGeneration = false;
-                    continue;
-                }
-
-                const duration = currentMaterial.durations[materialIndices[materialTypeIndex]];
-
-                overallSegments.push({
-                    name: currentMaterial.name,
-                    typeIndex: materialTypeIndex,
-                    startTime: currentTime, // This is the actual start time in the continuous piece
-                    duration: duration
-                });
-
-                currentTime += duration; // Update current time for the overall timeline
-                materialIndices[materialTypeIndex]++; // Move to the next duration for this material
-                iterationCount++;
-            }
-
-            const totalDuration = currentTime; // The total length of the continuous piece
-            document.getElementById('totalLength').textContent = `Overall Length: ${totalDuration.toFixed(2)} seconds`;
-
-            if (overallSegments.length === 0) {
-                timelineContentArea.innerHTML = '<p class="text-gray-600 w-full text-center py-4">No segments generated. Please add materials and enter valid positive durations.</p>';
-                return;
-            }
-
-            const scaleFactorInput = document.getElementById('scaleFactorInput');
-            const scaleFactor = parseFloat(scaleFactorInput.value) || 5; // Default to 5
-
-            // Create and append a track for each material
-            const materialTracks = [];
-            currentMaterialData.forEach((material, index) => {
-                const trackDiv = document.createElement('div');
-                trackDiv.className = 'material-track'; // Apply track styling
-                
-                // Add a label for the track
-                const trackLabel = document.createElement('span');
-                trackLabel.className = 'font-bold text-gray-800 text-sm absolute left-1 top-1'; // Position label
-                trackLabel.textContent = material.name;
-                trackDiv.appendChild(trackLabel);
-
-                // This div will hold the actual segments for this track
-                const segmentsContainer = document.createElement('div');
-                segmentsContainer.className = 'flex flex-row items-stretch h-full w-full relative'; // Inner container for segments
-                trackDiv.appendChild(segmentsContainer);
-
-                timelineContentArea.appendChild(trackDiv); // Append to the new content area
-                materialTracks[index] = segmentsContainer; // Store reference to the segments container
-            });
-
-            // Render segments by distributing them to their respective material's horizontal track
-            overallSegments.forEach(segment => {
-                const segmentElement = document.createElement('div');
-                const widthInPixels = Math.max(segment.duration * scaleFactor, 5); // Minimum width of 5px
-                const leftPosition = segment.startTime * scaleFactor; // Calculate left offset
-
-                const colorClass = predefinedColors[segment.typeIndex % predefinedColors.length];
-
-                segmentElement.className = `segment-item ${colorClass}`; // Removed text-white
-                segmentElement.style.width = `${widthInPixels}px`;
-                segmentElement.style.left = `${leftPosition}px`; // Apply left offset
-
-                // Inner HTML for segment details on three separate lines, left-aligned
-                segmentElement.innerHTML = `
-                    <div class="segment-content">
-                        <span class="font-bold">${segment.name}</span>
-                        <span>Start: ${segment.startTime.toFixed(2)}s</span>
-                        <span>Dur: ${segment.duration.toFixed(2)}s</span>
-                    </div>
-                `;
-                // Append to the correct material's specific track
-                materialTracks[segment.typeIndex].appendChild(segmentElement);
-            });
-
-            // Set the overall width of the timelineContentArea to accommodate all segments
-            // This ensures the horizontal scrollbar appears correctly on timelineMainWrapper
-            const maxRightEdge = overallSegments.reduce((max, segment) => {
-                return Math.max(max, (segment.startTime + segment.duration) * scaleFactor);
-            }, 0);
-            // Add some padding to the end of the scrollable area
-            timelineContentArea.style.width = `${Math.max(maxRightEdge + 100, timelineMainWrapper.clientWidth)}px`;
+    // Create the inner content area that will hold all tracks
+    const timelineContentArea = document.createElement('div');
+    timelineContentArea.id = 'timelineContentArea';
+    timelineContentArea.className = 'timeline-content-area';
+    timelineMainWrapper.appendChild(timelineContentArea);
 
 
-            // Populate the legend based on currentMaterialData
-            currentMaterialData.forEach((material, index) => {
-                const legendItem = document.createElement('div');
-                const colorClass = predefinedColors[index % predefinedColors.length];
-                legendItem.className = 'flex items-center space-x-2';
-                legendItem.innerHTML = `
-                    <span class="w-4 h-4 ${colorClass} rounded-full shadow"></span>
-                    <span class="text-gray-700">${material.name}</span>
-                `;
-                legendContainer.appendChild(legendItem);
-            });
+    // This array will hold all segments in their chronological order in the *overall* piece
+    const overallSegments = [];
+    let currentTime = 0; // Tracks the current time in the overall timeline
+    const materialIndices = Array(currentMaterialData.length).fill(0); // Tracks the next duration index for each material
+
+    let continueGeneration = true;
+    let iterationCount = 0;
+    const maxIterations = 1000; // Safety break
+
+    // Loop to generate the single, continuous sequence of segments
+    while (continueGeneration && iterationCount < maxIterations) {
+        const materialTypeIndex = iterationCount % currentMaterialData.length;
+        const currentMaterial = currentMaterialData[materialTypeIndex];
+
+        if (!currentMaterial || materialIndices[materialTypeIndex] >= currentMaterial.durations.length) {
+            // If any material's duration list is exhausted, the piece ends
+            continueGeneration = false;
+            continue;
         }
+
+        const duration = currentMaterial.durations[materialIndices[materialTypeIndex]];
+
+        overallSegments.push({
+            name: currentMaterial.name,
+            typeIndex: materialTypeIndex,
+            startTime: currentTime, // This is the actual start time in the continuous piece
+            duration: duration
+        });
+
+        currentTime += duration; // Update current time for the overall timeline
+        materialIndices[materialTypeIndex]++; // Move to the next duration for this material
+        iterationCount++;
+    }
+
+    const totalDuration = currentTime; // The total length of the continuous piece
+
+    // Convert totalDuration to Hh Mm Ss format
+    const hours = Math.floor(totalDuration / 3600);
+    const minutes = Math.floor((totalDuration % 3600) / 60);
+    const seconds = (totalDuration % 60);
+
+    let formattedDuration = '';
+    if (hours > 0) {
+        formattedDuration += `${hours}h `;
+    }
+    if (minutes > 0 || hours > 0) { // Show minutes if there are hours or minutes present
+        formattedDuration += `${minutes}m `;
+    }
+    formattedDuration += `${seconds.toFixed(2)}s`; // Always show seconds
+
+    document.getElementById('totalLength').textContent = `Overall Length: ${formattedDuration}`;
+
+
+    if (overallSegments.length === 0) {
+        timelineContentArea.innerHTML = '<p class="text-gray-600 w-full text-center py-4">No segments generated. Please add materials and enter valid positive durations.</p>';
+        return;
+    }
+
+    const scaleFactorInput = document.getElementById('scaleFactorInput');
+    const scaleFactor = parseFloat(scaleFactorInput.value) || 5; // Default to 5
+
+    // Create and append a track for each material
+    const materialTracks = [];
+    currentMaterialData.forEach((material, index) => {
+        const trackDiv = document.createElement('div');
+        trackDiv.className = 'material-track'; // Apply track styling
+
+        // Add a label for the track
+        const trackLabel = document.createElement('span');
+        trackLabel.className = 'font-bold text-gray-800 text-sm absolute left-1 top-1'; // Position label
+        trackLabel.textContent = material.name;
+        trackDiv.appendChild(trackLabel);
+
+        // This div will hold the actual segments for this track
+        const segmentsContainer = document.createElement('div');
+        segmentsContainer.className = 'flex flex-row items-stretch h-full w-full relative'; // Inner container for segments
+        trackDiv.appendChild(segmentsContainer);
+
+        timelineContentArea.appendChild(trackDiv); // Append to the new content area
+        materialTracks[index] = segmentsContainer; // Store reference to the segments container
+    });
+
+    // Render segments by distributing them to their respective material's horizontal track
+    overallSegments.forEach(segment => {
+        const segmentElement = document.createElement('div');
+        const widthInPixels = Math.max(segment.duration * scaleFactor, 5); // Minimum width of 5px
+        const leftPosition = segment.startTime * scaleFactor; // Calculate left offset
+
+        const colorClass = predefinedColors[segment.typeIndex % predefinedColors.length];
+
+        segmentElement.className = `segment-item ${colorClass}`; // Removed text-white
+        segmentElement.style.width = `${widthInPixels}px`;
+        segmentElement.style.left = `${leftPosition}px`; // Apply left offset
+
+        // Inner HTML for segment details on three separate lines, left-aligned
+        segmentElement.innerHTML = `
+            <div class="segment-content">
+                <span class="font-bold">${segment.name}</span>
+                <span>Start: ${segment.startTime.toFixed(2)}s</span>
+                <span>Dur: ${segment.duration.toFixed(2)}s</span>
+            </div>
+        `;
+        // Append to the correct material's specific track
+        materialTracks[segment.typeIndex].appendChild(segmentElement);
+    });
+
+    // Set the overall width of the timelineContentArea to accommodate all segments
+    // This ensures the horizontal scrollbar appears correctly on timelineMainWrapper
+    const maxRightEdge = overallSegments.reduce((max, segment) => {
+        return Math.max(max, (segment.startTime + segment.duration) * scaleFactor);
+    }, 0);
+    // Add some padding to the end of the scrollable area
+    timelineContentArea.style.width = `${Math.max(maxRightEdge + 100, timelineMainWrapper.clientWidth)}px`;
+
+
+    // Populate the legend based on currentMaterialData
+    currentMaterialData.forEach((material, index) => {
+        const legendItem = document.createElement('div');
+        const colorClass = predefinedColors[index % predefinedColors.length];
+        legendItem.className = 'flex items-center space-x-2';
+        legendItem.innerHTML = `
+            <span class="w-4 h-4 ${colorClass} rounded-full shadow"></span>
+            <span class="text-gray-700">${material.name}</span>
+        `;
+        legendContainer.appendChild(legendItem);
+    });
+}
 
         // Initial setup on page load
         window.onload = () => {
