@@ -61,7 +61,7 @@
         /* Material segment duration section */
         .material-section {
             margin-top: 40px;
-            width: 800px;
+            width: 900px; /* Wider to accommodate more columns */
             text-align: left;
         }
         .material-section h2 {
@@ -72,20 +72,26 @@
         }
         .columns-container {
             display: flex;
-            justify-content: space-around;
+            justify-content: center; /* Center items */
             flex-wrap: wrap;
             gap: 20px;
             padding: 0 20px;
         }
         .column {
-            flex: 1;
+            flex: 0 1 auto; /* Allow flexible width but not grow indefinitely */
             min-width: 120px;
-            max-width: 150px;
+            max-width: 160px; /* Slightly wider max-width */
             text-align: center;
             background-color: #fff;
             padding: 15px 10px;
             border-radius: 8px;
             box-shadow: 1px 1px 5px rgba(0,0,0,0.1);
+            border: 2px solid transparent; /* For highlighting */
+            transition: border-color 0.3s ease-in-out;
+        }
+        .column.active {
+            border-color: #007bff; /* Highlight color */
+            box-shadow: 0 0 15px rgba(0, 123, 255, 0.5);
         }
         .column h3 {
             font-size: 1.1em;
@@ -95,12 +101,18 @@
             border-bottom: 1px solid #eee;
             padding-bottom: 8px;
         }
-        /* Added IDs for each duration paragraph for dynamic updates */
         .column p {
             font-size: 1.2em;
             font-weight: bold;
             color: #007bff;
             margin: 0;
+        }
+        /* Style for the recording duration display */
+        #recording-duration-display {
+            margin-top: 20px;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #d9534f; /* Reddish for emphasis */
         }
     </style>
 </head>
@@ -113,64 +125,36 @@
     </div>
 
     <div class="material-section">
-        <h2>Material segment duration:</h2>
-        <div class="columns-container">
-            <div class="column">
-                <h3>1. runs</h3>
-                <p id="duration-0">--s</p>
+        <h2>Current Material Segment: <span id="current-segment-label">0</span></h2>
+        <div id="recording-duration-display">Recording Duration: --s</div>
+        <div id="columns-container" class="columns-container">
             </div>
-            <div class="column">
-                <h3>2. Cluster chords</h3>
-                <p id="duration-1">--s</p>
-            </div>
-            <div class="column">
-                <h3>3. High very high squeaks</h3>
-                <p id="duration-2">--s</p>
-            </div>
-            <div class="column">
-                <h3>4. Imitate Bells</h3>
-                <p id="duration-3">--s</p>
-            </div>
-            <div class="column">
-                <h3>5. Ostinato chords</h3>
-                <p id="duration-4">--s</p>
-            </div>
-            <div class="column">
-                <h3>6. Low rumbles</h3>
-                <p id="duration-5">--s</p>
-            </div>
-        </div>
     </div>
 
     <script>
         // --- Configuration Variables ---
+        const ORGAN_DATA_PATH = 'singinghollow_organ.json'; // Path to your JSON file
+        // const ORGAN_DATA_PATH = 'dummyorganstructure.json'; // Path to your JSON file
+
         const SVG_FOLDER_PATH = 'static_svg/'; // Path relative to index.html
-        const NUM_STATIC_SVGS = 13; // notes_1.svg to notes_6.svg
-        // Removed fixed SVG_CYCLE_INTERVAL_SECONDS, now calculated dynamically
-        const MATERIAL_DURATION_UPDATE_INTERVAL_SECONDS = 3 * 60; // 3 minutes
+        const NUM_STATIC_SVGS = 13; // notes_1.svg to notes_X.svg (adjust as needed based on your SVGs)
 
-        const POSSIBLE_DURATIONS = [3, 5, 8, 13, 21, 34, 59];
-
-        // --- Mockup Status Cycle ---
-        // These will be displayed in sequence before the SVG actually changes
+        const MOCKUP_STATUS_PHASE_DURATION = 1500; // 1.5 seconds per phase (Stop, Recording, Analysing)
         const MOCKUP_STATUS_SEQUENCE = [
             { message: 'Stop Playing!', color: '#FF0000' },
             { message: 'Recording bells...', color: '#008000' },
             { message: 'Analysing bells...', color: '#0000FF' }
         ];
-        // How long each of the above status messages stays on screen before advancing to the next.
-        // Adjust these to simulate realistic processing times if desired.
-        const MOCKUP_STATUS_PHASE_DURATION = 1500; // 1.5 seconds per phase (Stop, Recording, Analysing)
-
+        const META_MATERIALS = ["RECORDING", "analysis"]; // Materials not for display/playable
+        const LOW_RUMBLES_NAME = "Low Rumbles"; // The material after which recording happens
 
         // --- Template SVG structure (without the inner <g id="music"> placeholder) ---
-        // We will inject the content of notes_X.svg into this template
         const SVG_TEMPLATE_START = `
             <svg xmlns="http://www.w3.org/2000/svg"
                  xmlns:xlink="http://www.w3.org/1999/xlink"
                  width="800" height="300" viewBox="0 0 800 300">
                 <rect width="100%" height="100%" fill="#fefefe"/>
-                
+
                 <g id="music" transform="translate(0, 0)">
         `;
         const SVG_TEMPLATE_END = `
@@ -180,73 +164,185 @@
 
 
         // --- DOM Elements ---
-        const scoreSvgWrapper = document.getElementById('score-svg-wrapper'); // This div will hold the SVG
+        const scoreSvgWrapper = document.getElementById('score-svg-wrapper');
         const statusOverlay = document.getElementById('status-overlay');
-        const durationParagraphs = [];
-        for(let i = 0; i < 6; i++) {
-            durationParagraphs.push(document.getElementById('duration-' + i));
-        }
+        const columnsContainer = document.getElementById('columns-container');
+        const currentSegmentLabel = document.getElementById('current-segment-label');
+        const recordingDurationDisplay = document.getElementById('recording-duration-display');
+
 
         // --- State Variables ---
-        let currentSvgIndex = 1; // Start with notes_1.svg
-        let currentMaterialDurations = []; // Will store the generated durations for the 6 segments
-        let svgCycleTimer; // Timer for cycling SVGs (now a setTimeout that reschedules itself)
+        let organData = [];
+        let currentSegmentIndex = 0;
+        let currentMaterialIndex = 0;
+        let currentRecordingDuration = 0; // Duration for the current recording window
+        let processingTimer; // Main timer for performance progression
         let statusPhaseTimer; // Timer for controlling status message phases
+        let currentSvgFileIndex = 1; // Used to load static_svg/notes_X.svg
 
 
         // --- Functions ---
 
         /**
-         * Calculates a random interval between 5 and 60 seconds (in 5-second steps).
-         * @returns {number} The random interval in seconds.
+         * Loads the organ data from the specified JSON file.
          */
-        function getRandomSvgCycleInterval() {
-            const minSeconds = 5;
-            const maxSeconds = 60;
-            const step = 5;
+        async function loadOrganData() {
+            try {
+                const response = await fetch(ORGAN_DATA_PATH);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                organData = await response.json();
+                console.log("Organ data loaded successfully.");
 
-            const numberOfSteps = (maxSeconds - minSeconds) / step + 1;
-            const randomStep = Math.floor(Math.random() * numberOfSteps); // 0 to (numberOfSteps - 1)
-            const randomInterval = minSeconds + (randomStep * step);
+                // Initialize currentRecordingDuration with the first value from RECORDING
+                const recordingMaterial = organData.find(m => m.name === "RECORDING");
+                if (recordingMaterial && recordingMaterial.durations.length > 0) {
+                    currentRecordingDuration = recordingMaterial.durations[0];
+                } else {
+                    console.warn("RECORDING material not found or empty, defaulting recording duration to 5s.");
+                    currentRecordingDuration = 5;
+                }
 
-            return randomInterval;
-        }
-
-        /**
-         * Generates random durations for the 6 material segments from POSSIBLE_DURATIONS.
-         */
-        function generateRandomMaterialDurations() {
-            const newDurations = [];
-            for (let i = 0; i < 6; i++) {
-                const randomIndex = Math.floor(Math.random() * POSSIBLE_DURATIONS.length);
-                newDurations.push(POSSIBLE_DURATIONS[randomIndex]);
+            } catch (error) {
+                console.error("Failed to load organ data:", error);
+                organData = [];
+                statusOverlay.textContent = 'Error loading config!';
+                statusOverlay.classList.add('visible');
+                statusOverlay.style.color = '#FFA500';
             }
-            currentMaterialDurations = newDurations;
-            console.log("Generated new material durations:", currentMaterialDurations);
-
-            // Update the display immediately after generating new durations
-            updateMaterialDurationsDisplay();
         }
 
         /**
-         * Updates the text content of the duration paragraphs based on currentMaterialDurations.
+         * Gets the durations for the current segment index, updating recording duration.
+         * @returns {Array} An array of {name, duration} objects for the current segment.
          */
-        function updateMaterialDurationsDisplay() {
-            if (currentMaterialDurations && currentMaterialDurations.length === 6) {
-                currentMaterialDurations.forEach((duration, index) => {
-                    if (durationParagraphs[index]) {
-                        durationParagraphs[index].textContent = duration + 's';
+        function getCurrentSegmentDurations() {
+            if (organData.length === 0) {
+                return [];
+            }
+
+            const segmentDurations = organData.map(material => {
+                if (material.durations && material.durations.length > currentSegmentIndex) {
+                    return {
+                        name: material.name,
+                        duration: material.durations[currentSegmentIndex]
+                    };
+                }
+                return { name: material.name, duration: null };
+            });
+
+            // Update currentRecordingDuration based on the 'RECORDING' material's current segment duration
+            const recordingEntry = segmentDurations.find(s => s.name === "RECORDING");
+            if (recordingEntry && recordingEntry.duration !== null) {
+                currentRecordingDuration = recordingEntry.duration;
+                // console.log(`Updated current recording duration to: ${currentRecordingDuration}s`); // Commented to reduce spam
+            }
+
+            return segmentDurations;
+        }
+
+        /**
+         * Advances the performance state to the next material or segment.
+         */
+        function advancePerformanceState() {
+            if (organData.length === 0) {
+                console.warn("Cannot advance performance state, organ data not loaded.");
+                return;
+            }
+
+            currentMaterialIndex++;
+
+            const maxSegmentLength = Math.max(...organData.map(material => material.durations.length));
+
+            if (currentMaterialIndex >= organData.length) {
+                currentMaterialIndex = 0; // Reset material index
+                currentSegmentIndex++; // Move to the next segment (row)
+
+                if (currentSegmentIndex >= maxSegmentLength) {
+                    console.log("End of performance data reached. Looping back to the beginning.");
+                    currentSegmentIndex = 0; // Loop back to the start
+                }
+            }
+            console.log(`Advanced to Segment: ${currentSegmentIndex}, Material: ${organData[currentMaterialIndex]?.name || 'N/A'}`);
+        }
+
+        /**
+         * Updates the display elements based on the current performance state.
+         */
+        function updateDisplay() {
+            currentSegmentLabel.textContent = currentSegmentIndex;
+
+            const segmentDurations = getCurrentSegmentDurations();
+
+            // Clear existing columns
+            columnsContainer.innerHTML = '';
+
+            // Dynamically create and update duration paragraphs
+            let currentMaterialName = organData[currentMaterialIndex]?.name || 'N/A';
+            recordingDurationDisplay.textContent = `Recording Duration: ${currentRecordingDuration}s`;
+
+            segmentDurations.forEach((material, index) => {
+                // Only display materials that have durations and are not 'RECORDING' or 'analysis'
+                if (material.duration !== null && !META_MATERIALS.includes(material.name)) {
+                    const columnDiv = document.createElement('div');
+                    columnDiv.className = 'column';
+                    if (index === currentMaterialIndex) { // Highlight active material
+                        columnDiv.classList.add('active');
                     }
-                });
+
+                    const h3 = document.createElement('h3');
+                    // Find the actual 1-based index of this playable material for display purposes
+                    // (e.g., "1. Runs", "2. Cluster Chords", etc.)
+                    const playableMaterials = organData.filter(m => !META_MATERIALS.includes(m.name));
+                    const playableIndex = playableMaterials.findIndex(m => m.name === material.name);
+
+                    h3.textContent = (playableIndex !== -1 ? (playableIndex + 1) : '-') + '. ' + material.name;
+                    columnDiv.appendChild(h3);
+
+                    const p = document.createElement('p');
+                    p.textContent = material.duration + 's';
+                    columnDiv.appendChild(p);
+
+                    columnsContainer.appendChild(columnDiv);
+                }
+            });
+
+            // Update SVG based on currentSvgFileIndex (which is managed by runMockupProcessingCycle)
+            const svgContentPath = SVG_FOLDER_PATH + `notes_${currentSvgFileIndex}.svg`;
+            fetchSvgAndInject(svgContentPath);
+        }
+
+        /**
+         * Fetches an SVG file and injects its content into the score-svg-wrapper.
+         * @param {string} svgPath The path to the SVG file.
+         */
+        async function fetchSvgAndInject(svgPath) {
+            try {
+                const response = await fetch(svgPath);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const svgInnerContent = await response.text();
+
+                // Inject the inner SVG content into our template
+                scoreSvgWrapper.innerHTML = SVG_TEMPLATE_START + svgInnerContent + SVG_TEMPLATE_END;
+
+            } catch (error) {
+                console.error('Error fetching or embedding SVG:', error);
+                statusOverlay.textContent = 'Error loading music SVG!';
+                statusOverlay.classList.add('visible');
+                statusOverlay.style.color = '#FFA500'; // Orange for client-side error
             }
         }
 
         /**
-         * Controls the sequence of mockup status messages before the SVG changes.
+         * Simulates the recording and analysis process by displaying status messages
+         * and then advancing the SVG index.
          * @param {number} phaseIndex The current index in MOCKUP_STATUS_SEQUENCE.
          * @param {function} callback The function to call once all status phases are complete.
          */
-        function runMockupStatusSequence(phaseIndex, callback) {
+        function runMockupProcessingCycle(phaseIndex, callback) {
             if (statusPhaseTimer) {
                 clearTimeout(statusPhaseTimer);
             }
@@ -258,11 +354,16 @@
                 statusOverlay.classList.add('visible');
                 console.log(`Status: ${message}`);
 
+                // If recording, use currentRecordingDuration, otherwise use fixed phase duration
+                const duration = (message.includes('Recording') && currentRecordingDuration > 0)
+                                ? currentRecordingDuration * 1000 // Convert to milliseconds
+                                : MOCKUP_STATUS_PHASE_DURATION;
+
                 statusPhaseTimer = setTimeout(() => {
-                    runMockupStatusSequence(phaseIndex + 1, callback); // Move to next phase
-                }, MOCKUP_STATUS_PHASE_DURATION);
+                    runMockupProcessingCycle(phaseIndex + 1, callback); // Move to next phase
+                }, duration);
             } else {
-                // All status phases complete, hide overlay and proceed with SVG update
+                // All status phases complete, hide overlay and proceed with callback
                 statusOverlay.textContent = '';
                 statusOverlay.classList.remove('visible');
                 if (callback) {
@@ -272,59 +373,81 @@
         }
 
         /**
-         * Fetches the content of the current SVG part, injects it into the template,
-         * and schedules the next SVG cycle with a random delay, starting with status messages.
+         * Main function to manage the performance progression.
+         * It calculates the next interval based on the current material and
+         * triggers the mock recording/analysis cycle if it's 'Low Rumbles'.
          */
-        async function cycleSvgAndReschedule() {
-            // First, start the status message sequence
-            runMockupStatusSequence(0, async () => {
-                // This callback runs AFTER all status messages have completed their cycle
+        async function startPerformanceTimer() {
+            if (processingTimer) {
+                clearTimeout(processingTimer);
+            }
 
-                // Clear any existing main SVG cycle timer before setting a new one
-                if (svgCycleTimer) {
-                    clearTimeout(svgCycleTimer);
+            let nextInterval = 1; // Default to 1 second if data isn't ready or material has no duration
+            let currentMaterial = null;
+
+            if (organData.length > 0 && currentMaterialIndex < organData.length) {
+                currentMaterial = organData[currentMaterialIndex];
+                if (currentMaterial && currentMaterial.durations && currentMaterial.durations.length > currentSegmentIndex) {
+                    nextInterval = currentMaterial.durations[currentSegmentIndex];
+                } else {
+                    console.warn(`Could not find duration for material ${currentMaterialIndex} at segment ${currentSegmentIndex}. Defaulting to 1s.`);
+                }
+            } else {
+                console.warn("Organ data not loaded or empty, defaulting next interval to 1s.");
+            }
+
+            console.log(`Current Material: ${currentMaterial?.name || 'N/A'} (Segment ${currentSegmentIndex}, Index ${currentMaterialIndex})`);
+
+
+            processingTimer = setTimeout(async () => {
+                if (currentMaterial && currentMaterial.name === LOW_RUMBLES_NAME) {
+                    console.log(`Material '${LOW_RUMBLES_NAME}' finished. Initiating mock recording/analysis cycle.`);
+                    await runMockupProcessingCycle(0, () => {
+                        // This callback runs after the mockup recording/analysis phases are done
+                        // Increment SVG index after the full recording/analysis cycle
+                        currentSvgFileIndex = (currentSvgFileIndex % NUM_STATIC_SVGS) + 1;
+                        console.log(`Displaying notes_${currentSvgFileIndex}.svg`);
+                        // No need to call updateDisplay() here, as the final step of this callback will re-schedule
+                        // startPerformanceTimer, which calls updateDisplay() before its timer.
+                    });
+                } else if (currentMaterial && META_MATERIALS.includes(currentMaterial.name)) {
+                    console.log(`Current material is '${currentMaterial.name}'. This is a meta-material, skipping its duration in performance.`);
+                    // We don't wait for the duration of meta-materials in the overall timer,
+                    // as their "time" is implicitly handled within runMockupProcessingCycle.
+                    // Just advance the state immediately after this "skip"
+                } else {
+                    console.log(`Material '${currentMaterial?.name || 'N/A'}' finished. No mock recording/analysis for this unit.`);
                 }
 
-                // Increment index, wrap around if it exceeds NUM_STATIC_SVGS
-                currentSvgIndex = (currentSvgIndex % NUM_STATIC_SVGS) + 1;
-                const svgContentPath = SVG_FOLDER_PATH + `notes_${currentSvgIndex}.svg`;
-                console.log(`Fetching content for ${svgContentPath}`);
+                // Always advance the performance state after the timer completes its wait,
+                // and then schedule the next timer.
+                advancePerformanceState();
+                updateDisplay(); // Update display immediately after advancing state
+                startPerformanceTimer(); // Schedule the next performance unit
+            }, nextInterval * 1000);
 
-                try {
-                    const response = await fetch(svgContentPath);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    const svgInnerContent = await response.text();
-
-                    // Inject the inner SVG content into our template
-                    scoreSvgWrapper.innerHTML = SVG_TEMPLATE_START + svgInnerContent + SVG_TEMPLATE_END;
-
-                } catch (error) {
-                    console.error('Error fetching or embedding SVG:', error);
-                    statusOverlay.textContent = 'Error loading music SVG!';
-                    statusOverlay.classList.add('visible');
-                    statusOverlay.style.color = '#FFA500'; // Orange for client-side error
-                } finally {
-                    // Schedule the next SVG cycle with a random interval,
-                    // which will also re-trigger the status sequence.
-                    const nextInterval = getRandomSvgCycleInterval();
-                    console.log(`Next SVG cycle scheduled in ${nextInterval} seconds.`);
-                    svgCycleTimer = setTimeout(cycleSvgAndReschedule, nextInterval * 1000);
-                }
-            });
+            // Update display immediately for the material that *just started* its timer
+            updateDisplay();
+            console.log(`Next material unit ('${currentMaterial?.name || 'N/A'}') scheduled to run for ${nextInterval} seconds.`);
         }
 
 
-        // --- Initial Calls and Timers ---
+        // --- Initialisation ---
+        window.onload = async () => {
+            await loadOrganData(); // Load the JSON data
+            if (organData.length > 0) {
+                // Initial display update based on loaded data
+                updateDisplay();
+                // Start the main performance timer loop
+                startPerformanceTimer();
+            } else {
+                console.error("No organ data loaded, performance cannot start.");
+                statusOverlay.textContent = 'Failed to load data!';
+                statusOverlay.classList.add('visible');
+                statusOverlay.style.color = '#FF0000';
+            }
+        };
 
-        // 1. Initial generation of material durations and start the 3-minute update timer
-        generateRandomMaterialDurations(); // Generate initial durations
-        setInterval(generateRandomMaterialDurations, MATERIAL_DURATION_UPDATE_INTERVAL_SECONDS * 1000);
-
-        // 2. Start the SVG cycling (now includes status messages)
-        // Call this once initially. It will manage its own delays for status and next SVG.
-        cycleSvgAndReschedule();
     </script>
 </body>
 </html>

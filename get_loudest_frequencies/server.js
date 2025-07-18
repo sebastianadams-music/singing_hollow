@@ -5,70 +5,122 @@ const fs = require('fs');
 
 const app = express();
 const PORT = 3000;
-const RECORD_DURATION_SECONDS = 5;
-// Removed fixed TIMER_INTERVAL_SECONDS constant, as it's now dynamic
-const DURATION_UPDATE_INTERVAL_SECONDS = 180; // How often material durations update (1 minute)
 const AUDIO_FILE_PATH = path.join(__dirname, 'recorded_audio.wav');
 const NOTES_JSON_PATH = path.join(__dirname, 'notes.json');
+const ORGAN_DATA_PATH = path.join(__dirname, 'dummyorganstructure.json'); // Using your dummy data path for testing
 
 // --- Absolute Paths for Executables (IMPROVED ROBUSTNESS) ---
-// CONFIRM THESE PATHS ARE CORRECT ON YOUR SYSTEM!
-const FFMPEG_PATH = "/opt/homebrew/bin/ffmpeg"; // From 'which ffmpeg'
+const FFMPEG_PATH = "/opt/homebrew/bin/ffmpeg";
 const PYTHON_PATH = "/Users/sebastianadams/Desktop/singing_hollow/get_loudest_frequencies/.venv/bin/python"
-// const PYTHON_PATH = "/Volumes/seb/Documents/Projects/1Active/singing_hollow/get_loudest_frequencies/.venv/bin/python"; // From 'which python' in activated venv
-const LILYPOND_PATH = "/opt/homebrew/bin/lilypond"; // Assuming Homebrew install, verify with 'which lilypond'
+const LILYPOND_PATH = "/opt/homebrew/bin/lilypond";
 
 // --- FFmpeg Device Index (CRITICAL: ENSURE THIS IS CORRECT) ---
-const FFMPEG_DEVICE_INDEX = ":1"; // You confirmed this for your Focusrite. MAKE SURE IT'S ":3" in your actual file!
+const FFMPEG_DEVICE_INDEX = ":1";
 
-// --- New Testing Mode Switch ---
-// Set to `true` to force 5-second interval for audio processing cycle.
-// Set to `false` to use random 5-60 second interval.
-const IS_TESTING_MODE = true; // <--- Set this to true or false as needed
-
-if (!fs.existsSync(path.join(__dirname, 'public'))) {
-    fs.mkdirSync(path.join(__dirname, 'public'));
+// Ensure 'public' directory exists
+const publicDir = path.join(__dirname, 'public');
+if (!fs.existsSync(publicDir)) {
+    fs.mkdirSync(publicDir);
 }
 
-app.use(express.static('public'));
+// Serve static files from the 'public' directory
+app.use(express.static(publicDir));
 
 let currentStatusMessage = '';
-// New: Store the current material durations
-const POSSIBLE_DURATIONS = [3, 5, 8, 13, 21, 34, 59];
-let currentMaterialDurations = []; // Will store the generated durations
 
-// Function to generate random durations for the 6 segments
-function generateRandomMaterialDurations() {
-    const newDurations = [];
-    for (let i = 0; i < 6; i++) { // Assuming 6 segments
-        const randomIndex = Math.floor(Math.random() * POSSIBLE_DURATIONS.length);
-        newDurations.push(POSSIBLE_DURATIONS[randomIndex]);
+let organData = [];
+let currentSegmentIndex = 0;
+let currentMaterialIndex = 0;
+let currentRecordingDuration = 0;
+
+// Materials that are 'meta' and should not have their duration used for the main cycle timer
+const META_MATERIALS = ["RECORDING", "analysis"];
+
+function loadOrganData() {
+    try {
+        const data = fs.readFileSync(ORGAN_DATA_PATH, 'utf8');
+        organData = JSON.parse(data);
+        console.log("Organ data loaded successfully.");
+        const recordingMaterial = organData.find(m => m.name === "RECORDING");
+        if (recordingMaterial && recordingMaterial.durations.length > 0) {
+            currentRecordingDuration = recordingMaterial.durations[0];
+        } else {
+            console.warn("RECORDING material not found or empty, defaulting recording duration to 5s.");
+            currentRecordingDuration = 5;
+        }
+
+    } catch (error) {
+        console.error("Failed to load organ data:", error);
+        organData = [];
     }
-    currentMaterialDurations = newDurations;
-    console.log("Generated new material durations:", currentMaterialDurations);
+}
+
+function getCurrentSegmentDurations() {
+    if (organData.length === 0) {
+        return [];
+    }
+
+    const segmentDurations = organData.map(material => {
+        if (material.durations && material.durations.length > currentSegmentIndex) {
+            return {
+                name: material.name,
+                duration: material.durations[currentSegmentIndex]
+            };
+        }
+        return { name: material.name, duration: null };
+    });
+
+    const recordingEntry = segmentDurations.find(s => s.name === "RECORDING");
+    if (recordingEntry && recordingEntry.duration !== null) {
+        currentRecordingDuration = recordingEntry.duration;
+        // Commenting this out to reduce console spam, as it updates every frontend poll
+        // console.log(`Updated current recording duration to: ${currentRecordingDuration}s`);
+    }
+
+    return segmentDurations;
+}
+
+function advancePerformanceState() {
+    if (organData.length === 0) {
+        console.warn("Cannot advance performance state, organ data not loaded.");
+        return;
+    }
+
+    currentMaterialIndex++;
+
+    const maxSegmentLength = Math.max(...organData.map(material => material.durations.length));
+
+    if (currentMaterialIndex >= organData.length) {
+        currentMaterialIndex = 0;
+        currentSegmentIndex++;
+
+        if (currentSegmentIndex >= maxSegmentLength) {
+            console.log("End of performance data reached. Looping back to the beginning.");
+            currentSegmentIndex = 0;
+        }
+    }
+    console.log(`Advanced to Segment: ${currentSegmentIndex}, Material: ${organData[currentMaterialIndex]?.name || 'N/A'}`);
 }
 
 
 async function processAudioAndGenerateSVG() {
-    console.log('--- Starting Audio Processing Cycle ---');
+    console.log('--- Starting Audio Processing Cycle (Recording & Analysis) ---');
     let cycleSuccess = true;
 
     try {
         const scriptDir = __dirname;
 
-        // 1. Set initial message: "Stop Playing!"
         currentStatusMessage = 'Stop Playing!';
         console.log(`Status: ${currentStatusMessage}`);
 
-        // --- Recording bells ---
-        currentStatusMessage = 'Recording bells...';
+        currentStatusMessage = `Recording bells for ${currentRecordingDuration}s...`;
         console.log(`Status: ${currentStatusMessage}`);
-        console.log(`Recording audio for ${RECORD_DURATION_SECONDS} seconds using FFmpeg...`);
+        console.log(`Recording audio for ${currentRecordingDuration} seconds using FFmpeg...`);
 
         const recordArgs = [
             '-f', 'avfoundation',
-            '-i', FFMPEG_DEVICE_INDEX, // Corrected variable name here
-            '-t', RECORD_DURATION_SECONDS.toString(),
+            '-i', FFMPEG_DEVICE_INDEX,
+            '-t', currentRecordingDuration.toString(),
             '-ar', '48000',
             '-ac', '1',
             '-y',
@@ -77,7 +129,6 @@ async function processAudioAndGenerateSVG() {
             '-loglevel', 'debug'
         ];
 
-
         await new Promise((resolve, reject) => {
             console.log(`FFmpeg Command: ${FFMPEG_PATH} ${recordArgs.join(' ')}`);
             const ffmpegChild = spawn(FFMPEG_PATH, recordArgs, { cwd: scriptDir });
@@ -85,7 +136,6 @@ async function processAudioAndGenerateSVG() {
             let ffmpegErrorOutput = '';
             ffmpegChild.stderr.on('data', (data) => {
                 const output = data.toString();
-                console.warn(`FFmpeg stderr: ${output}`);
                 ffmpegErrorOutput += output;
             });
 
@@ -106,7 +156,6 @@ async function processAudioAndGenerateSVG() {
             });
         });
 
-        // --- Analysing bells ---
         currentStatusMessage = 'Analysing bells...';
         console.log(`Status: ${currentStatusMessage}`);
         console.log('Analyzing audio...');
@@ -123,12 +172,10 @@ async function processAudioAndGenerateSVG() {
                     console.warn(`Analysis stderr: ${stderr}`);
                 }
                 console.log('Audio analysis complete.');
-                console.log('Analysis stdout:', stdout);
                 resolve();
             });
         });
 
-        // --- Generate new LilyPond SVG ---
         console.log('Generating new LilyPond SVG...');
         const generateNodeCommand = `node generate_lilypond.js`;
         await new Promise((resolve, reject) => {
@@ -142,13 +189,11 @@ async function processAudioAndGenerateSVG() {
                     console.warn(`LilyPond generation stderr: ${stderr}`);
                 }
                 console.log('LilyPond SVG generation complete.');
-                console.log('LilyPond stdout:', stdout);
                 resolve();
             });
         });
 
-        // Full cycle successful
-        currentStatusMessage = ''; // Clear message
+        currentStatusMessage = '';
         console.log('--- Audio Processing Cycle Complete ---');
 
     } catch (err) {
@@ -156,288 +201,87 @@ async function processAudioAndGenerateSVG() {
         console.error('An error occurred during the processing cycle:', err);
         currentStatusMessage = `Cycle Error: ${err.message.substring(0, 70)}...`;
     } finally {
-        startProcessingTimer(); // Schedule next cycle with a random delay or fixed delay
+        // No call to startProcessingTimer() or advancePerformanceState() here.
+        // These are now exclusively handled by the main startProcessingTimer()
+        // to manage the sequence and ensure immediate progression after recording.
     }
 }
 
 let processingTimer;
-let durationUpdateTimer;
-
-// Function to calculate a random interval between 5 and 60 seconds (in 5-second steps)
-function getRandomAudioCycleInterval() {
-    const minSeconds = 5;
-    const maxSeconds = 60;
-    const step = 5;
-
-    const numberOfSteps = (maxSeconds - minSeconds) / step + 1;
-    const randomStep = Math.floor(Math.random() * numberOfSteps); // 0 to 11
-    const randomInterval = minSeconds + (randomStep * step); // 5, 10, ..., 60
-
-    return randomInterval;
-}
-
 
 function startProcessingTimer() {
     if (processingTimer) {
         clearTimeout(processingTimer);
     }
 
-    let nextInterval;
-    if (IS_TESTING_MODE) {
-        nextInterval = 5; // Force 5 seconds in testing mode
+    let nextInterval = 5; // Default if no valid material found
+    let currentMaterial = null;
+
+    if (organData.length > 0 && currentMaterialIndex < organData.length) {
+        currentMaterial = organData[currentMaterialIndex];
+        if (currentMaterial && currentMaterial.durations && currentMaterial.durations.length > currentSegmentIndex) {
+            nextInterval = currentMaterial.durations[currentSegmentIndex];
+        } else {
+            console.warn(`Could not find duration for material ${currentMaterialIndex} at segment ${currentSegmentIndex}. Defaulting to 5s.`);
+        }
     } else {
-        nextInterval = getRandomAudioCycleInterval(); // Use random interval in normal mode
+        console.warn("Organ data not loaded or empty, defaulting next interval to 5s.");
     }
 
     processingTimer = setTimeout(async () => {
-        await processAudioAndGenerateSVG();
-    }, nextInterval * 1000); // Convert seconds to milliseconds
-    console.log(`Next audio processing cycle scheduled in ${nextInterval} seconds.`);
+        // Only run processAudioAndGenerateSVG if it's the last *playable* material (Low Rumbles)
+        if (currentMaterial && currentMaterial.name === "Low Rumbles") {
+            console.log("Current material is 'Low Rumbles'. Initiating audio processing.");
+            await processAudioAndGenerateSVG();
+        } else if (currentMaterial && META_MATERIALS.includes(currentMaterial.name)) {
+            // If it's 'RECORDING' or 'analysis', these phases are handled *within* processAudioAndGenerateSVG
+            // when it runs after Low Rumbles. So, if we hit these in the *normal* material
+            // sequence, it means processAudioAndGenerateSVG didn't run this cycle,
+            // and we should just advance past them immediately.
+            console.log(`Current material is '${currentMaterial.name}'. This is a meta-material, advancing immediately.`);
+            nextInterval = 0.1; // Make it a very short interval to skip quickly
+        } else {
+            console.log(`Current material is '${currentMaterial?.name || 'N/A'}'. Skipping audio processing for this unit.`);
+        }
+
+        // Always advance the performance state after the timer completes, regardless of sampling.
+        // This ensures progression through materials, including skipping meta ones.
+        advancePerformanceState();
+
+        // Schedule the next timer immediately after advancing state
+        startProcessingTimer();
+
+    }, nextInterval * 1000);
+    console.log(`Next material unit scheduled in ${nextInterval} seconds (for material ${currentMaterial?.name || 'N/A'} in segment ${currentSegmentIndex}).`);
 }
-
-function startDurationUpdateTimer() {
-    if (durationUpdateTimer) {
-        clearTimeout(durationUpdateTimer);
-    }
-
-    // Generate durations immediately on first call
-    generateRandomMaterialDurations();
-
-    durationUpdateTimer = setTimeout(() => {
-        startDurationUpdateTimer(); // Call itself to loop
-    }, DURATION_UPDATE_INTERVAL_SECONDS * 1000);
-    console.log(`Next material durations update scheduled in ${DURATION_UPDATE_INTERVAL_SECONDS} seconds.`);
-}
-
 
 // --- API endpoints ---
 app.get('/status', (req, res) => {
     res.json({ status: currentStatusMessage });
 });
 
-app.get('/durations', (req, res) => {
-    res.json({ durations: currentMaterialDurations });
+app.get('/performance_state', (req, res) => {
+    const segmentDurations = getCurrentSegmentDurations();
+    res.json({
+        segmentIndex: currentSegmentIndex,
+        materialIndex: currentMaterialIndex,
+        materials: segmentDurations
+    });
 });
 
-
-// --- Express Routes ---
+// --- Express Route for the main page ---
 app.get('/', (req, res) => {
-    res.send(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Dynamic LilyPond SVG</title>
-            <style>
-                body {
-                    font-family: sans-serif;
-                    background: #f0f0f0;
-                    text-align: center;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    align-items: center;
-                    min-height: 100vh;
-                    margin: 0;
-                    padding-bottom: 50px;
-                }
-                h1 {
-                    color: #333;
-                }
-                #score-container {
-                    position: relative;
-                    width: 800px;
-                    height: 300px;
-                    margin: 20px auto;
-                    border: 1px solid #ccc;
-                    box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
-                    background-color: #fff;
-                }
-                #score {
-                    display: block;
-                    width: 100%;
-                    height: 100%;
-                    object-fit: contain;
-                }
-                #status-overlay {
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    background-color: rgba(255, 255, 255, 0.8);
-                    color: #FF0000;
-                    font-size: 3em;
-                    font-weight: bold;
-                    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-                    z-index: 1000;
-                    transition: opacity 0.3s ease-in-out;
-                    opacity: 0;
-                    pointer-events: none;
-                }
-                #status-overlay.visible {
-                    opacity: 1;
-                }
-
-                /* Material segment duration section */
-                .material-section {
-                    margin-top: 40px;
-                    width: 800px;
-                    text-align: left;
-                }
-                .material-section h2 {
-                    color: #333;
-                    font-size: 1.5em;
-                    margin-bottom: 15px;
-                    text-align: center;
-                }
-                .columns-container {
-                    display: flex;
-                    justify-content: space-around;
-                    flex-wrap: wrap;
-                    gap: 20px;
-                    padding: 0 20px;
-                }
-                .column {
-                    flex: 1;
-                    min-width: 120px;
-                    max-width: 150px;
-                    text-align: center;
-                    background-color: #fff;
-                    padding: 15px 10px;
-                    border-radius: 8px;
-                    box-shadow: 1px 1px 5px rgba(0,0,0,0.1);
-                }
-                .column h3 {
-                    font-size: 1.1em;
-                    color: #555;
-                    margin-top: 0;
-                    margin-bottom: 10px;
-                    border-bottom: 1px solid #eee;
-                    padding-bottom: 8px;
-                }
-                /* Added IDs for each duration paragraph for dynamic updates */
-                .column p {
-                    font-size: 1.2em;
-                    font-weight: bold;
-                    color: #007bff;
-                    margin: 0;
-                }
-            </style>
-        </head>
-        <body>
-            <h1>Dynamic Music Display</h1>
-
-            <div id="score-container">
-                <img id="score" src="combined.svg" alt="Music Score"/>
-                <div id="status-overlay"></div>
-            </div>
-
-            <div class="material-section">
-                <h2>Material segment duration:</h2>
-                <div class="columns-container">
-                    <div class="column">
-                        <h3>1. runs</h3>
-                        <p id="duration-0">3s</p>
-                    </div>
-                    <div class="column">
-                        <h3>2. Cluster chords</h3>
-                        <p id="duration-1">5s</p>
-                    </div>
-                    <div class="column">
-                        <h3>3. High very high squeaks</h3>
-                        <p id="duration-2">8s</p>
-                    </div>
-                    <div class="column">
-                        <h3>4. Imitate bells</h3>
-                        <p id="duration-3">5s</p>
-                    </div>
-                    <div class="column">
-                        <h3>5. Ostinato chords</h3>
-                        <p id="duration-4">3s</p>
-                    </div>
-                    <div class="column">
-                        <h3>6. Low rumbles</h3>
-                        <p id="duration-5">2s</p>
-                    </div>
-                </div>
-            </div>
-
-            <script>
-                const scoreImg = document.getElementById('score');
-                const statusOverlay = document.getElementById('status-overlay');
-                const durationParagraphs = [];
-                for(let i = 0; i < 6; i++) {
-                    durationParagraphs.push(document.getElementById('duration-' + i));
-                }
-
-
-                async function updateDisplay() {
-                    try {
-                        // Fetch status
-                        const statusResponse = await fetch('/status');
-                        const statusData = await statusResponse.json();
-                        const serverStatus = statusData.status;
-
-                        // Update status overlay
-                        if (serverStatus) {
-                            statusOverlay.textContent = serverStatus;
-                            statusOverlay.classList.add('visible');
-                            if (serverStatus === 'Recording bells...') {
-                                statusOverlay.style.color = '#008000';
-                            } else if (serverStatus === 'Analysing bells...') {
-                                statusOverlay.style.color = '#0000FF';
-                            } else {
-                                statusOverlay.style.color = '#FF0000';
-                            }
-                        } else {
-                            statusOverlay.classList.remove('visible');
-                        }
-
-                        // Fetch durations
-                        const durationsResponse = await fetch('/durations');
-                        const durationsData = await durationsResponse.json();
-                        const newDurations = durationsData.durations;
-
-                        // Update duration paragraphs
-                        if (newDurations && newDurations.length === 6) {
-                            newDurations.forEach((duration, index) => {
-                                if (durationParagraphs[index]) {
-                                    durationParagraphs[index].textContent = duration + 's';
-                                }
-                            });
-                        }
-
-                        // Refresh SVG
-                        scoreImg.src = 'combined.svg?t=' + Date.now();
-
-                    } catch (error) {
-                        console.error('Error fetching status or durations:', error);
-                        statusOverlay.textContent = 'Client: Connection Error';
-                        statusOverlay.classList.add('visible');
-                        statusOverlay.style.color = '#FFA500';
-                    }
-                }
-
-                setInterval(updateDisplay, 500);
-                updateDisplay(); // Initial call
-            </script>
-        </body>
-        </html>
-    `);
+    res.sendFile(path.join(publicDir, 'index.html'));
 });
 
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
-    const initialCombinedSvgPath = path.join(__dirname, 'public', 'combined.svg');
+    const initialCombinedSvgPath = path.join(publicDir, 'combined.svg');
     if (!fs.existsSync(initialCombinedSvgPath)) {
         console.warn("public/combined.svg not found on startup. Creating a blank initial SVG.");
         const blankSvg = `<svg width="800" height="300" viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="800" height="300" fill="#fff"/></svg>`;
         fs.writeFileSync(initialCombinedSvgPath, blankSvg);
     }
-    // Start both timers when the server starts
-    startDurationUpdateTimer(); // This will also generate initial durations
-    startProcessingTimer();
+    loadOrganData();
+    startProcessingTimer(); // Start the first timer
 });

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dynamic LilyPond SVG</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #f0f0f0;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding-bottom: 50px;
+        }
+        h1 {
+            color: #333;
+        }
+        #score-container {
+            position: relative;
+            width: 800px;
+            height: 300px;
+            margin: 20px auto;
+            border: 1px solid #ccc;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+            background-color: #fff;
+        }
+        #score {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        #status-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.8);
+            color: #FF0000;
+            font-size: 3em;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            z-index: 1000;
+            transition: opacity 0.3s ease-in-out;
+            opacity: 0;
+            pointer-events: none;
+        }
+        #status-overlay.visible {
+            opacity: 1;
+        }
+
+        /* Material segment duration section */
+        .material-section {
+            margin-top: 40px;
+            width: 900px; /* Wider to accommodate more columns */
+            text-align: left;
+        }
+        .material-section h2 {
+            color: #333;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .columns-container {
+            display: flex;
+            justify-content: center; /* Center items */
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 0 20px;
+        }
+        .column {
+            flex: 0 1 auto; /* Allow flexible width but not grow indefinitely */
+            min-width: 120px;
+            max-width: 160px; /* Slightly wider max-width */
+            text-align: center;
+            background-color: #fff;
+            padding: 15px 10px;
+            border-radius: 8px;
+            box-shadow: 1px 1px 5px rgba(0,0,0,0.1);
+            border: 2px solid transparent; /* For highlighting */
+            transition: border-color 0.3s ease-in-out;
+        }
+        .column.active {
+            border-color: #007bff; /* Highlight color */
+            box-shadow: 0 0 15px rgba(0, 123, 255, 0.5);
+        }
+        .column h3 {
+            font-size: 1.1em;
+            color: #555;
+            margin-top: 0;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+        .column p {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #007bff;
+            margin: 0;
+        }
+        /* Style for the recording duration display */
+        #recording-duration-display {
+            margin-top: 20px;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #d9534f; /* Reddish for emphasis */
+        }
+    </style>
+</head>
+<body>
+    <h1>Dynamic Music Display</h1>
+
+    <div id="score-container">
+        <img id="score" src="combined.svg" alt="Music Score"/>
+        <div id="status-overlay"></div>
+    </div>
+
+    <div class="material-section">
+        <h2>Current Material Segment: <span id="current-segment-label">0</span></h2>
+        <div id="recording-duration-display">Recording Duration: --s</div>
+        <div id="columns-container" class="columns-container">
+            </div>
+    </div>
+
+    <script>
+        const scoreImg = document.getElementById('score');
+        const statusOverlay = document.getElementById('status-overlay');
+        const columnsContainer = document.getElementById('columns-container');
+        const currentSegmentLabel = document.getElementById('current-segment-label');
+        const recordingDurationDisplay = document.getElementById('recording-duration-display');
+
+
+        async function updateDisplay() {
+            try {
+                // Fetch status
+                const statusResponse = await fetch('/status');
+                const statusData = await statusResponse.json();
+                const serverStatus = statusData.status;
+
+                // Update status overlay
+                if (serverStatus) {
+                    statusOverlay.textContent = serverStatus;
+                    statusOverlay.classList.add('visible');
+                    if (serverStatus.startsWith('Recording')) {
+                        statusOverlay.style.color = '#008000'; // Green for recording
+                    } else if (serverStatus.startsWith('Analysing')) {
+                        statusOverlay.style.color = '#0000FF'; // Blue for analyzing
+                    } else {
+                        statusOverlay.style.color = '#FF0000'; // Red for errors/stop playing
+                    }
+                } else {
+                    statusOverlay.classList.remove('visible');
+                }
+
+                // Fetch performance state (includes material durations and active index)
+                const performanceResponse = await fetch('/performance_state');
+                const performanceData = await performanceResponse.json();
+                const { segmentIndex, materialIndex, materials } = performanceData;
+
+                currentSegmentLabel.textContent = segmentIndex; // Update segment label
+
+                // Clear existing columns
+                columnsContainer.innerHTML = '';
+
+                // Dynamically create and update duration paragraphs
+                materials.forEach((material, index) => {
+                    // Only display materials that have durations and are not 'RECORDING' or 'analysis'
+                    if (material.duration !== null && material.name !== 'RECORDING' && material.name !== 'analysis') {
+                        const columnDiv = document.createElement('div');
+                        columnDiv.className = 'column';
+                        if (index === materialIndex) {
+                            columnDiv.classList.add('active'); // Highlight active material
+                        }
+
+                        const h3 = document.createElement('h3');
+                        h3.textContent = (index + 1) + '. ' + material.name;
+                        columnDiv.appendChild(h3);
+
+                        const p = document.createElement('p');
+                        p.textContent = material.duration + 's';
+                        columnDiv.appendChild(p);
+
+                        columnsContainer.appendChild(columnDiv);
+                    } else if (material.name === 'RECORDING' && material.duration !== null) {
+                        recordingDurationDisplay.textContent = `Recording Duration: ${material.duration}s`;
+                    }
+                });
+
+
+                // Refresh SVG
+                scoreImg.src = 'combined.svg?t=' + Date.now();
+
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                statusOverlay.textContent = 'Client: Connection Error';
+                statusOverlay.classList.add('visible');
+                statusOverlay.style.color = '#FFA500';
+                recordingDurationDisplay.textContent = `Recording Duration: --s`; // Clear on error
+            }
+        }
+
+        setInterval(updateDisplay, 500);
+        updateDisplay(); // Initial call
+    </script>
+</body>
+</html>

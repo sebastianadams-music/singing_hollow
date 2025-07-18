@@ -1,0 +1,82 @@
+[
+  {
+    "name": "Runs",
+    "durations": [
+      3,
+      3,
+      3,
+      3,
+      3
+    ]
+  },
+  {
+    "name": "Cluster Chords",
+    "durations": [
+      5,
+      5,
+      5,
+      5,
+      5
+    ]
+  },
+  {
+    "name": "Squeak",
+    "durations": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  {
+    "name": "Imitate Bells",
+    "durations": [
+      3,
+      3,
+      3,
+      3,
+      3
+    ]
+  },
+  {
+    "name": "Ostinato Chords",
+    "durations": [
+      5,
+      5,
+      5,
+      5,
+      5
+    ]
+  },
+  {
+    "name": "Low Rumbles",
+    "durations": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  {
+    "name": "RECORDING",
+    "durations": [
+      5,
+      5,
+      10,
+      10,
+      30
+    ]
+  },
+  {
+    "name": "analysis",
+    "durations": [
+      5,
+      5,
+      5,
+      5,
+      5
+    ]
+  }
+]
