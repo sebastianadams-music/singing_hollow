@@ -191,7 +191,8 @@
         function formatSecondsToMinutesSeconds(totalSeconds) {
             const minutes = Math.floor(totalSeconds / 60);
             const seconds = totalSeconds % 60;
-            return `${minutes}m ${seconds.toFixed(2)}s`;
+            const paddedSeconds = seconds < 10 && minutes > 0 ? '0' + seconds.toFixed(2) : seconds.toFixed(2); // Pad with leading zero if less than 10 and there are minutes
+            return `${minutes}m ${paddedSeconds}s`;
         }
 
         /**
@@ -500,15 +501,51 @@
             });
         }
 
-        // Initial setup on page load
-        window.onload = () => {
-            // Add 6 default materials with random data
+        // --- Function to load default JSON from a file ---
+        async function loadDefaultConfig() {
+            try {
+                // Adjust the path if your file is in a subdirectory (e.g., './data/singinghollow_organ.json')
+                const response = await fetch('./singinghollow_organ.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+
+                if (Array.isArray(data) && data.every(item => item.name && Array.isArray(item.durations))) {
+                    currentMaterialData = data.map(item => ({
+                        name: String(item.name),
+                        durations: item.durations.map(d => parseFloat(d)).filter(n => !isNaN(n) && n > 0)
+                    }));
+                    console.log('Default configuration loaded from singinghollow_organ.json');
+                } else {
+                    console.warn('Default JSON file has an invalid structure. Using fallback default data.');
+                    setupFallbackDefaultData();
+                }
+            } catch (error) {
+                console.error('Could not load default configuration from singinghollow_organ.json:', error);
+                console.warn('Using fallback default data.');
+                setupFallbackDefaultData();
+            } finally {
+                generateTimeline(); // Always generate timeline after attempting to load config
+            }
+        }
+
+        function setupFallbackDefaultData() {
+            // Add 6 default materials with random data if the JSON fails to load or is invalid
+            currentMaterialData = []; // Clear any potentially partial or invalid data
             for (let i = 1; i <= 6; i++) {
                 currentMaterialData.push({
                     name: `Material ${i}`,
                     durations: generateRandomDurations(5, 10).split(' ').map(Number) // 5 random durations, max 10s
                 });
             }
+        }
+
+
+        // Initial setup on page load
+        window.onload = () => {
+            // Load the default configuration from the JSON file
+            loadDefaultConfig();
 
             // Event listener for opening the modal
             document.getElementById('configureMaterialsBtn').addEventListener('click', openMaterialModal);
@@ -518,9 +555,6 @@
             document.getElementById('scaleFactorInput').addEventListener('change', generateTimeline);
             // Event listener for import JSON input
             document.getElementById('importJsonInput').addEventListener('change', importJson);
-
-
-            generateTimeline(); // Generate initial timeline with default data
         };
     </script>
 </body>
