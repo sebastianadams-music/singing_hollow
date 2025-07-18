@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alternating Material Visualiser</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Custom styles for the Inter font */
@@ -129,41 +128,41 @@
             </div>
         </div>
 
-        <button onclick="generateTimeline()" class="w-full bg-gradient-to-r from-blue-600 to-blue-800 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:from-blue-700 hover:to-blue-900 transition duration-300 ease-in-out transform hover:scale-105 mb-4">
-            Generate Timeline
-        </button>
+        <div class="flex flex-col md:flex-row gap-4 mb-4">
+            <button onclick="generateTimeline()" class="flex-grow bg-gradient-to-r from-blue-600 to-blue-800 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:from-blue-700 hover:to-blue-900 transition duration-300 ease-in-out transform hover:scale-105">
+                Generate Timeline
+            </button>
+            <button onclick="exportToJson()" class="flex-grow bg-gray-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-gray-700 transition duration-300 ease-in-out transform hover:scale-105">
+                Export Configuration (JSON)
+            </button>
+            <label for="importJsonInput" class="flex-grow bg-purple-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-purple-700 transition duration-300 ease-in-out transform hover:scale-105 cursor-pointer text-center">
+                Import Configuration (JSON)
+                <input type="file" id="importJsonInput" accept=".json" class="hidden">
+            </label>
+        </div>
 
-        <button onclick="exportToJson()" class="w-full bg-gray-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-gray-700 transition duration-300 ease-in-out transform hover:scale-105">
-            Export Configuration (JSON)
-        </button>
 
         <div id="timelineContainer" class="mt-8 flex-grow flex flex-col">
             <h2 class="text-2xl font-bold text-gray-900 mb-4 text-center">Timeline Visualization</h2>
             <p id="totalLength" class="text-xl font-semibold text-gray-800 mb-4 text-center">Overall Length: 0.00 seconds</p>
 
-            <!-- The main wrapper for the entire timeline, enabling horizontal scrolling -->
             <div id="timelineMainWrapper" class="timeline-main-wrapper">
-                <!-- This inner div will dynamically size to contain all tracks and enable proper scrolling -->
                 <div id="timelineContentArea" class="timeline-content-area">
                     <p class="text-gray-600 w-full text-center py-4">Click "Generate Timeline" to see the visualization.</p>
                 </div>
             </div>
 
-            <!-- Legend will be rendered here -->
             <div id="legendContainer" class="flex flex-wrap justify-center gap-4 mt-8 p-4 bg-white rounded-lg shadow border border-gray-200">
                 <h3 class="w-full text-center text-lg font-semibold text-gray-800 mb-2">Material Legend</h3>
-                <!-- Legend items will be dynamically added here -->
-            </div>
+                </div>
         </div>
     </div>
 
-    <!-- Material Configuration Modal -->
     <div id="materialModal" class="modal-overlay hidden">
         <div class="modal-content">
             <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Material Configuration</h2>
             <div id="materialInputsContainer" class="flex flex-col gap-4 mb-8">
-                <!-- Material input rows will be dynamically added here by JavaScript -->
-            </div>
+                </div>
             <button id="addMaterialBtn" class="w-full bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md hover:bg-gray-400 transition duration-300 ease-in-out mb-4">
                 Add Material Type
             </button>
@@ -183,6 +182,39 @@
             'bg-purple-500', 'bg-indigo-500', 'bg-pink-500', 'bg-teal-500',
             'bg-orange-500', 'bg-cyan-500', 'bg-lime-500', 'bg-fuchsia-500'
         ];
+
+        /**
+         * Converts total seconds into a formatted string (Mm SS.ss).
+         * @param {number} totalSeconds - The total number of seconds.
+         * @returns {string} Formatted time string (e.g., "01m 30.50s").
+         */
+        function formatSecondsToMinutesSeconds(totalSeconds) {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            return `${minutes}m ${seconds.toFixed(2)}s`;
+        }
+
+        /**
+         * Converts total seconds into a formatted string (Hh Mm SS.ss s).
+         * @param {number} totalSeconds - The total number of seconds.
+         * @returns {string} Formatted time string (e.g., "1h 05m 12.34s").
+         */
+        function formatTotalDuration(totalSeconds) {
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = (totalSeconds % 60);
+
+            let formatted = '';
+            if (hours > 0) {
+                formatted += `${hours}h `;
+            }
+            if (minutes > 0 || hours > 0) { // Show minutes if there are hours or minutes present
+                formatted += `${minutes}m `;
+            }
+            formatted += `${seconds.toFixed(2)}s`; // Always show seconds
+            return formatted.trim(); // Remove trailing space if any
+        }
+
 
         /**
          * Generates a string of random positive durations.
@@ -209,6 +241,7 @@
 
             // Re-populate modal with current material data
             currentMaterialData.forEach(data => {
+                // Ensure durations are joined with a space for the input field
                 addMaterialInput(data.name, data.durations.join(' '));
             });
         }
@@ -283,6 +316,39 @@
         }
 
         /**
+         * Imports material configuration from a JSON file.
+         */
+        function importJson(event) {
+            const file = event.target.files[0];
+            if (!file) {
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    // Validate imported data structure if necessary
+                    if (Array.isArray(importedData) && importedData.every(item => item.name && Array.isArray(item.durations))) {
+                        currentMaterialData = importedData.map(item => ({
+                            name: String(item.name),
+                            durations: item.durations.map(d => parseFloat(d)).filter(n => !isNaN(n) && n > 0)
+                        }));
+                        openMaterialModal(); // Open modal and populate with imported data
+                        generateTimeline(); // Regenerate timeline after import
+                        alert('Configuration imported successfully! Please review in the "Configure Materials" modal.');
+                    } else {
+                        alert('Invalid JSON structure. Please ensure it\'s an array of objects with "name" and "durations" properties.');
+                    }
+                } catch (error) {
+                    alert('Error parsing JSON file: ' + error.message);
+                    console.error('Error parsing JSON:', error);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        /**
          * Updates the currentMaterialData array by reading values from the modal's inputs.
          * This ensures the data is fresh before generating the timeline or exporting.
          */
@@ -307,148 +373,132 @@
          * Function to generate and display the musical timeline based on user inputs.
          */
         function generateTimeline() {
-    // currentMaterialData is assumed to be up-to-date (either from initial load or modal close)
+            // currentMaterialData is assumed to be up-to-date (either from initial load or modal close)
 
-    const timelineMainWrapper = document.getElementById('timelineMainWrapper');
-    timelineMainWrapper.innerHTML = ''; // Clear previous timelines
+            const timelineMainWrapper = document.getElementById('timelineMainWrapper');
+            timelineMainWrapper.innerHTML = ''; // Clear previous timelines
 
-    const legendContainer = document.getElementById('legendContainer');
-    legendContainer.innerHTML = '<h3 class="w-full text-center text-lg font-semibold text-gray-800 mb-2">Material Legend</h3>'; // Clear previous legend
+            const legendContainer = document.getElementById('legendContainer');
+            legendContainer.innerHTML = '<h3 class="w-full text-center text-lg font-semibold text-gray-800 mb-2">Material Legend</h3>'; // Clear previous legend
 
-    // Create the inner content area that will hold all tracks
-    const timelineContentArea = document.createElement('div');
-    timelineContentArea.id = 'timelineContentArea';
-    timelineContentArea.className = 'timeline-content-area';
-    timelineMainWrapper.appendChild(timelineContentArea);
+            // Create the inner content area that will hold all tracks
+            const timelineContentArea = document.createElement('div');
+            timelineContentArea.id = 'timelineContentArea';
+            timelineContentArea.className = 'timeline-content-area';
+            timelineMainWrapper.appendChild(timelineContentArea);
 
 
-    // This array will hold all segments in their chronological order in the *overall* piece
-    const overallSegments = [];
-    let currentTime = 0; // Tracks the current time in the overall timeline
-    const materialIndices = Array(currentMaterialData.length).fill(0); // Tracks the next duration index for each material
+            // This array will hold all segments in their chronological order in the *overall* piece
+            const overallSegments = [];
+            let currentTime = 0; // Tracks the current time in the overall timeline
+            const materialIndices = Array(currentMaterialData.length).fill(0); // Tracks the next duration index for each material
 
-    let continueGeneration = true;
-    let iterationCount = 0;
-    const maxIterations = 1000; // Safety break
+            let continueGeneration = true;
+            let iterationCount = 0;
+            const maxIterations = 1000; // Safety break
 
-    // Loop to generate the single, continuous sequence of segments
-    while (continueGeneration && iterationCount < maxIterations) {
-        const materialTypeIndex = iterationCount % currentMaterialData.length;
-        const currentMaterial = currentMaterialData[materialTypeIndex];
+            // Loop to generate the single, continuous sequence of segments
+            while (continueGeneration && iterationCount < maxIterations) {
+                const materialTypeIndex = iterationCount % currentMaterialData.length;
+                const currentMaterial = currentMaterialData[materialTypeIndex];
 
-        if (!currentMaterial || materialIndices[materialTypeIndex] >= currentMaterial.durations.length) {
-            // If any material's duration list is exhausted, the piece ends
-            continueGeneration = false;
-            continue;
+                if (!currentMaterial || materialIndices[materialTypeIndex] >= currentMaterial.durations.length) {
+                    // If any material's duration list is exhausted, the piece ends
+                    continueGeneration = false;
+                    continue;
+                }
+
+                const duration = currentMaterial.durations[materialIndices[materialTypeIndex]];
+
+                overallSegments.push({
+                    name: currentMaterial.name,
+                    typeIndex: materialTypeIndex,
+                    startTime: currentTime, // This is the actual start time in the continuous piece
+                    duration: duration
+                });
+
+                currentTime += duration; // Update current time for the overall timeline
+                materialIndices[materialTypeIndex]++; // Move to the next duration for this material
+                iterationCount++;
+            }
+
+            const totalDuration = currentTime; // The total length of the continuous piece
+            document.getElementById('totalLength').textContent = `Overall Length: ${formatTotalDuration(totalDuration)}`;
+
+            if (overallSegments.length === 0) {
+                timelineContentArea.innerHTML = '<p class="text-gray-600 w-full text-center py-4">No segments generated. Please add materials and enter valid positive durations.</p>';
+                return;
+            }
+
+            const scaleFactorInput = document.getElementById('scaleFactorInput');
+            const scaleFactor = parseFloat(scaleFactorInput.value) || 5; // Default to 5
+
+            // Create and append a track for each material
+            const materialTracks = [];
+            currentMaterialData.forEach((material, index) => {
+                const trackDiv = document.createElement('div');
+                trackDiv.className = 'material-track'; // Apply track styling
+
+                // Add a label for the track
+                const trackLabel = document.createElement('span');
+                trackLabel.className = 'font-bold text-gray-800 text-sm absolute left-1 top-1'; // Position label
+                trackLabel.textContent = material.name;
+                trackDiv.appendChild(trackLabel);
+
+                // This div will hold the actual segments for this track
+                const segmentsContainer = document.createElement('div');
+                segmentsContainer.className = 'flex flex-row items-stretch h-full w-full relative'; // Inner container for segments
+                trackDiv.appendChild(segmentsContainer);
+
+                timelineContentArea.appendChild(trackDiv); // Append to the new content area
+                materialTracks[index] = segmentsContainer; // Store reference to the segments container
+            });
+
+            // Render segments by distributing them to their respective material's horizontal track
+            overallSegments.forEach(segment => {
+                const segmentElement = document.createElement('div');
+                const widthInPixels = Math.max(segment.duration * scaleFactor, 5); // Minimum width of 5px
+                const leftPosition = segment.startTime * scaleFactor; // Calculate left offset
+
+                const colorClass = predefinedColors[segment.typeIndex % predefinedColors.length];
+
+                segmentElement.className = `segment-item ${colorClass}`; // Removed text-white
+                segmentElement.style.width = `${widthInPixels}px`;
+                segmentElement.style.left = `${leftPosition}px`; // Apply left offset
+
+                // Inner HTML for segment details on three separate lines, left-aligned
+                segmentElement.innerHTML = `
+                    <div class="segment-content">
+                        <span class="font-bold">${segment.name}</span>
+                        <span>Start: ${formatSecondsToMinutesSeconds(segment.startTime)}</span>
+                        <span>Dur: ${formatSecondsToMinutesSeconds(segment.duration)}</span>
+                    </div>
+                `;
+                // Append to the correct material's specific track
+                materialTracks[segment.typeIndex].appendChild(segmentElement);
+            });
+
+            // Set the overall width of the timelineContentArea to accommodate all segments
+            // This ensures the horizontal scrollbar appears correctly on timelineMainWrapper
+            const maxRightEdge = overallSegments.reduce((max, segment) => {
+                return Math.max(max, (segment.startTime + segment.duration) * scaleFactor);
+            }, 0);
+            // Add some padding to the end of the scrollable area
+            timelineContentArea.style.width = `${Math.max(maxRightEdge + 100, timelineMainWrapper.clientWidth)}px`;
+
+
+            // Populate the legend based on currentMaterialData
+            currentMaterialData.forEach((material, index) => {
+                const legendItem = document.createElement('div');
+                const colorClass = predefinedColors[index % predefinedColors.length];
+                legendItem.className = 'flex items-center space-x-2';
+                legendItem.innerHTML = `
+                    <span class="w-4 h-4 ${colorClass} rounded-full shadow"></span>
+                    <span class="text-gray-700">${material.name}</span>
+                `;
+                legendContainer.appendChild(legendItem);
+            });
         }
-
-        const duration = currentMaterial.durations[materialIndices[materialTypeIndex]];
-
-        overallSegments.push({
-            name: currentMaterial.name,
-            typeIndex: materialTypeIndex,
-            startTime: currentTime, // This is the actual start time in the continuous piece
-            duration: duration
-        });
-
-        currentTime += duration; // Update current time for the overall timeline
-        materialIndices[materialTypeIndex]++; // Move to the next duration for this material
-        iterationCount++;
-    }
-
-    const totalDuration = currentTime; // The total length of the continuous piece
-
-    // Convert totalDuration to Hh Mm Ss format
-    const hours = Math.floor(totalDuration / 3600);
-    const minutes = Math.floor((totalDuration % 3600) / 60);
-    const seconds = (totalDuration % 60);
-
-    let formattedDuration = '';
-    if (hours > 0) {
-        formattedDuration += `${hours}h `;
-    }
-    if (minutes > 0 || hours > 0) { // Show minutes if there are hours or minutes present
-        formattedDuration += `${minutes}m `;
-    }
-    formattedDuration += `${seconds.toFixed(2)}s`; // Always show seconds
-
-    document.getElementById('totalLength').textContent = `Overall Length: ${formattedDuration}`;
-
-
-    if (overallSegments.length === 0) {
-        timelineContentArea.innerHTML = '<p class="text-gray-600 w-full text-center py-4">No segments generated. Please add materials and enter valid positive durations.</p>';
-        return;
-    }
-
-    const scaleFactorInput = document.getElementById('scaleFactorInput');
-    const scaleFactor = parseFloat(scaleFactorInput.value) || 5; // Default to 5
-
-    // Create and append a track for each material
-    const materialTracks = [];
-    currentMaterialData.forEach((material, index) => {
-        const trackDiv = document.createElement('div');
-        trackDiv.className = 'material-track'; // Apply track styling
-
-        // Add a label for the track
-        const trackLabel = document.createElement('span');
-        trackLabel.className = 'font-bold text-gray-800 text-sm absolute left-1 top-1'; // Position label
-        trackLabel.textContent = material.name;
-        trackDiv.appendChild(trackLabel);
-
-        // This div will hold the actual segments for this track
-        const segmentsContainer = document.createElement('div');
-        segmentsContainer.className = 'flex flex-row items-stretch h-full w-full relative'; // Inner container for segments
-        trackDiv.appendChild(segmentsContainer);
-
-        timelineContentArea.appendChild(trackDiv); // Append to the new content area
-        materialTracks[index] = segmentsContainer; // Store reference to the segments container
-    });
-
-    // Render segments by distributing them to their respective material's horizontal track
-    overallSegments.forEach(segment => {
-        const segmentElement = document.createElement('div');
-        const widthInPixels = Math.max(segment.duration * scaleFactor, 5); // Minimum width of 5px
-        const leftPosition = segment.startTime * scaleFactor; // Calculate left offset
-
-        const colorClass = predefinedColors[segment.typeIndex % predefinedColors.length];
-
-        segmentElement.className = `segment-item ${colorClass}`; // Removed text-white
-        segmentElement.style.width = `${widthInPixels}px`;
-        segmentElement.style.left = `${leftPosition}px`; // Apply left offset
-
-        // Inner HTML for segment details on three separate lines, left-aligned
-        segmentElement.innerHTML = `
-            <div class="segment-content">
-                <span class="font-bold">${segment.name}</span>
-                <span>Start: ${segment.startTime.toFixed(2)}s</span>
-                <span>Dur: ${segment.duration.toFixed(2)}s</span>
-            </div>
-        `;
-        // Append to the correct material's specific track
-        materialTracks[segment.typeIndex].appendChild(segmentElement);
-    });
-
-    // Set the overall width of the timelineContentArea to accommodate all segments
-    // This ensures the horizontal scrollbar appears correctly on timelineMainWrapper
-    const maxRightEdge = overallSegments.reduce((max, segment) => {
-        return Math.max(max, (segment.startTime + segment.duration) * scaleFactor);
-    }, 0);
-    // Add some padding to the end of the scrollable area
-    timelineContentArea.style.width = `${Math.max(maxRightEdge + 100, timelineMainWrapper.clientWidth)}px`;
-
-
-    // Populate the legend based on currentMaterialData
-    currentMaterialData.forEach((material, index) => {
-        const legendItem = document.createElement('div');
-        const colorClass = predefinedColors[index % predefinedColors.length];
-        legendItem.className = 'flex items-center space-x-2';
-        legendItem.innerHTML = `
-            <span class="w-4 h-4 ${colorClass} rounded-full shadow"></span>
-            <span class="text-gray-700">${material.name}</span>
-        `;
-        legendContainer.appendChild(legendItem);
-    });
-}
 
         // Initial setup on page load
         window.onload = () => {
@@ -466,6 +516,9 @@
             document.getElementById('addMaterialBtn').addEventListener('click', () => addMaterialInput('', ''));
             // Event listener for scale factor input changes
             document.getElementById('scaleFactorInput').addEventListener('change', generateTimeline);
+            // Event listener for import JSON input
+            document.getElementById('importJsonInput').addEventListener('change', importJson);
+
 
             generateTimeline(); // Generate initial timeline with default data
         };
