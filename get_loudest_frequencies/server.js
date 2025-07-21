@@ -125,7 +125,8 @@ async function processAudioAndGenerateSVG() {
         console.log(`Recording audio for ${currentRecordingDuration} seconds using FFmpeg...`);
 
         const recordArgs = [
-            '-f', 'avfoundation',
+            // '-f', 'avfoundation',
+            '-f', 'alsa'
             '-i', FFMPEG_DEVICE_INDEX,
             '-t', currentRecordingDuration.toString(),
             '-ar', '48000',
