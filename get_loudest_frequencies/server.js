@@ -21,6 +21,10 @@ const FFMPEG_PATH = "ffmpeg";
 const PYTHON_PATH = "python"
 const LILYPOND_PATH = "lilypond";
 
+
+const FFMPEG_DEVICE_INDEX_MAC = ':3'; // Example Mac device index
+const FFMPEG_DEVICE_INDEX_DEBIAN = 'default'; // Example Debian ALSA or PulseAudio device name
+
 // --- FFmpeg Device Index (CRITICAL: ENSURE THIS IS CORRECT) ---
 const FFMPEG_DEVICE_INDEX = ":1";
 
@@ -42,6 +46,22 @@ let currentRecordingDuration = 0;
 
 // Materials that are 'meta' and should not have their duration used for the main cycle timer
 const META_MATERIALS = ["RECORDING", "analysis"];
+
+if (process.platform === 'darwin') { // macOS
+    inputFormat = 'avfoundation';
+    inputDevice = FFMPEG_DEVICE_INDEX_MAC;
+    console.log("Detected macOS: Using avfoundation.");
+} else if (process.platform === 'linux') { // Debian/Linux
+    // You might need to refine this based on your specific Linux setup (ALSA vs PulseAudio)
+    inputFormat = 'alsa'; // or 'pulse'
+    inputDevice = FFMPEG_DEVICE_INDEX_DEBIAN;
+    console.log(`Detected Linux: Using ${inputFormat} with device ${inputDevice}.`);
+} else {
+    // Handle other platforms or throw an error
+    console.error(`Unsupported platform: ${process.platform}. Cannot determine audio input.`);
+    process.exit(1);
+}
+
 
 function loadOrganData() {
     try {
@@ -125,9 +145,8 @@ async function processAudioAndGenerateSVG() {
         console.log(`Recording audio for ${currentRecordingDuration} seconds using FFmpeg...`);
 
         const recordArgs = [
-            // '-f', 'avfoundation',
-            '-f', 'alsa'
-            '-i', FFMPEG_DEVICE_INDEX,
+            '-f', inputFormat,
+            '-i', inputDevice,
             '-t', currentRecordingDuration.toString(),
             '-ar', '48000',
             '-ac', '1',
