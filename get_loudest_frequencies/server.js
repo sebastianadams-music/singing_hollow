@@ -11,15 +11,9 @@ const PORT = 3000;
 const AUDIO_FILE_PATH = path.join(__dirname, 'recorded_audio.wav');
 const NOTES_JSON_PATH = path.join(__dirname, 'notes.json');
 
-
-if (isTestMode) {
-    console.log("test mode")
-    ORGAN_DATA_PATH = path.join(__dirname, 'dummyorganstructure.json'); // Using your dummy data path for testing
-}
-else {
-    const ORGAN_DATA_PATH = path.join(__dirname, 'singinghollow_organ.json');
-
-}
+const ORGAN_DATA_PATH = isTestMode
+    ? path.join(__dirname, 'dummyorganstructure.json') // If true (test mode)
+    : path.join(__dirname, 'singinghollow_organ.json'); // If false (normal mode)
 
 
 // --- Absolute Paths for Executables (IMPROVED ROBUSTNESS) ---
