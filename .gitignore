@@ -1,3 +1,9 @@
+# tempfiles
+get_loudest_frequencies/notes.ly
+get_loudest_frequencies/notes.svg
+get_loudest_frequencies/recorded_audio.wav
+
+
 # Node.js
 node_modules/
 .pnp/
