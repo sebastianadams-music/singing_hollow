@@ -3,16 +3,29 @@ const path = require('path');
 const { exec, spawn } = require('child_process');
 const fs = require('fs');
 
+const args = process.argv.slice(2); // Get arguments after 'node server.js'
+const isTestMode = args.includes('test'); // run "npm start test" to use test mode!
+
 const app = express();
 const PORT = 3000;
 const AUDIO_FILE_PATH = path.join(__dirname, 'recorded_audio.wav');
 const NOTES_JSON_PATH = path.join(__dirname, 'notes.json');
-const ORGAN_DATA_PATH = path.join(__dirname, 'dummyorganstructure.json'); // Using your dummy data path for testing
+
+
+if (isTestMode) {
+    console.log("test mode")
+    ORGAN_DATA_PATH = path.join(__dirname, 'dummyorganstructure.json'); // Using your dummy data path for testing
+}
+else {
+    const ORGAN_DATA_PATH = path.join(__dirname, 'singinghollow_organ.json');
+
+}
+
 
 // --- Absolute Paths for Executables (IMPROVED ROBUSTNESS) ---
-const FFMPEG_PATH = "/opt/homebrew/bin/ffmpeg";
-const PYTHON_PATH = "/Users/sebastianadams/Desktop/singing_hollow/get_loudest_frequencies/.venv/bin/python"
-const LILYPOND_PATH = "/opt/homebrew/bin/lilypond";
+const FFMPEG_PATH = "ffmpeg";
+const PYTHON_PATH = "python"
+const LILYPOND_PATH = "lilypond";
 
 // --- FFmpeg Device Index (CRITICAL: ENSURE THIS IS CORRECT) ---
 const FFMPEG_DEVICE_INDEX = ":1";
