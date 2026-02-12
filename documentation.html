@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Singing Hollow Documentation</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+            overflow: hidden;
+        }
+        .video-container {
+            position: absolute;
+            opacity: 0.8;
+            transition: opacity 1s ease-in-out;
+        }
+        video {
+            opacity: 0.8;
+        }
+        .bottom-link {
+            position: fixed;
+            bottom: 10px;
+            color: white;
+            text-decoration: none;
+            font-family: sans-serif;
+            font-size: 12px;
+            z-index: 101;
+        }
+        #reload-link {
+            left: 10px;
+        }
+        .home-link {
+            right: 10px;
+        }
+        #play-sound-button {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2em;
+            padding: 20px;
+            cursor: pointer;
+            z-index: 100;
+        }
+
+        @media (orientation: portrait) {
+            body.portrait {
+                transform: rotate(90deg);
+                transform-origin: center center;
+                width: 100vh;
+                height: 100vw;
+                overflow-x: hidden;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) rotate(90deg) ;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="video-players"></div>
+    <a href="index.html" class="home-link bottom-link">HOME</a>
+    <a href="#" id="reload-link" class="bottom-link">RELOAD</a>
+    <button id="play-sound-button">Play sound</button>
+
+    <script>
+        const videoFiles = [
+            "SEB_BELLS_PIECE_JULY25/123_PANA/P1230427_crf28.mp4",
+            "SEB_BELLS_PIECE_JULY25/123_PANA/P1230426_crf28.mp4",
+            "SEB_BELLS_PIECE_JULY25/123_PANA/P1230425_crf28.mp4",
+            "SEB_BELLS_PIECE_JULY25/123_PANA/P1230424_crf28.mp4",
+            "SEB_BELLS_PIECE_JULY25/123_PANA/P1230423_crf28.mp4",
+            "SEB_BELLS_PIECE_JULY25/123_PANA/P1230422_crf28.mp4",
+            "SEB_BELLS_PIECE_JULY25/123_PANA/P1230421_crf28.mp4",
+            "SEB_BELLS_PIECE_JULY25/123_PANA/P1230420_crf28.mp4",
+            "SEB_BELLS_PIECE_JULY25/123_PANA/P1230419_crf28.mp4",
+            "SEB_BELLS_PIECE_JULY25/123_PANA/P1230418_crf28.mp4",
+            "SEB_BELLS_PIECE_JULY25/123_PANA/P1230417_crf28.mp4",
+            "SEB_BELLS_PIECE_JULY25/123_PANA/P1230416_crf28.mp4",
+            "SEB_BELLS_PIECE_JULY25/123_PANA/P1230415_crf28.mp4",
+            "SEB_BELLS_PIECE_JULY25/123_PANA/P1230414_crf28.mp4",
+            "SEB_BELLS_PIECE_JULY25/123_PANA/P1230413_crf28.mp4",
+            "SEB_BELLS_PIECE_JULY25/123_PANA/P1230412_crf28.mp4",
+            "SEB_BELLS_PIECE_JULY25/123_PANA/P1230411_crf28.mp4",
+            "SEB_BELLS_PIECE_JULY25/123_PANA/P1230410_crf28.mp4",
+            "SEB_BELLS_PIECE_JULY25/123_PANA/P1230409_crf28.mp4",
+            "SEB_BELLS_PIECE_JULY25/123_PANA/P1230408_crf28.mp4"
+        ];
+        const audioFile = "SEB_BELLS_PIECE_JULY25/audio/ZOOM0010_LR.WAV";
+        const maxVideos = 4;
+        const videoPlayersContainer = document.getElementById('video-players');
+        const playSoundButton = document.getElementById('play-sound-button');
+        const reloadLink = document.getElementById('reload-link');
+        let videoPlayers = [];
+        let audio;
+        let isInitialLoad = true;
+
+        function getRandomVideo() {
+            return videoFiles[Math.floor(Math.random() * videoFiles.length)];
+        }
+
+        function createVideoPlayer() {
+            const videoContainer = document.createElement('div');
+            videoContainer.className = 'video-container';
+
+            const video = document.createElement('video');
+            video.src = getRandomVideo();
+            video.autoplay = false;
+            video.muted = false;
+            video.width = Math.max(window.innerWidth, window.innerHeight) / 4;
+
+            let containerWidth = window.innerWidth;
+            let containerHeight = window.innerHeight;
+
+            if (document.body.classList.contains('portrait')) {
+                containerWidth = window.innerHeight;
+                containerHeight = window.innerWidth;
+            }
+
+            videoContainer.style.left = Math.random() * (containerWidth - video.width) + 'px';
+            videoContainer.style.top = Math.random() * (containerHeight - (video.width * 9 / 16)) + 'px';
+
+            video.onended = () => handleVideoEnd(videoContainer, video);
+            
+            video.onplay = () => {
+                if (!isInitialLoad) {
+                    videoContainer.style.opacity = 0.8;
+                }
+                const fadeOutTimeout = (video.duration - 1) * 1000;
+                if (fadeOutTimeout > 0) {
+                    setTimeout(() => {
+                        videoContainer.style.opacity = 0;
+                    }, fadeOutTimeout);
+                }
+            };
+
+            videoContainer.appendChild(video);
+            videoPlayersContainer.appendChild(videoContainer);
+            videoPlayers.push({ container: videoContainer, video: video });
+        }
+
+        function handleVideoEnd(container, video) {
+            container.style.opacity = 0;
+            if (Math.random() < 0.5) {
+                setTimeout(() => {
+                    video.src = getRandomVideo();
+                    video.play();
+                }, 1000);
+            } else {
+                container.style.display = 'none';
+                setTimeout(() => {
+                    video.src = getRandomVideo();
+                    container.style.display = 'block';
+                    video.play();
+                }, Math.random() * 75000);
+            }
+        }
+
+        function setupAudio() {
+            audio = new Audio(audioFile);
+            audio.loop = true;
+            audio.volume = 0.5;
+            
+            audio.addEventListener('canplaythrough', () => {
+                const randomStartTime = Math.random() * audio.duration;
+                audio.currentTime = randomStartTime;
+            });
+        }
+
+        function startPlayback() {
+            // Play all videos
+            videoPlayers.forEach(player => {
+                player.video.play();
+            });
+
+            // Play audio
+            if (audio) {
+                audio.play();
+            }
+            
+            isInitialLoad = false;
+
+            // Hide the button
+            playSoundButton.style.display = 'none';
+        }
+
+        function checkOrientation() {
+            if (window.matchMedia("(orientation: portrait)").matches) {
+                document.body.classList.add('portrait');
+            } else {
+                document.body.classList.remove('portrait');
+            }
+        }
+
+        // Initial setup
+        for (let i = 0; i < maxVideos; i++) {
+            createVideoPlayer();
+        }
+        setupAudio();
+        checkOrientation();
+
+
+        playSoundButton.addEventListener('click', startPlayback);
+        reloadLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            location.reload();
+        });
+        window.matchMedia("(orientation: portrait)").addEventListener("change", checkOrientation);
+
+    </script>
+</body>
+</html>
+
+</body>
+</html>
