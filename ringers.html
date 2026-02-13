@@ -26,8 +26,6 @@
                 background-color: #fff;
                 border-radius: 8px;
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-                position: relative; /* Ensure container is positioned correctly relative to body */
-                z-index: 1; /* Ensure it's above the notation overlay */
             }
 
             h1, h2, h3 {
@@ -137,41 +135,9 @@
             .software-elements strong {
                 color: #2980b9; /* Blue for emphasized software elements */
             }
-
-            /* New Bell Notation Styles */
-            #bell-notation-container {
-                position: fixed;
-                left: 0;
-                top: 0;
-                width: 45vw; /* Between 30% and 60% */
-                height: 100vh;
-                background-color: rgba(0,0,0,0.7); /* Semi-transparent background */
-                color: white;
-                overflow: hidden;
-                padding: 20px;
-                box-sizing: border-box; /* Include padding in width calculation */
-                z-index: 10; /* Ensure it's above other content */
-                display: flex;
-                flex-direction: column;
-                justify-content: flex-end; /* Align content to the bottom */
-            }
-            .bell-line {
-                font-family: monospace;
-                font-size: 2em; /* Adjust as needed for 10 lines */
-                white-space: pre; /* Preserve spaces */
-                opacity: 0.4;
-                transition: opacity 0.3s ease-in-out; /* Smooth transition for active state */
-                line-height: 1.2;
-            }
-            .bell-line.active {
-                opacity: 1;
-            }
         </style>
     </head>
     <body>
-        <div id="bell-notation-container">
-            <div id="bell-notation-display"></div>
-        </div>
         <div class="container">
             <a href="index.html" class="back-link">&larr; Back to Home Page</a>
 
@@ -290,70 +256,5 @@
                 <p>&copy; 2025 Sebastian Adams. All rights reserved.</p>
             </footer>
         </div>
-        <script>
-            const plainHunt6 = [
-                "123456", "214365", "241635", "426153", "462513", "645231",
-                "654321", "563412", "536142", "351624", "315246", "132564"
-            ];
-            const fibonacciSequence = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987];
-            let fibonacciIndex = 0;
-            const baseSpeed = 300; // ms per change for fibonacci 1 (adjusted for a reasonable speed)
-            const maxDisplayLines = 10;
-            let currentChangeIndex = 0;
-            let leadCount = 0;
-            let animationTimeout; // Renamed to avoid conflict with setInterval
-
-            const bellNotationContainer = document.getElementById('bell-notation-container');
-            const bellNotationDisplay = document.getElementById('bell-notation-display');
-
-            function updateDisplay() {
-                // Remove active class from previous active line
-                const activeLine = bellNotationDisplay.querySelector('.bell-line.active');
-                if (activeLine) {
-                    activeLine.classList.remove('active');
-                }
-
-                // Create new line element
-                const newLine = document.createElement('div');
-                newLine.classList.add('bell-line');
-                newLine.textContent = plainHunt6[currentChangeIndex].split('').join(' '); // Add spaces for readability
-                bellNotationDisplay.appendChild(newLine);
-
-                // Add active class to new line
-                newLine.classList.add('active');
-
-                // Manage scrolling
-                while (bellNotationDisplay.children.length > maxDisplayLines) {
-                    bellNotationDisplay.removeChild(bellNotationDisplay.children[0]);
-                }
-
-                // Update indices
-                currentChangeIndex++;
-                if (currentChangeIndex >= plainHunt6.length) {
-                    currentChangeIndex = 0;
-                    leadCount++;
-                    fibonacciIndex = (fibonacciIndex + 1) % fibonacciSequence.length; // Cycle through Fibonacci numbers
-                }
-
-                // Schedule next update
-                const delay = fibonacciSequence[fibonacciIndex] * baseSpeed;
-                animationTimeout = setTimeout(updateDisplay, delay);
-            }
-
-            // Initial setup
-            // Fill the display buffer with initial (inactive) lines
-            for (let i = 0; i < maxDisplayLines - 1; i++) {
-                const initialLine = document.createElement('div');
-                initialLine.classList.add('bell-line');
-                // Use a modulo to ensure we don't go out of bounds if plainHunt6 is shorter than maxDisplayLines - 1
-                initialLine.textContent = plainHunt6[i % plainHunt6.length].split('').join(' ');
-                bellNotationDisplay.appendChild(initialLine);
-            }
-            // Adjust starting index for the actual animation to start from the correct place
-            currentChangeIndex = (maxDisplayLines - 1 + currentChangeIndex) % plainHunt6.length; 
-            
-            updateDisplay(); // Start the animation
-
-        </script>
     </body>
     </html>
