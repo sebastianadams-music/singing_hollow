@@ -40,7 +40,7 @@
             font-size: 2em;
             padding: 20px;
             cursor: pointer;
-            z-index: 100;
+            z-index: 102; /* Higher z-index to be above notation */
         }
 
         @media (orientation: portrait) {
@@ -56,9 +56,47 @@
                 transform: translate(-50%, -50%) rotate(90deg) ;
             }
         }
+
+        /* New Bell Notation Styles */
+        #bell-notation-container {
+            position: fixed;
+            left: 30%; /* Start 30% from the left */
+            top: 0;
+            width: 30%; /* Finish roughly 60% from the left (30% + 30%) */
+            height: 100vh;
+            background-color: rgba(0,0,0,0.7); /* Semi-transparent background */
+            color: white;
+            overflow: hidden;
+            padding: 20px 0; /* Vertical padding only, horizontal handled by width */
+            box-sizing: border-box;
+            z-index: 100; /* Ensure it's above videos but below play button */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end; /* Align content to the bottom */
+            text-align: center; /* Center the numbers horizontally within their container */
+        }
+        .bell-line {
+            font-family: monospace;
+            font-size: 2.5em; /* Adjusted for 10 lines and readability */
+            white-space: pre; /* Preserve spaces */
+            line-height: 1.2;
+            height: 1.2em; /* Explicit height to maintain consistent line spacing */
+        }
+        .bell-digit {
+            opacity: 0.4;
+            transition: opacity 0.1s ease-in-out; /* Smooth transition for active state */
+            display: inline-block; /* Allows individual numbers to be styled */
+            width: 1em; /* Give each digit a consistent width */
+        }
+        .bell-digit.active {
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
+    <div id="bell-notation-container">
+        <div id="bell-notation-display"></div>
+    </div>
     <div id="video-players"></div>
     <a href="index.html" class="home-link bottom-link">HOME</a>
     <a href="#" id="reload-link" class="bottom-link">RELOAD</a>
@@ -95,6 +133,24 @@
         let videoPlayers = [];
         let audio;
         let isInitialLoad = true;
+
+        // Bell Notation Variables
+        const plainHunt6 = [
+            "123456", "214365", "241635", "426153", "462513", "645231",
+            "654321", "563412", "536142", "351624", "315246", "132564"
+        ];
+        const fibonacciSequence = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987];
+        let fibonacciIndex = 0;
+        const baseBellSpeed = 100; // ms per digit for fibonacci 1
+        const maxBellDisplayLines = 10;
+        let currentLineIndex = 0; // Index in plainHunt6
+        let currentDigitIndex = 0; // Index within the current line (0-5)
+        let leadCount = 0;
+        let bellAnimationTimeout;
+
+        const bellNotationContainer = document.getElementById('bell-notation-container');
+        const bellNotationDisplay = document.getElementById('bell-notation-display');
+
 
         function getRandomVideo() {
             return videoFiles[Math.floor(Math.random() * videoFiles.length)];
@@ -168,6 +224,72 @@
             });
         }
 
+        function initBellNotation() {
+            // Fill the display buffer with initial (inactive) lines
+            for (let i = 0; i < maxBellDisplayLines - 1; i++) {
+                const lineDiv = document.createElement('div');
+                lineDiv.classList.add('bell-line');
+                const lineContent = plainHunt6[i % plainHunt6.length];
+                for (const digit of lineContent) {
+                    const digitSpan = document.createElement('span');
+                    digitSpan.classList.add('bell-digit');
+                    digitSpan.textContent = digit;
+                    lineDiv.appendChild(digitSpan);
+                }
+                bellNotationDisplay.appendChild(lineDiv);
+            }
+            currentLineIndex = (maxBellDisplayLines - 1) % plainHunt6.length; // Adjust starting index
+        }
+
+        function animateBellNotation() {
+            const currentLineDiv = bellNotationDisplay.children[bellNotationDisplay.children.length - 1]; // Always operate on the last line
+
+            // Remove active class from previous digit
+            const previousActiveDigit = currentLineDiv.querySelector('.bell-digit.active');
+            if (previousActiveDigit) {
+                previousActiveDigit.classList.remove('active');
+            }
+
+            // Add active class to current digit
+            const currentDigitSpan = currentLineDiv.children[currentDigitIndex];
+            if (currentDigitSpan) {
+                currentDigitSpan.classList.add('active');
+            }
+
+            currentDigitIndex++;
+
+            if (currentDigitIndex >= plainHunt6[currentLineIndex].length) { // A full line has completed
+                currentDigitIndex = 0; // Reset digit index for the new line
+
+                // Scrolling: remove oldest line, add new one
+                if (bellNotationDisplay.children.length >= maxBellDisplayLines) {
+                    bellNotationDisplay.removeChild(bellNotationDisplay.children[0]);
+                }
+
+                currentLineIndex++;
+                if (currentLineIndex >= plainHunt6.length) {
+                    currentLineIndex = 0;
+                    leadCount++;
+                    fibonacciIndex = (fibonacciIndex + 1) % fibonacciSequence.length; // Cycle through Fibonacci numbers
+                }
+
+                const newLine = document.createElement('div');
+                newLine.classList.add('bell-line');
+                const lineContent = plainHunt6[currentLineIndex];
+                for (const digit of lineContent) {
+                    const digitSpan = document.createElement('span');
+                    digitSpan.classList.add('bell-digit');
+                    digitSpan.textContent = digit;
+                    newLine.appendChild(digitSpan);
+                }
+                bellNotationDisplay.appendChild(newLine);
+            }
+
+            const delay = fibonacciSequence[fibonacciIndex] * baseBellSpeed;
+            bellAnimationTimeout = setTimeout(animateBellNotation, delay);
+        }
+
+
         function startPlayback() {
             // Play all videos
             videoPlayers.forEach(player => {
@@ -183,6 +305,9 @@
 
             // Hide the button
             playSoundButton.style.display = 'none';
+
+            // Start bell notation animation
+            animateBellNotation();
         }
 
         function checkOrientation() {
@@ -199,7 +324,7 @@
         }
         setupAudio();
         checkOrientation();
-
+        initBellNotation(); // Initialize bell notation display
 
         playSoundButton.addEventListener('click', startPlayback);
         reloadLink.addEventListener('click', (e) => {
