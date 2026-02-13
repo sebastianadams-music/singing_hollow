@@ -141,12 +141,13 @@
         ];
         const fibonacciSequence = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987];
         let fibonacciIndex = 0;
-        const baseBellSpeed = 100; // ms per digit for fibonacci 1
+        const baseBellSpeed = 1000; // ms per digit for fibonacci 1 (changed from 100 to 1000)
         const maxBellDisplayLines = 10;
         let currentLineIndex = 0; // Index in plainHunt6
         let currentDigitIndex = 0; // Index within the current line (0-5)
         let leadCount = 0;
         let bellAnimationTimeout;
+        let currentActiveDigitElement = null; // Track the currently active digit element
 
         const bellNotationContainer = document.getElementById('bell-notation-container');
         const bellNotationDisplay = document.getElementById('bell-notation-display');
@@ -242,35 +243,28 @@
         }
 
         function animateBellNotation() {
-            const currentLineDiv = bellNotationDisplay.children[bellNotationDisplay.children.length - 1]; // Always operate on the last line
-
-            // Remove active class from previous digit
-            const previousActiveDigit = currentLineDiv.querySelector('.bell-digit.active');
-            if (previousActiveDigit) {
-                previousActiveDigit.classList.remove('active');
+            // 1. Deactivate the previously active digit
+            if (currentActiveDigitElement) {
+                currentActiveDigitElement.classList.remove('active');
             }
 
-            // Add active class to current digit
-            const currentDigitSpan = currentLineDiv.children[currentDigitIndex];
-            if (currentDigitSpan) {
-                currentDigitSpan.classList.add('active');
-            }
+            // 2. Prepare for next digit/line
+            let lineDivToUpdate;
+            let digitIndexToActivate = currentDigitIndex;
 
-            currentDigitIndex++;
-
-            if (currentDigitIndex >= plainHunt6[currentLineIndex].length) { // A full line has completed
+            if (currentDigitIndex >= plainHunt6[currentLineIndex].length) { // A full line has completed, move to next line
                 currentDigitIndex = 0; // Reset digit index for the new line
-
-                // Scrolling: remove oldest line, add new one
-                if (bellNotationDisplay.children.length >= maxBellDisplayLines) {
-                    bellNotationDisplay.removeChild(bellNotationDisplay.children[0]);
-                }
-
                 currentLineIndex++;
-                if (currentLineIndex >= plainHunt6.length) {
+
+                if (currentLineIndex >= plainHunt6.length) { // A full lead has completed
                     currentLineIndex = 0;
                     leadCount++;
                     fibonacciIndex = (fibonacciIndex + 1) % fibonacciSequence.length; // Cycle through Fibonacci numbers
+                }
+
+                // Handle scrolling: remove oldest line, add new one
+                if (bellNotationDisplay.children.length >= maxBellDisplayLines) {
+                    bellNotationDisplay.removeChild(bellNotationDisplay.children[0]);
                 }
 
                 const newLine = document.createElement('div');
@@ -283,8 +277,23 @@
                     newLine.appendChild(digitSpan);
                 }
                 bellNotationDisplay.appendChild(newLine);
+                lineDivToUpdate = newLine; // New line is the target
+                digitIndexToActivate = 0; // First digit of the new line
+            } else {
+                lineDivToUpdate = bellNotationDisplay.children[bellNotationDisplay.children.length - 1]; // Still on the last line
             }
 
+            // 3. Activate the current digit
+            const digitSpanToActivate = lineDivToUpdate.children[digitIndexToActivate];
+            if (digitSpanToActivate) {
+                digitSpanToActivate.classList.add('active');
+                currentActiveDigitElement = digitSpanToActivate; // Store for next deactivation
+            }
+            
+            // 4. Increment currentDigitIndex for the *next* call
+            currentDigitIndex++;
+
+            // 5. Schedule next update
             const delay = fibonacciSequence[fibonacciIndex] * baseBellSpeed;
             bellAnimationTimeout = setTimeout(animateBellNotation, delay);
         }
