@@ -3,6 +3,9 @@ get_loudest_frequencies/notes.ly
 get_loudest_frequencies/notes.svg
 get_loudest_frequencies/recorded_audio.wav
 
+# uncompressed video files
+SEB_BELLS_PIECE_JULY25/123_PANA/unprocessed
+SEB_BELLS_PIECE_JULY25/audio/ZOOM0010_LR.WAV
 
 # Node.js
 node_modules/
