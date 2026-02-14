@@ -1,235 +1,374 @@
 <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Singing Hollow - A Performance Installation</title>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-        <style>
-            body {
-                font-family: 'Inter', sans-serif;
-                line-height: 1.6;
-                margin: 0;
-                padding: 0;
-                background-color: #f4f4f4; /* Light grey background */
-                color: #333; /* Dark grey text */
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                padding-bottom: 50px; /* Space for potential footer or just breathing room */
+<html>
+<head>
+    <title>Singing Hollow Documentation</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+            overflow: hidden;
+            font-family: sans-serif;
+        }
+        .video-container {
+            position: absolute;
+            opacity: 0.8;
+            transition: opacity 1s ease-in-out;
+        }
+        video {
+            opacity: 0.8;
+        }
+        .bottom-link {
+            position: fixed;
+            bottom: 10px;
+            color: white;
+            text-decoration: none;
+            font-family: sans-serif;
+            font-size: 12px;
+            z-index: 101;
+        }
+
+        ul {
+            list-style-type: none;
+        }
+
+        #reload-link {
+            left: 10px;
+        }
+        .home-link {
+            right: 10px;
+        }        
+        .sebastian-link {
+            display: flex;
+            justify-content: center;
+            width:   100%;
+
+        }
+        #play-sound-button {
+            cursor: pointer;
+        }
+
+        #intro {
+            position: fixed;
+            align-items: center;
+            justify-items: center;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            /* font-size: 2em; */
+            color: white;
+            text-align: center;
+            padding: 20px;
+            z-index: 102; /* Higher z-index to be above notation */
+            background-color: rgba(55, 55, 55, 0.354);
+        }
+
+        @media (orientation: portrait) {
+            body.portrait {
+                transform: rotate(90deg);
+                transform-origin: center center;
+                width: 100vh;
+                height: 100vw;
+                overflow-x: hidden;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) rotate(90deg) ;
+            }
+        }
+
+        /* New Bell Notation Styles */
+        #bell-notation-container {
+            position: fixed;
+/*             left: 30%; /* Start 30% from the left */ */
+            top: 0;
+            width: 30%; /* Finish roughly 60% from the left (30% + 30%) */
+            height: 100vh;
+/*             background-color: rgba(0,0,0,0.7); /* Semi-transparent background */ */
+            color: white;
+            overflow: hidden;
+/*             padding: 20px 0; /* Vertical padding only, horizontal handled by width */ */
+            box-sizing: border-box;
+            z-index: 100; /* Ensure it's above videos but below play button */
+            display: flex;
+            flex-direction: column;
+/*             justify-content: flex-end; /* Align content to the bottom */ */
+            text-align: center; /* Center the numbers horizontally within their container */
+        }
+        .bell-line {
+            font-family: monospace;
+            font-size: 2.5em; /* Adjusted for 10 lines and readability */
+            white-space: pre; /* Preserve spaces */
+            line-height: 1.2;
+            height: 1.2em; /* Explicit height to maintain consistent line spacing */
+        }
+        .bell-digit {
+            opacity: 0.4;
+            transition: opacity 0.1s ease-in-out; /* Smooth transition for active state */
+            display: inline-block; /* Allows individual numbers to be styled */
+            width: 1em; /* Give each digit a consistent width */
+        }
+        .bell-digit.active {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div id="bell-notation-container">
+        <div id="bell-notation-display"></div>
+    </div>
+    <div id="video-players"></div>
+    <a href="score.html" class="home-link bottom-link">SCORE</a>
+    <a href="https://www.sebastianadams.net" class="sebastian-link bottom-link">sebastianadams.net</a>
+    <a href="#" id="reload-link" class="bottom-link">RELOAD</a>
+    
+    <div id="intro">
+        <h2>Singing Hollow</h2>
+        <h3>A performance installation for church bells (method ringers), organ, and walking instruments. Designed around St Audoen's Church, Dublin.</h3>
+        <ul>
+            <li>organ - Olesia Borsuk</li>
+            <li>saxophone - Nick Roth</li>
+            <li>viola - Joanna Mattrey</li>
+            <li>melodica - Robert Coleman</li>
+            <li>shakuhachi - Jin Theriault</li>
+            <li>composition/walkie talkie/web design - Sebastian Adams</li>
+            <li></li>
+            <li>commissioned by the OPW/The Liberties Festival</li>
+            <li></li>
+            <li>video footage shot by Paul Scully</li>
+
+        </ul>
+        <button id="play-sound-button">Play</button>
+        <a id="about-button" class="buttonlink" href="audience.html">About</a>
+        <a id="score-button" class="buttonlink" href="score.html">Score</a>
+
+    </div>
+    
+
+    <script>
+        const videoFiles = [
+            "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230408_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230409_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230410_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230411_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230412_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230413_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230414_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230415_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230416_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230417_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230418_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230419_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230420_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230421_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230422_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230423_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230424_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230425_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230426_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230427_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230428_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230429_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230430_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230431_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230432_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230433_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230434_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230435_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230436_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230437_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230438_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230439_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230440_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230441_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230442_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230443_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230444_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230445_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230446_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230447_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230448_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230449_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230450_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230451_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230452_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230453_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230454_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230455_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230456_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230457_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230458_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230459_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230460_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230461_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230462_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230463_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230464_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230465_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230466_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230467_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230468_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230469_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230470_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230471_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230472_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230473_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230474_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230475_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230476_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230477_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230478_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230479_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230480_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230481_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230482_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230483_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230484_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230485_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230486_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230487_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230488_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230489_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230490_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230491_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230492_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230493_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230494_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230495_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/unprocessed"
+        ];
+        const audioFile = "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/audio/output.m4a";
+        const maxVideos = 4;
+        const videoPlayersContainer = document.getElementById('video-players');
+        const playSoundButton = document.getElementById('play-sound-button');
+        const reloadLink = document.getElementById('reload-link');
+        let videoPlayers = [];
+        let audio;
+        let isInitialLoad = true;
+
+        // Bell Notation Variables
+        const plainHunt6 = [
+            "123456", "214365", "241635", "426153", "462513", "645231",
+            "654321", "563412", "536142", "351624", "315246", "132564"
+        ];
+        const fibonacciSequence = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987];
+        let fibonacciIndex = 0;
+        const baseBellSpeed = 1000; // ms per digit for fibonacci 1 (changed from 100 to 1000)
+        const maxBellDisplayLines = 10;
+        let currentLineIndex = 0; // Index in plainHunt6
+        let currentDigitIndex = 0; // Index within the current line (0-5)
+        let leadCount = 0;
+        let bellAnimationTimeout;
+        let currentActiveDigitElement = null; // Track the currently active digit element
+
+        const bellNotationContainer = document.getElementById('bell-notation-container');
+        const bellNotationDisplay = document.getElementById('bell-notation-display');
+
+
+        function getRandomVideo() {
+            return videoFiles[Math.floor(Math.random() * videoFiles.length)];
+        }
+
+        function createVideoPlayer() {
+            const videoContainer = document.createElement('div');
+            videoContainer.className = 'video-container';
+
+            const video = document.createElement('video');
+            video.src = getRandomVideo();
+            video.autoplay = false;
+            video.muted = false;
+            video.width = Math.max(window.innerWidth, window.innerHeight) / 4;
+
+            let containerWidth = window.innerWidth;
+            let containerHeight = window.innerHeight;
+
+            if (document.body.classList.contains('portrait')) {
+                containerWidth = window.innerHeight;
+                containerHeight = window.innerWidth;
             }
 
-            .container {
-                max-width: 900px;
-                margin: 20px auto;
-                padding: 30px;
-                background-color: #fff;
-                border-radius: 8px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            videoContainer.style.left = Math.random() * (containerWidth - video.width) + 'px';
+            videoContainer.style.top = Math.random() * (containerHeight - (video.width * 9 / 16)) + 'px';
+
+            video.onended = () => handleVideoEnd(videoContainer, video);
+            
+            video.onplay = () => {
+                if (!isInitialLoad) {
+                    videoContainer.style.opacity = 0.8;
+                }
+                const fadeOutTimeout = (video.duration - 1) * 1000;
+                if (fadeOutTimeout > 0) {
+                    setTimeout(() => {
+                        videoContainer.style.opacity = 0;
+                    }, fadeOutTimeout);
+                }
+            };
+
+            videoContainer.appendChild(video);
+            videoPlayersContainer.appendChild(videoContainer);
+            videoPlayers.push({ container: videoContainer, video: video });
+        }
+
+        function handleVideoEnd(container, video) {
+            container.style.opacity = 0;
+            if (Math.random() < 0.5) {
+                setTimeout(() => {
+                    video.src = getRandomVideo();
+                    video.play();
+                }, 1000);
+            } else {
+                container.style.display = 'none';
+                setTimeout(() => {
+                    video.src = getRandomVideo();
+                    container.style.display = 'block';
+                    video.play();
+                }, Math.random() * 75000);
+            }
+        }
+
+        function setupAudio() {
+            audio = new Audio(audioFile);
+            audio.loop = true;
+            audio.volume = 0.5;
+            
+            audio.addEventListener('canplaythrough', () => {
+                const randomStartTime = Math.random() * audio.duration;
+                audio.currentTime = randomStartTime;
+            });
+        }
+
+        function initBellNotation() {
+            // Fill the display buffer with initial (inactive) lines
+            for (let i = 0; i < maxBellDisplayLines - 1; i++) {
+                const lineDiv = document.createElement('div');
+                lineDiv.classList.add('bell-line');
+                const lineContent = plainHunt6[i % plainHunt6.length];
+                for (const digit of lineContent) {
+                    const digitSpan = document.createElement('span');
+                    digitSpan.classList.add('bell-digit');
+                    digitSpan.textContent = digit;
+                    lineDiv.appendChild(digitSpan);
+                }
+                bellNotationDisplay.appendChild(lineDiv);
+            }
+            currentLineIndex = (maxBellDisplayLines - 1) % plainHunt6.length; // Adjust starting index
+        }
+
+        function animateBellNotation() {
+            // 1. Deactivate the previously active digit
+            if (currentActiveDigitElement) {
+                currentActiveDigitElement.classList.remove('active');
             }
 
-            h1, h2, h3 {
-                color: #2c3e50; /* Darker blue-grey for headings */
-                margin-top: 20px;
-                margin-bottom: 15px;
+            // 2. Prepare for next digit/line
+            let lineDivToUpdate;
+            let digitIndexToActivate = currentDigitIndex;
+
+            if (currentDigitIndex >= plainHunt6[currentLineIndex].length) { // A full line has completed, move to next line
+                currentDigitIndex = 0; // Reset digit index for the new line
+                currentLineIndex++;
+
+                if (currentLineIndex >= plainHunt6.length) { // A full lead has completed
+                    currentLineIndex = 0;
+                    leadCount++;
+                    fibonacciIndex = (fibonacciIndex + 1) % fibonacciSequence.length; // Cycle through Fibonacci numbers
+                }
+
+                // Handle scrolling: remove oldest line, add new one
+                if (bellNotationDisplay.children.length >= maxBellDisplayLines) {
+                    bellNotationDisplay.removeChild(bellNotationDisplay.children[0]);
+                }
+
+                const newLine = document.createElement('div');
+                newLine.classList.add('bell-line');
+                const lineContent = plainHunt6[currentLineIndex];
+                for (const digit of lineContent) {
+                    const digitSpan = document.createElement('span');
+                    digitSpan.classList.add('bell-digit');
+                    digitSpan.textContent = digit;
+                    newLine.appendChild(digitSpan);
+                }
+                bellNotationDisplay.appendChild(newLine);
+                lineDivToUpdate = newLine; // New line is the target
+                digitIndexToActivate = 0; // First digit of the new line
+            } else {
+                lineDivToUpdate = bellNotationDisplay.children[bellNotationDisplay.children.length - 1]; // Still on the last line
             }
 
-            h1 {
-                font-size: 2.8em;
-                text-align: center;
-                margin-bottom: 10px;
+            // 3. Activate the current digit
+            const digitSpanToActivate = lineDivToUpdate.children[digitIndexToActivate];
+            if (digitSpanToActivate) {
+                digitSpanToActivate.classList.add('active');
+                currentActiveDigitElement = digitSpanToActivate; // Store for next deactivation
             }
+            
+            // 4. Increment currentDigitIndex for the *next* call
+            currentDigitIndex++;
 
-            h2 {
-                font-size: 2.2em;
-                border-bottom: 2px solid #eee;
-                padding-bottom: 10px;
-                margin-bottom: 25px;
+            // 5. Schedule next update
+            const delay = fibonacciSequence[fibonacciIndex] * baseBellSpeed;
+            bellAnimationTimeout = setTimeout(animateBellNotation, delay);
+        }
+
+
+        function startPlayback() {
+            // Play all videos
+            videoPlayers.forEach(player => {
+                player.video.play();
+            });
+
+            // Play audio
+            if (audio) {
+                audio.play();
             }
+            
+            isInitialLoad = false;
 
-            h3 {
-                font-size: 1.6em;
+            // Hide the button
+            playSoundButton.style.display = 'none';
+
+            // Start bell notation animation
+            animateBellNotation();
+        }
+
+        function checkOrientation() {
+            if (window.matchMedia("(orientation: portrait)").matches) {
+                document.body.classList.add('portrait');
+            } else {
+                document.body.classList.remove('portrait');
             }
+        }
 
-            p {
-                margin-bottom: 1em;
-            }
+        // Initial setup
+        for (let i = 0; i < maxVideos; i++) {
+            createVideoPlayer();
+        }
+        setupAudio();
+        checkOrientation();
+        initBellNotation(); // Initialize bell notation display
 
-            .author-info {
-                text-align: center;
-                font-size: 1.1em;
-                margin-top: -10px;
-                margin-bottom: 30px;
-                color: #555;
-            }
+        playSoundButton.addEventListener('click', startPlayback);
+        reloadLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            location.reload();
+        });
+        window.matchMedia("(orientation: portrait)").addEventListener("change", checkOrientation);
 
-            .commission-info {
-                text-align: center;
-                font-style: italic;
-                margin-bottom: 40px;
-                color: #666;
-            }
+    </script>
+</body>
+</html>
 
-            .section {
-                margin-bottom: 40px;
-            }
-
-            .section-intro {
-                font-size: 1.15em;
-                margin-bottom: 25px;
-                background-color: #eaf2f8; /* Light blue background */
-                padding: 15px;
-                border-left: 5px solid #3498db; /* Blue border */
-                border-radius: 5px;
-            }
-
-            .list-item {
-                margin-bottom: 0.5em;
-            }
-
-            a {
-                color: #3498db; /* Blue links */
-                text-decoration: none;
-            }
-
-            a:hover {
-                text-decoration: underline;
-            }
-
-            .contact-info {
-                text-align: center;
-                margin-top: 40px;
-                font-size: 1.1em;
-                padding: 20px;
-                background-color: #f8f8f8;
-                border-top: 1px solid #eee;
-                border-radius: 0 0 8px 8px; /* Rounded bottom corners */
-            }
-
-            .technical-requirements ul, .case-of-rain ul {
-                list-style-type: disc;
-                margin-left: 20px;
-                padding-left: 0;
-            }
-            .technical-requirements li, .case-of-rain li {
-                margin-bottom: 0.5em;
-            }
-            .bell-tech-note {
-                font-style: italic;
-                font-size: 0.95em;
-                color: #666;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <header>
-                <h1>Singing Hollow</h1>
-                <p class="author-info">Sebastian Adams (2025)</p>
-                <p class="commission-info">A performance installation written for Olesia Borsuk, Robert Coleman, Joanna Mattrey, Nick Roth, Jin Theriault and the bell-ringers of St Audoen’s Church, Dublin</p>
-                <p class="commission-info">Commissioned by the OPW/The Liberties Festival</p>
-            </header>
-
-            <hr>
-
-            <section class="section">
-                <h2>Introduction</h2>
-                <p>
-                    The Singing Hollow sculpture in St Audoen's Park invites visitors to put their heads into a hole inside a rock. It creates an acoustic transformation reminiscent of the feeling of sanctuary from the outside world that comes when you walk into a church. This inspired this live sound installation: organ plays inside the church, musicians play in the grounds, and church bells bridge both worlds, all playing parts that are both independent and interdependent.
-                </p>
-                <p>
-                    In the original performance, the piece is designed for four outdoor instruments, six church bells (each one rung by an individual) and an organ. It was specifically written for St Audoen’s Church of Ireland, which is an incredibly old church.
-                </p>
-                <p class="section-intro">
-                    [named for] St Ouen (or Audoen) of Rouen (Normandy), a saint who lived in the seventh century and was dedicated to him by the Anglo-Normans, who arrived in Dublin after 1172. It was erected in 1190, possibly on the site of an older church dedicated to St. Columcille.<a href="https://en.wikipedia.org/wiki/St._Audoen%27s_Church,_Dublin_(Church_of_Ireland)">¹</a>.
-                </p>
-                <p>
-                    Three of the bells in this church are over 600 years old.
-                </p>
-                <p>
-                    The piece could easily be adapted for performance in other circumstances: a different church, a different number of bells, a different number of outdoor instrumentalists. The main thing which would need to be redone from scratch is the division of the church grounds into areas and sectors outlined in Spatial Layer - structural.
-                </p>
-                <p>
-                    The organ and outdoor instrumental parts are derived from the bells in various ways explained later in this score.
-                </p>
-            </section>
-
-            <hr>
-
-            <section class="section">
-                <h2>Instructions for Performers</h2>
-                <p>This score is designed to be read and internalised, and should not need to be referred to during the performance. The outdoor musicians will be guided via walkie talkie during the performance, and the organ and bells will be guided by web pages.</p>
-                <p>
-                    Please click the relevant link below for your specific instructions:
-                </p>
-                <ul>
-                    <li class="list-item"><a href="outdoor_musicians.html">Instructions for Outdoor Musicians</a></li>
-                    <li class="list-item"><a href="ringers.html">Instructions for Bell Ringers / Bell Control Software</a></li>
-                    <li class="list-item"><a href="organist.html">Instructions for Organist</a></li>
-                </ul>
-                <p>
-                    If anything in the score is unclear, please contact me at <a href="mailto:sebastian@kirkosensemble.com">sebastian@kirkosensemble.com</a>.
-                </p>
-            </section>
-
-            <hr>
-
-            <section class="section">
-                <h2>Technical Requirements</h2>
-                <div class="technical-requirements">
-                    <h3>Outdoor Instruments:</h3>
-                    <ul>
-                        <li>Must all be portable.</li>
-                        <li>No chairs or music stands required.</li>
-                        <li>No cables may be used.</li>
-                    </ul>
-
-                    <h3>Organist:</h3>
-                    <ul>
-                        <li>Will require a computer with a microphone attached.</li>
-                        <li>The computer screen must sit on the organ console’s music stand.</li>
-                        <li>The microphone must be able to pick up the bells in order to analyse it.</li>
-                        <li>The computer must be capable of running a modern web browser.</li>
-                        <li>Careful testing of the provided web server application will be required on the specific computer used for the performance.</li>
-                        <li>The application is available to download here: <a href="https://github.com/sebastianadams-music/singing_hollow/tree/main/get_loudest_frequencies"></a></li>
-                        <li>To install the application [detailed instructions to follow]</li>
-                    </ul>
-
-                    <h3>Bell-Ringers:</h3>
-                    <ul>
-                        <li>Must have access to a computer, whose screen must be visible to all the bell ringers; or which must be equipped with multiple screens.</li>
-                        <li>The computer should either have internet access to access the web page specified in the Bell Control tab, or a local copy of the web page (link to downloadable file will be provided here).</li>
-                        <li>The software is run locally, not synced over a server, so multiple computers must not be used simultaneously in order to solve sightline issues.</li>
-                    </ul>
-                    <p class="bell-tech-note">In the initial performance, all tech elements can be provided and set up by the composer.</p>
-                </div>
-            </section>
-
-            <hr>
-
-            <section class="section">
-                <h2>In Case of Rain</h2>
-                <div class="case-of-rain">
-                    <p>
-                        The backup plan will be to perform the same kinds of spatial transformation inside the church:
-                    </p>
-                    <ul>
-                        <li>Because the organ and “outdoor instruments” will both be in the same spaces, the “outdoor instruments” should play extremely quietly.</li>
-                        <li>Only audience members who are right beside them should be able to hear them.</li>
-                    </ul>
-                </div>
-            </section>
-
-            <hr>
-
-            <section><p>an audience page is available <a href="audience.html">here</a>.</p></section>
-
-            <hr>
-
-            <footer class="contact-info">
-                <p>&copy; 2025 Sebastian Adams. All rights reserved.</p>
-                <p>For inquiries, please contact <a href="mailto:sebastian@kirkosensemble.com">sebastian@kirkosensemble.com</a></p>
-            </footer>
-        </div>
-    </body>
-    </html>
+</body>
+</html>
