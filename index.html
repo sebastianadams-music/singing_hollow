@@ -182,9 +182,8 @@
 
 <script>
         // --- CONFIGURATION ---
-        const ENABLE_SPATIAL_AUDIO = true; // false to disable position-based pan and volume
-        const VIDEO_SIZE = 1.8; // size of videos = smallest dimension/this const
-        
+        const ENABLE_SPATIAL_AUDIO = true;
+
         const videoFiles = [
             "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230408_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230409_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230410_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230411_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230412_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230413_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230414_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230415_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230416_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230417_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230418_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230419_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230420_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230421_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230422_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230423_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230424_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230425_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230426_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230427_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230428_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230429_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230430_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230431_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230432_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230433_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230434_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230435_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230436_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230437_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230438_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230439_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230440_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230441_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230442_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230443_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230444_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230445_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230446_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230447_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230448_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230449_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230450_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230451_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230452_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230453_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230454_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230455_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230456_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230457_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230458_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230459_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230460_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230461_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230462_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230463_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230464_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230465_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230466_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230467_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230468_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230469_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230470_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230471_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230472_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230473_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230474_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230475_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230476_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230477_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230478_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230479_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230480_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230481_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230482_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230483_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230484_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230485_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230486_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230487_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230488_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230489_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230490_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230491_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230492_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230493_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230494_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230495_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/unprocessed"
         ];
@@ -221,6 +220,14 @@
             return videoFiles[Math.floor(Math.random() * videoFiles.length)];
         }
 
+        function checkOrientation() {
+            if (window.matchMedia("(orientation: portrait)").matches) {
+                document.body.classList.add('portrait');
+            } else {
+                document.body.classList.remove('portrait');
+            }
+        }
+
         // --- AUDIO HELPERS ---
         function initVideoAudioNodes(videoEl) {
             if (!audioCtx) return null;
@@ -244,46 +251,19 @@
                 return;
             }
 
-            const isPortrait = document.body.classList.contains('portrait');
-            const vWidth = videoEl.width || 300;
-            const vHeight = vWidth * (9/16);
+            // Dimensions: We use the visual "Landscape" flow regardless of orientation
+            // because in portrait, the body IS physically rotated to be landscape.
+            const centerX = styleLeft + (videoEl.width / 2);
+            const centerY = styleTop + ((videoEl.width * 9/16) / 2);
 
-            // Calculate Center based on the style positions (relative to the container)
-            const centerX = styleLeft + (vWidth / 2);
-            const centerY = styleTop + (vHeight / 2);
-
-            let panVal = 0;
-            let volVal = 1;
-
-            if (isPortrait) {
-                // IN PORTRAIT MODE (Body is rotated 90deg clockwise)
-                // 'styleLeft' runs along the LONG edge (Visual Vertical)
-                // 'styleTop' runs along the SHORT edge (Visual Horizontal)
-                
-                // 1. Panning (Left/Right) is determined by 'styleTop'
-                //    0 (Top) is visual Right, Max (Bottom) is visual Left.
-                //    We need to map styleTop 0..containerH to 1..-1 (Right to Left)
-                
-                // Normalize Top position (0 to 1)
-                const normH = centerY / containerH; 
-                // Map to Pan: 0 -> +1 (Right), 1 -> -1 (Left)
-                panVal = (1 - normH * 2) * 0.66; // * 0.66 for 2/3rds width
-
-                // 2. Volume (Top/Bottom) is determined by 'styleLeft'
-                //    0 (Left) is visual Top, Max (Right) is visual Bottom.
-                const normV = centerX / containerW;
-                const distFromCenter = Math.abs(normV - 0.5);
-                volVal = 1.0 - distFromCenter;
-
-            } else {
-                // STANDARD MODE
-                const normH = centerX / containerW;
-                panVal = (normH * 2 - 1) * 0.66;
-
-                const normV = centerY / containerH;
-                const distFromCenter = Math.abs(normV - 0.5);
-                volVal = 1.0 - distFromCenter;
-            }
+            // 1. Panning (Visual Horizontal / CSS Left)
+            // Left (0) = -0.66, Right (Width) = +0.66
+            let panVal = ((centerX / containerW) * 2 - 1) * 0.66;
+            
+            // 2. Volume (Visual Vertical / CSS Top)
+            // Center (0.5) = 1.0, Edge (0 or 1) = 0.5
+            let distFromCenterY = Math.abs((centerY / containerH) - 0.5);
+            let volVal = 1.0 - distFromCenterY;
 
             // Clamp values
             panVal = Math.max(-0.9, Math.min(0.9, panVal));
@@ -300,30 +280,34 @@
 
         // --- POSITIONING LOGIC ---
         function setRandomPosition(container, video) {
-            // Simplified Logic: 
-            // Since CSS enforces the body to be the correct "Landscape" aspect ratio 
-            // (even if that means 100vh width in portrait), we can trust clientWidth.
-            // This prevents "short edge" calculations from constraining elements to the left.
-            
-            const limitX = document.body.clientWidth;
-            const limitY = document.body.clientHeight;
+            // Determine "Visual" Limits based on the current body state
+            let limitX, limitY;
+            const isPortrait = document.body.classList.contains('portrait');
+
+            if (isPortrait) {
+                // In portrait, CSS sets body width to 100vh (Height of screen)
+                // and body height to 100vw (Width of screen).
+                // We must use these "flipped" dimensions for placement logic.
+                limitX = window.innerHeight; // Visual Width
+                limitY = window.innerWidth;  // Visual Height
+            } else {
+                // Desktop / Landscape
+                limitX = window.innerWidth;
+                limitY = window.innerHeight;
+            }
 
             // Calculate video dimensions
             const vWidth = video.width;
             const vHeight = vWidth * (9 / 16);
 
-            // Add a safety margin (5%)
-            const marginX = limitX * 0.05;
-            const marginY = limitY * 0.05;
-
-            // Random positions within safe area
-            const randLeft = marginX + Math.random() * (limitX - vWidth - (marginX * 2));
-            const randTop = marginY + Math.random() * (limitY - vHeight - (marginY * 2));
+            // Random positions
+            const randLeft = Math.random() * (limitX - vWidth);
+            const randTop = Math.random() * (limitY - vHeight);
 
             container.style.left = randLeft + 'px';
             container.style.top = randTop + 'px';
 
-            // Pass these limits to audio updater
+            // Pass limits to audio
             updateSpatialAudio(video, randLeft, randTop, limitX, limitY);
         }
 
@@ -337,9 +321,9 @@
             video.muted = false;
             video.crossOrigin = "anonymous";
             
-            // Set basic width based on smallest dimension
+            // Set basic width
             const minDim = Math.min(window.innerWidth, window.innerHeight);
-            video.width = minDim / VIDEO_SIZE 
+            video.width = minDim / 4; 
 
             // Initial Position
             setRandomPosition(videoContainer, video);
@@ -365,7 +349,6 @@
 
         function handleVideoEnd(container, video) {
             container.style.opacity = 0;
-            // 50% chance of going straight on or else waits
             if (Math.random() < 0.5) {
                 setTimeout(() => {
                     video.src = getRandomVideo();
@@ -463,16 +446,11 @@
                 } else if (audioCtx.state === 'suspended') {
                     audioCtx.resume();
                 }
-                // Update audio for all existing players
+                
+                // When we start playback, recalculate positions just to be safe
+                // in case resize happened during the "Intro" screen
                 videoPlayers.forEach(player => {
-                    const left = parseFloat(player.container.style.left) || 0;
-                    const top = parseFloat(player.container.style.top) || 0;
-                    
-                    // Use CSS body dimensions to match visual layout
-                    const limitX = document.body.clientWidth;
-                    const limitY = document.body.clientHeight;
-                    
-                    updateSpatialAudio(player.video, left, top, limitX, limitY);
+                    setRandomPosition(player.container, player.video);
                 });
             }
 
@@ -484,23 +462,24 @@
             animateBellNotation();
         }
 
-        function checkOrientation() {
-            if (window.matchMedia("(orientation: portrait)").matches) {
-                document.body.classList.add('portrait');
-            } else {
-                document.body.classList.remove('portrait');
-            }
-        }
-
-        // Init
-        for (let i = 0; i < maxVideos; i++) createVideoPlayer();
-        setupAudio();
+        // --- INITIALIZATION ---
+        // 1. CHECK ORIENTATION FIRST
         checkOrientation();
+
+        // 2. NOW CREATE VIDEOS (logic will now know if we are in portrait)
+        for (let i = 0; i < maxVideos; i++) {
+            createVideoPlayer();
+        }
+        setupAudio();
         initBellNotation();
 
         playSoundButton.addEventListener('click', startPlayback);
         reloadLink.addEventListener('click', (e) => { e.preventDefault(); location.reload(); });
-        window.matchMedia("(orientation: portrait)").addEventListener("change", checkOrientation);
+        window.matchMedia("(orientation: portrait)").addEventListener("change", (e) => {
+            checkOrientation();
+            // Optional: Reshuffle positions if user rotates screen while active
+            videoPlayers.forEach(p => setRandomPosition(p.container, p.video));
+        });
 
     </script>
 
