@@ -30,123 +30,94 @@
             color: white;
             text-decoration: none;
             font-family: sans-serif;
-            /* font-size: 1em; */
             z-index: 101;
         }
         .bottom-link:hover {
             color: green;
         }
-
-                #reload-link {
+        #reload-link {
             left: 10px;
         }
         .home-link {
             right: 10px;
-        }        
+        }
         .sebastian-link {
             display: flex;
             justify-content: center;
-            width:   100%;
-
+            width: 100%;
         }
-
-
         ul {
             list-style-type: none;
             padding: 0;
             margin: 20px 0;
         }
-
-
-
         .buttonlink, buttonlink:visited {
-            
             font-size: 1.2em;
             padding: 10px;
             color: black;
             text-decoration: none;
             background-color: rgb(153, 153, 153);
-
         }
-
         .buttonlink:hover {
             background-color: rgb(0, 241, 108);
-
         }
-
         #play-sound-button {
             background-color: rgb(190, 190, 190);
-
         }
-
         #play-sound-button:hover {
             background-color: rgb(16, 241, 0);
-
         }
-        
-
         #intro {
             position: fixed;
-            /* align-items: center;
-            justify-items: center; */
             top: 40%;
             left: 50%;
             transform: translate(-50%, -50%);
-            /* font-size: 2em; */
             color: white;
             text-align: center;
             padding: 20px;
-            z-index: 102; /* Higher z-index to be above notation */
+            z-index: 102;
             display: flex;
             flex-direction: column;
             align-items: center;
             background-color: rgba(55, 55, 55, 0.354);
-            background-color: linear-gradient(to right, transparent, 10%, rgba(55, 55, 55, 0.487)
-        , 90%, transparent);
+            background: linear-gradient(to right, transparent, 10%, rgba(55, 55, 55, 0.487), 90%, transparent);
         }
-        
         .button-container {
             display: flex;
-            gap: 8px;   
+            gap: 8px;
             justify-content: center;
         }
-
-        /* New Bell Notation Styles */
         #bell-notation-container {
             position: fixed;
-/*             left: 30%; /* Start 30% from the left */ */
             top: 0;
-            width: 30%; /* Finish roughly 60% from the left (30% + 30%) */
+            width: 30%;
             height: 100vh;
-/*             background-color: rgba(0,0,0,0.7); /* Semi-transparent background */ */
             color: white;
             overflow: hidden;
-/*             padding: 20px 0; /* Vertical padding only, horizontal handled by width */ */
             box-sizing: border-box;
-            z-index: 100; /* Ensure it's above videos but below play button */
+            z-index: 100;
             display: flex;
             flex-direction: column;
-/*             justify-content: flex-end; /* Align content to the bottom */ */
-            text-align: center; /* Center the numbers horizontally within their container */
+            text-align: center;
         }
         .bell-line {
             font-family: monospace;
-            font-size: 2.5em; /* Adjusted for 10 lines and readability */
-            white-space: pre; /* Preserve spaces */
+            font-size: 2.5em;
+            white-space: pre;
             line-height: 1.2;
-            height: 1.2em; /* Explicit height to maintain consistent line spacing */
+            height: 1.2em;
         }
         .bell-digit {
             opacity: 0.4;
-            transition: opacity 0.1s ease-in-out; /* Smooth transition for active state */
-            display: inline-block; /* Allows individual numbers to be styled */
-            width: 1em; /* Give each digit a consistent width */
+            transition: opacity 0.1s ease-in-out;
+            display: inline-block;
+            width: 1em;
         }
         .bell-digit.active {
             opacity: 1;
         }
 
-@media (orientation: portrait) {
+        @media (orientation: portrait) {
             body.portrait {
                 transform: rotate(90deg);
                 transform-origin: center center;
@@ -158,35 +129,24 @@
                 left: 50%;
                 transform: translate(-50%, -50%) rotate(90deg);
             }
-
-            /* 1. Move ALL footer links to the "Visual Bottom" (which is Body Top) */
             body.portrait .bottom-link {
-                bottom: 20px;    
-                top: auto;       /* Attached to the Visual Right/Bottom edge */
-                width: auto;     /* Prevent overlapping clicks */
+                bottom: 20px;
+                top: auto;
+                width: auto;
             }
-
-            /* 2. RELOAD: Stays on the Left (Visual Top) */
             body.portrait #reload-link {
                 left: 10%;
-                /* Inherits top: 10px from above */
             }
-
-            /* 3. SCORE: Stays on the Right (Visual Bottom) */
             body.portrait .home-link {
                 right: 10%;
-                /* Inherits top: 10px from above */
             }
-
-            /* 4. SEBASTIAN: Centers horizontally */
             body.portrait .sebastian-link {
                 left: 50%;
-                transform: translateX(-50%); /* Centers along the edge */
-                display: block;              
+                transform: translateX(-50%);
+                display: block;
                 width: auto;
             }
         }
-
     </style>
 </head>
 <body>
@@ -195,15 +155,14 @@
     </div>
     <div id="video-players"></div>
     <a href="score.html" class="home-link bottom-link">SCORE</a>
-    <!-- <a href="https://www.sebastianadams.net" class="sebastian-link bottom-link">sebastianadams.net</a> -->
     <a href="#" id="reload-link" class="reload-link bottom-link">RELOAD</a>
-    
+
     <div id="intro">
         <h2>Singing Hollow</h2>
         <h3>A performance installation for church bells (method ringers), organ, and walking instruments. Designed around St Audoen's Church, Dublin.</h3>
         <div class="button-container">
             <a id="about-button" class="buttonlink" href="audience.html">About</a>
-            <a id="play-sound-button" class="buttonlink" href=>PLAY</a>
+            <a id="play-sound-button" class="buttonlink" href="#">PLAY</a>
             <a id="score-button" class="buttonlink" href="score.html">Score</a>
         </div>
         <ul>
@@ -218,15 +177,13 @@
             <li>commissioned by the OPW/The Liberties Festival</li>
             <br>
             <li>video footage shot by Paul Scully</li>
-
         </ul>
-        
-        
-
     </div>
-    
 
     <script>
+        // --- CONFIGURATION ---
+        const ENABLE_SPATIAL_AUDIO = true; // false to disable position-based pan and volume
+        const VIDEO_SIZE = 1.8; // size of videos = smallest dimension/this const
         const videoFiles = [
             "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230408_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230409_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230410_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230411_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230412_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230413_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230414_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230415_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230416_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230417_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230418_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230419_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230420_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230421_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230422_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230423_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230424_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230425_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230426_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230427_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230428_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230429_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230430_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230431_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230432_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230433_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230434_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230435_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230436_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230437_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230438_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230439_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230440_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230441_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230442_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230443_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230444_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230445_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230446_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230447_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230448_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230449_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230450_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230451_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230452_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230453_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230454_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230455_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230456_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230457_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230458_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230459_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230460_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230461_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230462_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230463_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230464_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230465_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230466_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230467_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230468_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230469_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230470_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230471_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230472_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230473_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230474_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230475_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230476_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230477_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230478_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230479_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230480_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230481_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230482_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230483_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230484_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230485_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230486_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230487_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230488_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230489_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230490_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230491_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230492_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230493_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230494_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/P1230495_crf28.mp4", "https://media.githubusercontent.com/media/sebastianadams-music/singing_hollow/main/SEB_BELLS_PIECE_JULY25/123_PANA/unprocessed"
         ];
@@ -239,6 +196,7 @@
         let videoPlayers = [];
         let audio;
         let isInitialLoad = true;
+        let audioCtx;
 
         // Bell Notation Variables
         const plainHunt6 = [
@@ -247,20 +205,136 @@
         ];
         const fibonacciSequence = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987];
         let fibonacciIndex = 0;
-        const baseBellSpeed = 1000; // ms per digit for fibonacci 1 (changed from 100 to 1000)
+        const baseBellSpeed = 1000; // time-step size in mx
         const maxBellDisplayLines = 10;
-        let currentLineIndex = 0; // Index in plainHunt6
-        let currentDigitIndex = 0; // Index within the current line (0-5)
+        let currentLineIndex = 0;
+        let currentDigitIndex = 0;
         let leadCount = 0;
         let bellAnimationTimeout;
-        let currentActiveDigitElement = null; // Track the currently active digit element
+        let currentActiveDigitElement = null;
 
         const bellNotationContainer = document.getElementById('bell-notation-container');
         const bellNotationDisplay = document.getElementById('bell-notation-display');
 
-
         function getRandomVideo() {
             return videoFiles[Math.floor(Math.random() * videoFiles.length)];
+        }
+
+        // --- AUDIO HELPERS ---
+        function initVideoAudioNodes(videoEl) {
+            if (!audioCtx) return null;
+            if (videoEl._pannerNode) return videoEl._pannerNode;
+
+            const source = audioCtx.createMediaElementSource(videoEl);
+            const panner = audioCtx.createStereoPanner();
+            
+            source.connect(panner);
+            panner.connect(audioCtx.destination);
+            
+            videoEl._pannerNode = panner;
+            videoEl._sourceNode = source;
+            return panner;
+        }
+
+        function updateSpatialAudio(videoEl, styleLeft, styleTop, containerW, containerH) {
+            if (!ENABLE_SPATIAL_AUDIO) {
+                videoEl.volume = 1.0;
+                if (videoEl._pannerNode) videoEl._pannerNode.pan.value = 0;
+                return;
+            }
+
+            const isPortrait = document.body.classList.contains('portrait');
+            const vWidth = videoEl.width || 300;
+            const vHeight = vWidth * (9/16);
+
+            // Calculate Center based on the style positions (relative to the container)
+            const centerX = styleLeft + (vWidth / 2);
+            const centerY = styleTop + (vHeight / 2);
+
+            let panVal = 0;
+            let volVal = 1;
+
+            if (isPortrait) {
+                // IN PORTRAIT MODE (Body is rotated 90deg clockwise)
+                // 'styleLeft' runs along the LONG edge (Visual Vertical)
+                // 'styleTop' runs along the SHORT edge (Visual Horizontal)
+                
+                // 1. Panning (Left/Right) is determined by 'styleTop'
+                //    0 (Top) is visual Right, Max (Bottom) is visual Left.
+                //    We need to map styleTop 0..containerH to 1..-1 (Right to Left)
+                
+                // Normalize Top position (0 to 1)
+                const normH = centerY / containerH; 
+                // Map to Pan: 0 -> +1 (Right), 1 -> -1 (Left)
+                panVal = (1 - normH * 2) * 0.66; // * 0.66 for 2/3rds width
+
+                // 2. Volume (Top/Bottom) is determined by 'styleLeft'
+                //    0 (Left) is visual Top, Max (Right) is visual Bottom.
+                const normV = centerX / containerW;
+                const distFromCenter = Math.abs(normV - 0.5);
+                volVal = 1.0 - distFromCenter;
+
+            } else {
+                // STANDARD MODE
+                // 'styleLeft' is Horizontal (Pan)
+                // 'styleTop' is Vertical (Volume)
+                
+                const normH = centerX / containerW;
+                panVal = (normH * 2 - 1) * 0.66;
+
+                const normV = centerY / containerH;
+                const distFromCenter = Math.abs(normV - 0.5);
+                volVal = 1.0 - distFromCenter;
+            }
+
+            // Clamp values
+            panVal = Math.max(-0.9, Math.min(0.9, panVal));
+            volVal = Math.max(0, Math.min(1, volVal));
+
+            if (audioCtx && !videoEl._pannerNode) {
+                initVideoAudioNodes(videoEl);
+            }
+            if (videoEl._pannerNode) {
+                videoEl._pannerNode.pan.value = panVal;
+            }
+            videoEl.volume = volVal;
+        }
+
+        // --- POSITIONING LOGIC ---
+        function setRandomPosition(container, video) {
+            const isPortrait = document.body.classList.contains('portrait');
+            
+            // Define limits based on rotation
+            let limitX, limitY;
+            
+            if (isPortrait) {
+                // In portrait, the body is 100vh wide and 100vw high.
+                // We use visualViewport if available for accuracy, else fallback
+                limitX = (window.visualViewport ? window.visualViewport.height : window.innerHeight); // Body Width (Screen Height)
+                limitY = (window.visualViewport ? window.visualViewport.width : window.innerWidth);   // Body Height (Screen Width)
+            } else {
+                limitX = window.innerWidth;
+                limitY = window.innerHeight;
+            }
+
+            // Calculate video dimensions (assuming aspect ratio)
+            const vWidth = video.width;
+            const vHeight = vWidth * (9 / 16);
+
+            // Add a safety margin (5%) so videos don't touch the absolute edge
+            const marginX = limitX * 0.05;
+            const marginY = limitY * 0.05;
+
+            // Random positions within safe area
+            // Note: In portrait, 'randLeft' is the Vertical axis, 'randTop' is Horizontal
+            const randLeft = marginX + Math.random() * (limitX - vWidth - (marginX * 2));
+            const randTop = marginY + Math.random() * (limitY - vHeight - (marginY * 2));
+
+            container.style.left = randLeft + 'px';
+            container.style.top = randTop + 'px';
+
+            // Pass these exact limits to audio updater so it knows the scale
+            updateSpatialAudio(video, randLeft, randTop, limitX, limitY);
         }
 
         function createVideoPlayer() {
@@ -271,18 +345,14 @@
             video.src = getRandomVideo();
             video.autoplay = false;
             video.muted = false;
-            video.width = Math.max(window.innerWidth, window.innerHeight) / 4;
+            video.crossOrigin = "anonymous";
+            
+            // Set basic width (relative to the smaller screen dimension for consistency)
+            const minDim = Math.min(window.innerWidth, window.innerHeight);
+            video.width = minDim / VIDEO_SIZE 
 
-            let containerWidth = window.innerWidth;
-            let containerHeight = window.innerHeight;
-
-            if (document.body.classList.contains('portrait')) {
-                containerWidth = window.innerHeight;
-                containerHeight = window.innerWidth;
-            }
-
-            videoContainer.style.left = Math.random() * (containerWidth - video.width) + 'px';
-            videoContainer.style.top = Math.random() * (containerHeight - (video.width * 9 / 16)) + 'px';
+            // Initial Position
+            setRandomPosition(videoContainer, video);
 
             video.onended = () => handleVideoEnd(videoContainer, video);
             
@@ -305,9 +375,11 @@
 
         function handleVideoEnd(container, video) {
             container.style.opacity = 0;
+            // 50% chance of going straight on or else waits for a random time before picking next video
             if (Math.random() < 0.5) {
                 setTimeout(() => {
                     video.src = getRandomVideo();
+                    setRandomPosition(container, video); // Re-randomize
                     video.play();
                 }, 1000);
             } else {
@@ -315,6 +387,7 @@
                 setTimeout(() => {
                     video.src = getRandomVideo();
                     container.style.display = 'block';
+                    setRandomPosition(container, video); // Re-randomize
                     video.play();
                 }, Math.random() * 75000);
             }
@@ -324,7 +397,6 @@
             audio = new Audio(audioFile);
             audio.loop = true;
             audio.volume = 0.5;
-            
             audio.addEventListener('canplaythrough', () => {
                 const randomStartTime = Math.random() * audio.duration;
                 audio.currentTime = randomStartTime;
@@ -332,7 +404,6 @@
         }
 
         function initBellNotation() {
-            // Fill the display buffer with initial (inactive) lines
             for (let i = 0; i < maxBellDisplayLines - 1; i++) {
                 const lineDiv = document.createElement('div');
                 lineDiv.classList.add('bell-line');
@@ -345,34 +416,28 @@
                 }
                 bellNotationDisplay.appendChild(lineDiv);
             }
-            currentLineIndex = (maxBellDisplayLines - 1) % plainHunt6.length; // Adjust starting index
+            currentLineIndex = (maxBellDisplayLines - 1) % plainHunt6.length;
         }
 
         function animateBellNotation() {
-            // 1. Deactivate the previously active digit
             if (currentActiveDigitElement) {
                 currentActiveDigitElement.classList.remove('active');
             }
-
-            // 2. Prepare for next digit/line
+            
             let lineDivToUpdate;
             let digitIndexToActivate = currentDigitIndex;
 
-            if (currentDigitIndex >= plainHunt6[currentLineIndex].length) { // A full line has completed, move to next line
-                currentDigitIndex = 0; // Reset digit index for the new line
+            if (currentDigitIndex >= plainHunt6[currentLineIndex].length) { 
+                currentDigitIndex = 0;
                 currentLineIndex++;
-
-                if (currentLineIndex >= plainHunt6.length) { // A full lead has completed
+                if (currentLineIndex >= plainHunt6.length) {
                     currentLineIndex = 0;
                     leadCount++;
-                    fibonacciIndex = (fibonacciIndex + 1) % fibonacciSequence.length; // Cycle through Fibonacci numbers
+                    fibonacciIndex = (fibonacciIndex + 1) % fibonacciSequence.length;
                 }
-
-                // Handle scrolling: remove oldest line, add new one
                 if (bellNotationDisplay.children.length >= maxBellDisplayLines) {
                     bellNotationDisplay.removeChild(bellNotationDisplay.children[0]);
                 }
-
                 const newLine = document.createElement('div');
                 newLine.classList.add('bell-line');
                 const lineContent = plainHunt6[currentLineIndex];
@@ -383,47 +448,56 @@
                     newLine.appendChild(digitSpan);
                 }
                 bellNotationDisplay.appendChild(newLine);
-                lineDivToUpdate = newLine; // New line is the target
-                digitIndexToActivate = 0; // First digit of the new line
+                lineDivToUpdate = newLine; 
+                digitIndexToActivate = 0; 
             } else {
-                lineDivToUpdate = bellNotationDisplay.children[bellNotationDisplay.children.length - 1]; // Still on the last line
+                lineDivToUpdate = bellNotationDisplay.children[bellNotationDisplay.children.length - 1]; 
             }
 
-            // 3. Activate the current digit
             const digitSpanToActivate = lineDivToUpdate.children[digitIndexToActivate];
             if (digitSpanToActivate) {
                 digitSpanToActivate.classList.add('active');
-                currentActiveDigitElement = digitSpanToActivate; // Store for next deactivation
+                currentActiveDigitElement = digitSpanToActivate; 
             }
-            
-            // 4. Increment currentDigitIndex for the *next* call
             currentDigitIndex++;
-
-            // 5. Schedule next update
             const delay = fibonacciSequence[fibonacciIndex] * baseBellSpeed;
             bellAnimationTimeout = setTimeout(animateBellNotation, delay);
         }
 
-
-        function startPlayback() {
-            // Play all videos
-            videoPlayers.forEach(player => {
-                player.video.play();
-            });
-
-            // Play audio
-            if (audio) {
-                audio.play();
-            }
+        function startPlayback(e) {
+            if (e) e.preventDefault();
             
+            if (ENABLE_SPATIAL_AUDIO) {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                } else if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                // Update audio for all existing players
+                videoPlayers.forEach(player => {
+                    const left = parseFloat(player.container.style.left) || 0;
+                    const top = parseFloat(player.container.style.top) || 0;
+                    
+                    // Determine dimensions again to pass correct limits
+                    let limitX, limitY;
+                    if (document.body.classList.contains('portrait')) {
+                        limitX = (window.visualViewport ? window.visualViewport.height : window.innerHeight);
+                        limitY = (window.visualViewport ? window.visualViewport.width : window.innerWidth);
+                    } else {
+                        limitX = window.innerWidth;
+                        limitY = window.innerHeight;
+                    }
+                    
+                    updateSpatialAudio(player.video, left, top, limitX, limitY);
+                });
+            }
+
+            videoPlayers.forEach(player => player.video.play().catch(err => console.log(err)));
+            if (audio) audio.play();
+
             isInitialLoad = false;
-
-            // Hide the button
             introElements.style.display = 'none';
-
-            // Start bell notation animation
             animateBellNotation();
-            event.preventDefault()
         }
 
         function checkOrientation() {
@@ -434,24 +508,17 @@
             }
         }
 
-        // Initial setup
-        for (let i = 0; i < maxVideos; i++) {
-            createVideoPlayer();
-        }
+        // Init
+        for (let i = 0; i < maxVideos; i++) createVideoPlayer();
         setupAudio();
         checkOrientation();
-        initBellNotation(); // Initialize bell notation display
+        initBellNotation();
 
         playSoundButton.addEventListener('click', startPlayback);
-        reloadLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            location.reload();
-        });
+        reloadLink.addEventListener('click', (e) => { e.preventDefault(); location.reload(); });
         window.matchMedia("(orientation: portrait)").addEventListener("change", checkOrientation);
 
     </script>
-</body>
-</html>
 
 </body>
 </html>
