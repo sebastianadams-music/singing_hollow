@@ -104,19 +104,7 @@
             background-color: linear-gradient(to right, transparent, 10%, rgba(55, 55, 55, 0.487)
         , 90%, transparent);
         }
-        @media (orientation: portrait) {
-            body.portrait {
-                transform: rotate(90deg);
-                transform-origin: center center;
-                width: 100vh;
-                height: 100vw;
-                overflow-x: hidden;
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%) rotate(90deg) ;
-            }
-        }
+        
         .button-container {
             display: flex;
             gap: 8px;   
@@ -158,30 +146,44 @@
             opacity: 1;
         }
 
-                @media (orientation: portrait) {
-            /* 1. Reset standard positioning and move to Visual Bottom (CSS Right) */
+@media (orientation: portrait) {
+            body.portrait {
+                transform: rotate(90deg);
+                transform-origin: center center;
+                width: 100vh;
+                height: 100vw;
+                overflow-x: hidden;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) rotate(90deg);
+            }
+
+            /* 1. Move ALL footer links to the "Visual Bottom" (which is Body Top) */
             body.portrait .bottom-link {
-                bottom: auto;    
-                left: auto;      
-                right: 10px;     /* 'Right' in CSS = 'Bottom' visually when rotated 90deg */
-                width: auto;     /* Reset width for the center link */
+                bottom: 20px;    
+                top: auto;       /* Attached to the Visual Right/Bottom edge */
+                width: auto;     /* Prevent overlapping clicks */
             }
 
-            /* 2. Position 'RELOAD' at Visual Left (CSS Bottom) */
+            /* 2. RELOAD: Stays on the Left (Visual Top) */
             body.portrait #reload-link {
-                bottom: 10px;    /* 'Bottom' in CSS = 'Left' visually */
+                left: 20px;
+                /* Inherits top: 10px from above */
             }
 
-            /* 3. Position 'SCORE' at Visual Right (CSS Top) */
+            /* 3. SCORE: Stays on the Right (Visual Bottom) */
             body.portrait .home-link {
-                top: 10px;       /* 'Top' in CSS = 'Right' visually */
+                right: 20px;
+                /* Inherits top: 10px from above */
             }
 
-            /* 4. Center 'SEBASTIAN' horizontally (CSS Vertical Center) */
+            /* 4. SEBASTIAN: Centers horizontally */
             body.portrait .sebastian-link {
-                top: 50%;        
-                transform: translateY(-50%); /* Centers it on the Y-axis (Visual X-axis) */
-                display: block;              /* Removes the flex behavior that stretches it wrong */
+                left: 50%;
+                transform: translateX(-50%); /* Centers along the edge */
+                display: block;              
+                width: auto;
             }
         }
 
