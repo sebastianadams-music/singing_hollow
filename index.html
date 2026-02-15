@@ -2,13 +2,19 @@
 <html>
 <head>
     <title>Singing Hollow Documentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
             padding: 0;
             background-color: black;
             overflow: hidden;
-            font-family: sans-serif;
+            font-family: "Open Sans", Arial, sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 300;
+            font-style: normal;
         }
         .video-container {
             position: absolute;
@@ -24,15 +30,14 @@
             color: white;
             text-decoration: none;
             font-family: sans-serif;
-            font-size: 12px;
+            /* font-size: 1em; */
             z-index: 101;
         }
-
-        ul {
-            list-style-type: none;
+        .bottom-link:hover {
+            color: green;
         }
 
-        #reload-link {
+                #reload-link {
             left: 10px;
         }
         .home-link {
@@ -44,14 +49,46 @@
             width:   100%;
 
         }
-        #play-sound-button {
-            cursor: pointer;
+
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 20px 0;
         }
+
+
+
+        .buttonlink, buttonlink:visited {
+            
+            font-size: 1.2em;
+            padding: 10px;
+            color: black;
+            text-decoration: none;
+            background-color: rgb(153, 153, 153);
+
+        }
+
+        .buttonlink:hover {
+            background-color: rgb(0, 241, 108);
+
+        }
+
+        #play-sound-button {
+            background-color: rgb(190, 190, 190);
+
+        }
+
+        #play-sound-button:hover {
+            background-color: rgb(16, 241, 0);
+
+        }
+        
 
         #intro {
             position: fixed;
-            align-items: center;
-            justify-items: center;
+            /* align-items: center;
+            justify-items: center; */
             top: 40%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -60,9 +97,12 @@
             text-align: center;
             padding: 20px;
             z-index: 102; /* Higher z-index to be above notation */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             background-color: rgba(55, 55, 55, 0.354);
-        }
-
+            background-color: linear-gradient(to right, transparent, 10%, rgba(55, 55, 55, 0.487)
+        , 90%, transparent);
         @media (orientation: portrait) {
             body.portrait {
                 transform: rotate(90deg);
@@ -75,6 +115,11 @@
                 left: 50%;
                 transform: translate(-50%, -50%) rotate(90deg) ;
             }
+        }
+        .button-container {
+            display: flex;
+            gap: 8px;   
+            justify-content: center;
         }
 
         /* New Bell Notation Styles */
@@ -111,6 +156,34 @@
         .bell-digit.active {
             opacity: 1;
         }
+
+                @media (orientation: portrait) {
+            /* 1. Reset standard positioning and move to Visual Bottom (CSS Right) */
+            body.portrait .bottom-link {
+                bottom: auto;    
+                left: auto;      
+                right: 10px;     /* 'Right' in CSS = 'Bottom' visually when rotated 90deg */
+                width: auto;     /* Reset width for the center link */
+            }
+
+            /* 2. Position 'RELOAD' at Visual Left (CSS Bottom) */
+            body.portrait #reload-link {
+                bottom: 10px;    /* 'Bottom' in CSS = 'Left' visually */
+            }
+
+            /* 3. Position 'SCORE' at Visual Right (CSS Top) */
+            body.portrait .home-link {
+                top: 10px;       /* 'Top' in CSS = 'Right' visually */
+            }
+
+            /* 4. Center 'SEBASTIAN' horizontally (CSS Vertical Center) */
+            body.portrait .sebastian-link {
+                top: 50%;        
+                transform: translateY(-50%); /* Centers it on the Y-axis (Visual X-axis) */
+                display: block;              /* Removes the flex behavior that stretches it wrong */
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -120,7 +193,7 @@
     <div id="video-players"></div>
     <a href="score.html" class="home-link bottom-link">SCORE</a>
     <a href="https://www.sebastianadams.net" class="sebastian-link bottom-link">sebastianadams.net</a>
-    <a href="#" id="reload-link" class="bottom-link">RELOAD</a>
+    <a href="#" id="reload-link" class="reload-link bottom-link">RELOAD</a>
     
     <div id="intro">
         <h2>Singing Hollow</h2>
@@ -132,15 +205,18 @@
             <li>melodica - Robert Coleman</li>
             <li>shakuhachi - Jin Theriault</li>
             <li>composition/walkie talkie/web design - Sebastian Adams</li>
-            <li></li>
+            <br>
             <li>commissioned by the OPW/The Liberties Festival</li>
-            <li></li>
+            <br>
             <li>video footage shot by Paul Scully</li>
 
         </ul>
-        <button id="play-sound-button">Play</button>
-        <a id="about-button" class="buttonlink" href="audience.html">About</a>
-        <a id="score-button" class="buttonlink" href="score.html">Score</a>
+        <div class="button-container">
+            <a id="about-button" class="buttonlink" href="audience.html">About</a>
+            <a id="play-sound-button" class="buttonlink" href=>PLAY</a>
+            <a id="score-button" class="buttonlink" href="score.html">Score</a>
+        </div>
+        
 
     </div>
     
@@ -153,6 +229,7 @@
         const maxVideos = 4;
         const videoPlayersContainer = document.getElementById('video-players');
         const playSoundButton = document.getElementById('play-sound-button');
+        const introElements = document.getElementById('intro');
         const reloadLink = document.getElementById('reload-link');
         let videoPlayers = [];
         let audio;
@@ -337,10 +414,11 @@
             isInitialLoad = false;
 
             // Hide the button
-            playSoundButton.style.display = 'none';
+            introElements.style.display = 'none';
 
             // Start bell notation animation
             animateBellNotation();
+            event.preventDefault()
         }
 
         function checkOrientation() {
