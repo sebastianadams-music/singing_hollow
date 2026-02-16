@@ -318,7 +318,7 @@
             const video = document.createElement('video');
             video.src = getRandomVideo();
             video.autoplay = false;
-            video.muted = false;
+            video.muted = true;
             video.playsInline = true;
             video.crossOrigin = "anonymous";
             
@@ -451,7 +451,9 @@
                 // When we start playback, recalculate positions just to be safe
                 // in case resize happened during the "Intro" screen
                 videoPlayers.forEach(player => {
-                    setRandomPosition(player.container, player.video);
+                   player.video.muted = false; 
+		   setRandomPosition(player.container, player.video);
+                   player.video.play().catch(err => console.log("Playback failed:", err));
                 });
             }
 
